@@ -105,7 +105,6 @@ test("L4: a recharge ends up in uses.recovery and the item is accepted by the st
     const html = "<p>The dragon exhales fire in a 60-foot cone. Each creature in that area must make a DC 18 Dexterity saving throw, taking 56 (16d6) fire damage on a failed save, or half as much damage on a successful one.</p>";
     const plan = P.parseFeature("Fire Breath (Recharge 5-6)", html, { keys });
     const patch = P.toItemPatch(plan, { keys, item: { type: "feat" } });
-    // eslint-disable-next-line no-undef
     const doc = new CONFIG.Item.documentClass({ name: "recharge", type: "feat", system: patch }, { strict: true });
     return { recovery: doc.toObject().system.uses.recovery, periods: [...keys.limitedUsePeriods] };
   }, "dnd5e-text-parser");
