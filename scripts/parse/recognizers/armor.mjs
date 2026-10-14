@@ -1,4 +1,4 @@
-import { hasLang, languagesOf, ORIGIN } from "./common.mjs";
+import { hasLang, languagesOf, isNegated, ORIGIN } from "./common.mjs";
 import { lookup } from "../lexicon/index.mjs";
 
 const EN_AC = /\bAC\s+(\d+)(?:\s*\+\s*Dex(?:terity)?\s+modifier(?:\s*\(\s*max(?:imum)?\s*(?:of\s+)?(\d)\s*\))?)?/iu;
@@ -80,6 +80,9 @@ export function recognizeArmor(text, ctx = {}, meta = null) {
     if ( !hasLang(ctx, lang) || armor.stealthDisadvantage ) continue;
     const match = source.match(re);
     if ( !match ) continue;
+    // "the mithral version doesn't" / "no disadvantage on Stealth checks"
+    const around = sentenceAt(source, match.index);
+    if ( isNegated(around.text, match.index - around.start, match.index - around.start + match[0].length) ) continue;
     armor.stealthDisadvantage = true;
     spans.push({ ...span("armor", match.index, match.index + match[0].length, match[0]), role: "stealth" });
   }

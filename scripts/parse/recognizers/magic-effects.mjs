@@ -1,4 +1,4 @@
-import { hasLang, languagesOf, ORIGIN } from "./common.mjs";
+import { hasLang, languagesOf, isNegated, isNotWearer, ORIGIN } from "./common.mjs";
 import { lookup, fold, damageKey, conditionKey, abilityKey } from "../lexicon/index.mjs";
 import { splitSentences, parseNumber, toFeet } from "../text.mjs";
 
@@ -38,6 +38,13 @@ const SCORE_FR = /\bVotre\s+(?:(?:valeur|score)\s+(?:de\s+|d'))?(\p{L}+)\s+(?:pa
 const SPEED_EN = /\bspeed\s+(?:increases|is\s+increased)\s+by\s+(\d+)\s*(?:feet|ft\.?)/giu;
 const SPEED_FR = /\bvitesse(?:\s+de\s+d[ée]placement)?\s+augmente\s+de\s+(\d+(?:[.,]\d+)?)\s*m\b/giu;
 
+const AGAINST_TAIL = /^\s*(?:against|contre)(?![\p{L}])/iu;
+const THIS_EFFECT = /^(?:this|that|these|those|the\s+effect|it|its|ce|cet|cette)(?![\p{L}])/iu;
+const BONUS_OF_EN = /\bbonus\s+to\s+(.+?)\s+of\s+\+(\d+)/giu;
+const BONUS_OF_FR = /\bbonus\s+(?:aux?|[àa]\s+la|[àa]\s+l')\s*(.+?)\s+de\s+\+(\d+)/giu;
+const MOVEMENT = { fly: "fly", vol: "fly", swim: "swim", nage: "swim", climb: "climb", escalade: "climb", burrow: "burrow", creusement: "burrow" };
+const MOVEMENT_EN = /\b(fly|flying|swim|swimming|climb|climbing|burrow|burrowing)\s+speed\s+(?:of|equal\s+to)\s+(\d+)\s*(?:feet|ft\.?)/giu;
+const MOVEMENT_FR = /\bvitesse\s+de\s+(vol|nage|escalade|creusement)\s+(?:de|[ée]gale?\s+[àa])\s+(\d+(?:[.,]\d+)?)\s*(m(?![\p{L}])|m[eè]tres?|pieds?)/giu;
 const NOTE_UNKNOWN = "dnd5e-text-parser.Note.EffectUnknown";
 
 /**
@@ -120,18 +127,39 @@ export function recognizeMagicEffects(text, ctx = {}) {
       sentence: { start: sentence.index, end: sentence.index + s.length }
     }));
     const raw = s;
+    const endOf = match => match.index + match[0].length;
+    const skip = match => isNegated(s, match.index, endOf(match));
 
     for ( const [re, lang] of [[BONUS_EN, "en"], [BONUS_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
-      for ( const match of s.matchAll(re) ) add(bonusEffects(match[2], `+${match[1]}`, raw, langs));
+      for ( const match of s.matchAll(re) ) {
+        if ( skip(match) ) continue;
+        // "+1 bonus to saving throws against spells" is not a general bonus
+        if ( AGAINST_TAIL.test(s.slice(endOf(match))) ) {
+          ambiguous.push({ key: NOTE_UNKNOWN, data: { kind: "bonus", text: match[0] } });
+          continue;
+        }
+        add(bonusEffects(match[2], `+${match[1]}`, raw, langs));
+      }
+    }
+    // "a bonus to spell attack rolls of +1"
+    for ( const [re, lang] of [[BONUS_OF_EN, "en"], [BONUS_OF_FR, "fr"]] ) {
+      if ( !hasLang(ctx, lang) ) continue;
+      for ( const match of s.matchAll(re) ) {
+        if ( skip(match) ) continue;
+        add(bonusEffects(match[1], `+${match[2]}`, raw, langs));
+      }
     }
 
     for ( const [re, lang] of [[TRAIT_EN, "en"], [TRAIT_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
+        if ( skip(match) || isNotWearer(s, match.index) ) continue;
+        const object = (match[2] ?? match[4]).trim();
+        if ( THIS_EFFECT.test(object) ) continue;
         const word = fold(match[1] ?? match[3]);
         const kind = word.startsWith("resist") ? "resistance" : word.startsWith("immun") ? "immunity" : "vulnerability";
-        const result = traitEffects(kind, (match[2] ?? match[4]).trim(), raw, langs, lang);
+        const result = traitEffects(kind, object, raw, langs, lang);
         add(result.effects);
         ambiguous.push(...result.notes);
       }
@@ -140,6 +168,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[ADVANTAGE_EN, "en"], [ADVANTAGE_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
+        if ( skip(match) || isNotWearer(s, match.index) ) continue;
         const kind = fold(match[1]).startsWith("dis") || fold(match[1]).startsWith("desa") ? "disadvantage" : "advantage";
         const first = lang === "en" ? match[2] : match[3];
         const second = lang === "en" ? match[3] : match[4];
@@ -162,6 +191,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[IMMUNE_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
+        if ( skip(match) || isNotWearer(s, match.index) || THIS_EFFECT.test(match[2].trim()) ) continue;
         const result = traitEffects("immunity", match[2].trim(), raw, langs, lang);
         add(result.effects);
         ambiguous.push(...result.notes);
@@ -171,9 +201,12 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[AGAINST_EN, "en"], [AGAINST_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
+        if ( skip(match) || isNotWearer(s, match.index) ) continue;
         for ( const part of match[1].split(AGAINST_SPLIT) ) {
-          const word = part.replace(/^against\s+|^contre\s+/iu, "").replace(AGAINST_NOISE, "").trim();
-          const against = conditionKey(word) ?? damageKey(word);
+          const word = part.replace(/^(?:and|et)\s+/iu, "").replace(/^against\s+|^contre\s+/iu, "")
+            .replace(AGAINST_NOISE, "").trim();
+          // Whatever it is limited to ("the breath weapons of dragons"), it is never a general advantage
+          const against = conditionKey(word) ?? damageKey(word) ?? (fold(word).replace(/\s+/g, " ").slice(0, 80) || null);
           if ( against ) add([{ kind: "advantage", value: null, scope: null, on: "save", against, raw }]);
         }
       }
@@ -182,6 +215,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[SCORE_EN, "en"], [SCORE_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
+        if ( skip(match) ) continue;
         const scope = abilityKey(match[1]);
         if ( scope ) add([{ kind: "abilityScore", value: Number(match[2]), scope, raw }]);
       }
@@ -190,8 +224,20 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[SPEED_EN, "en"], [SPEED_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
+        if ( skip(match) ) continue;
         const value = lang === "en" ? Number(match[1]) : toFeet(parseNumber(match[1]), "m");
         add([{ kind: "speed", value, scope: null, raw }]);
+      }
+    }
+    // "a flying speed of 60 feet", "vitesse de vol de 18 m"
+    for ( const [re, lang] of [[MOVEMENT_EN, "en"], [MOVEMENT_FR, "fr"]] ) {
+      if ( !hasLang(ctx, lang) ) continue;
+      for ( const match of s.matchAll(re) ) {
+        if ( skip(match) ) continue;
+        const scope = MOVEMENT[fold(match[1]).replace(/ing$/, "")];
+        const value = lang === "en" ? Number(match[2])
+          : toFeet(parseNumber(match[2]), /^m/i.test(match[3]) ? "m" : "ft");
+        if ( scope && Number.isFinite(value) ) add([{ kind: "speed", value, scope, raw }]);
       }
     }
 

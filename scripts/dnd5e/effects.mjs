@@ -68,6 +68,11 @@ function changesOf(effect, keys, notes) {
     case "abilityScore":
       return isValidKey(keys, "abilities", scope) ? [change(`system.abilities.${scope}.value`, "upgrade", value)] : skip();
     case "speed":
+      // A movement type ("a flying speed of 60 feet") sets that speed; without one, the speed bonus grows
+      if ( scope ) {
+        return isValidKey(keys, "movementTypes", scope)
+          ? [change(`system.attributes.movement.${scope}`, "upgrade", String(value))] : skip();
+      }
       return [change("system.attributes.movement.bonus", "add", `+${value}`)];
     default:
       return skip();
