@@ -18,7 +18,7 @@ const PREFIX = "dnd5e-text-parser.";
 export const DESCRIBE_KEYS = Object.freeze([
   "Describe.Attack", "Describe.Range", "Describe.Target", "Describe.Damage", "Describe.Save", "Describe.Template",
   "Describe.Uses", "Describe.Recharge", "Describe.LegendaryResistance", "Describe.Activation", "Describe.Skipped",
-  "Describe.Weapon", "Describe.Armor", "Describe.Consumable", "Describe.Rarity", "Describe.Attunement",
+  "Describe.Weapon", "Describe.Armor", "Describe.Consumable", "Describe.Charges", "Describe.Rarity", "Describe.Attunement",
   "Describe.Weight", "Describe.Price", "Describe.Effect", "Describe.Field", "Describe.Fallback",
   "Describe.Activity", "Describe.Heal", "Describe.Cast", "Describe.Consume", "Describe.ExtraDamage",
   "Note.Unrecognized"
@@ -213,6 +213,7 @@ export function describe(planOrChanges) {
     if ( c.charges || c.destroyOnEmpty ) paths.push("system.uses");
     detail("Consumable", { type: c.type, charges: c.charges?.max ?? null }, c, paths);
   }
+  if ( details.charges ) detail("Charges", { charges: details.charges.max }, details.charges, ["system.uses"]);
   if ( details.rarity ) detail("Rarity", { rarity: details.rarity }, null, ["system.rarities"]);
   if ( details.attunement ) {
     detail("Attunement", { attunement: details.attunement, condition: details.attunementCondition ?? "" }, null, ["system.attunement"]);

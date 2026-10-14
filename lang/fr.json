@@ -15,6 +15,7 @@
       "Weapon": "Arme : {category} {baseItem} {base}",
       "Armor": "Armure : {type} CA {ac}",
       "Consumable": "Consommable : {type}, charges : {charges}",
+      "Charges": "Charges : {charges}",
       "Rarity": "Rareté : {rarity}",
       "Attunement": "Harmonisation : {attunement}",
       "Weight": "Poids : {value} {units}",

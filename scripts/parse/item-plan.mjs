@@ -97,6 +97,7 @@ export function parseItem(name, html, opts = {}) {
   if ( weapon.fact ) details.weapon = weapon.fact;
   if ( armor.fact ) details.armor = armor.fact;
   if ( consumable.fact ) details.consumable = consumable.fact;
+  else if ( consumable.charges ) details.charges = consumable.charges;
 
   // Segments -> activities
   const leads = leadIns(html);

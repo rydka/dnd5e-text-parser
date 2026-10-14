@@ -16,7 +16,7 @@ function buildUses(plan, keys) {
   if ( plan.legendaryResistance ) return null;   // goes to the actor (resources.legres)
   const recovery = [];
   let max = null;
-  const charges = plan.details?.consumable?.charges;
+  const charges = plan.details?.consumable?.charges ?? plan.details?.charges;
   if ( plan.uses && isValidKey(keys, "limitedUsePeriods", plan.uses.period) ) {
     max = plan.uses.max;
     recovery.push(plan.uses.recoverFormula

@@ -145,7 +145,7 @@ Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "
 const lines = parser.describe(plan).map(d => game.i18n.format(d.key, d.data));
 ```
 
-Clés : `dnd5e-text-parser.Describe.{Attack, Range, Target, Damage, ExtraDamage, Save, Template, Uses, Recharge, LegendaryResistance, Activation, Activity, Heal, Cast, Consume, Skipped, Weapon, Armor, Consumable, Rarity, Attunement, Weight, Price, Effect, Field, Fallback}` et `dnd5e-text-parser.Note.*`. Une donnée proposée par le secours porte `data.origin === "fallback"` : ajoutez `Describe.Fallback` (« proposé par l'assistant »).
+Clés : `dnd5e-text-parser.Describe.{Attack, Range, Target, Damage, ExtraDamage, Save, Template, Uses, Recharge, LegendaryResistance, Activation, Activity, Heal, Cast, Consume, Skipped, Weapon, Armor, Consumable, Charges, Rarity, Attunement, Weight, Price, Effect, Field, Fallback}` et `dnd5e-text-parser.Note.*`. Une donnée proposée par le secours porte `data.origin === "fallback"` : ajoutez `Describe.Fallback` (« proposé par l'assistant »).
 
 ### Structure intermédiaire (plans, `SCHEMA_VERSION = 1`)
 

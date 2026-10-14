@@ -36,7 +36,7 @@ export function recognizeConsumable(text, ctx = {}, meta = null) {
   const langs = languagesOf(ctx);
   const spans = [];
   const type = KINDS.has(meta?.kind) ? meta.kind : null;
-  if ( !type && ctx.itemType !== "consumable" ) return { fact: null, spans, ambiguous: [], notes: [] };
+  const isConsumable = Boolean(type) || ctx.itemType === "consumable";
   const consumable = { type, charges: null, destroyOnEmpty: false, raw: meta?.raw ?? "", origin: ORIGIN };
 
   let max = null;
@@ -57,6 +57,11 @@ export function recognizeConsumable(text, ctx = {}, meta = null) {
     spans.push(sentenceAt(source, match.index));
   }
   if ( max !== null && !consumable.charges ) consumable.charges = { max, period: null, formula: null };
+  // Any other item ("The staff has 10 charges") reports its charges apart, as \`charges\`
+  if ( !isConsumable ) {
+    spans.sort((a, b) => a.start - b.start);
+    return { fact: null, charges: consumable.charges, spans: consumable.charges ? spans : [], ambiguous: [], notes: [] };
+  }
 
   for ( const [re, lang] of [[EN_DESTROY, "en"], [FR_DESTROY, "fr"]] ) {
     if ( !hasLang(ctx, lang) || consumable.destroyOnEmpty ) continue;
