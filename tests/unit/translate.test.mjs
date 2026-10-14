@@ -2,25 +2,10 @@
 import { describe, expect, it } from "vitest";
 import * as P from "../../scripts/index.mjs";
 
-const o = (...k) => Object.fromEntries(k.map(x => [x, { label: x }]));
-const CONFIG_DND5E = {
-  damageTypes: o("acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder"),
-  conditionTypes: o("blinded", "charmed", "frightened", "poisoned", "prone"),
-  abilities: o("str", "dex", "con", "int", "wis", "cha"),
-  skills: o("ste", "inv", "prc"),
-  areaTargetTypes: o("cone", "cube", "cylinder", "line", "radius", "sphere"),
-  individualTargetTypes: o("creature", "ally", "enemy", "self"),
-  activityActivationTypes: o("action", "bonus", "reaction", "legendary", "special"),
-  limitedUsePeriods: o("sr", "lr", "day", "dawn", "dusk", "recharge"),
-  healingTypes: o("healing", "temphp"),
-  itemRarity: o("common", "uncommon", "rare", "veryRare", "legendary", "artifact"),
-  attunementTypes: o("required", "optional"),
-  weaponTypes: o("simpleM", "martialM", "simpleR", "martialR"),
-  armorTypes: o("light", "medium", "heavy", "shield"),
-  consumableTypes: o("potion", "wand", "scroll", "ammo"),
-  currencies: o("pp", "gp", "ep", "sp", "cp"),
-  validProperties: { weapon: new Set(["fin", "lgt", "two", "ver"]), equipment: new Set(["mgc"]), consumable: new Set(["mgc"]), feat: new Set(["trait"]) }
-};
+import { readFileSync } from "node:fs";
+
+// Real dnd5e 6.0.6 keys: snapshot of CONFIG.DND5E taken in Foundry (tests/integration/extract-control.spec.mjs).
+const CONFIG_DND5E = JSON.parse(readFileSync(new URL("../fixtures/dnd5e-keys.json", import.meta.url), "utf8"));
 const keys = P.keysFromConfig(CONFIG_DND5E);
 let n = 0;
 const idGen = () => `id${++n}`.padEnd(16, "0");
@@ -33,7 +18,7 @@ describe("keys", () => {
     const k = P.keysFromConfig({ abilities: new Map([["str", 1]]), skills: ["ste"], damageTypes: new Set(["fire"]), currencies: { gp: 1 } });
     expect([...k.abilities]).toEqual(["str"]);
     expect([...k.skills]).toEqual(["ste"]);
-    const snap = P.keysSnapshot(CONFIG_DND5E);
+    const snap = P.keysSnapshot(P.keysFromConfig(CONFIG_DND5E));
     expect(JSON.parse(JSON.stringify(snap)).damageTypes).toContain("fire");
     expect([...P.keysFromConfig(JSON.parse(JSON.stringify(snap))).abilities].sort()).toEqual([...keys.abilities].sort());
     expect(P.keysFromConfig(undefined).abilities.size).toBe(0);

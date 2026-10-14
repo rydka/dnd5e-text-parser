@@ -90,3 +90,11 @@ test("extract objects from dnd5e.items and dnd5e.equipment24", async ({ foundry 
   fs.writeFileSync(process.env.OUT_ITEMS, JSON.stringify(out));
   console.log("items", out.length);
 });
+
+test("snapshot the valid dnd5e keys (CONFIG.DND5E) for the unit tests", async ({ foundry }) => {
+  const snapshot = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    return P.keysSnapshot(CONFIG.DND5E);
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(process.env.OUT_KEYS, JSON.stringify(snapshot, null, 1));
+});

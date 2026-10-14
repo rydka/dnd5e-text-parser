@@ -127,16 +127,9 @@ function statBlockRuns() {
   }));
 }
 
+// Real dnd5e keys (snapshot of CONFIG.DND5E, see tests/integration/extract-control.spec.mjs).
 function minimalConfig() {
-  const o = (...k) => Object.fromEntries(k.map(x => [x, { label: x }]));
-  return {
-    damageTypes: o("acid", "bludgeoning", "cold", "fire", "force", "lightning", "necrotic", "piercing", "poison", "psychic", "radiant", "slashing", "thunder"),
-    conditionTypes: o("blinded", "charmed", "deafened", "exhaustion", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious"),
-    abilities: o("str", "dex", "con", "int", "wis", "cha"),
-    areaTargetTypes: o("cone", "cube", "cylinder", "line", "radius", "sphere"),
-    activityActivationTypes: o("action", "bonus", "reaction", "legendary", "special"),
-    limitedUsePeriods: o("sr", "lr", "day", "dawn", "dusk")
-  };
+  return JSON.parse(fs.readFileSync(new URL("../fixtures/dnd5e-keys.json", import.meta.url), "utf8"));
 }
 
 const timing = [];
