@@ -188,6 +188,11 @@ export function validateFallbackFacts(facts, { keys, sentence = "" } = {}) {
     rejected.push({ key: NOTE_REJECTED, data: { field: "", reason: "type", raw: sentence } });
     return { facts: valid, rejected };
   }
+  // Healing proposed as a damage part of type "healing" is a `heal` fact
+  if ( Array.isArray(facts.damage) && !facts.heal ) {
+    const heal = facts.damage.find(part => part?.type === "healing");
+    if ( heal ) facts = { ...facts, heal, damage: facts.damage.filter(part => part !== heal) };
+  }
   for ( const [field, value] of Object.entries(facts) ) {
     if ( value === undefined || value === null ) continue;
     const validator = VALIDATORS[field];
