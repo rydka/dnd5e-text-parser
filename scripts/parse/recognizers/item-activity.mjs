@@ -24,7 +24,7 @@ const ACTIVATION_FR = [
 const NUM = `(${NUMBER_RE})`;
 const FORMULA = String.raw`\d+\s*d\s*\d+(?:\s*[+-]\s*\d+)?|\d+`;
 const HEAL_EN = new RegExp(String.raw`\b(?:regains?|restores?|heals?|recovers?)\s+(?:up\s+to\s+)?(${FORMULA})\s+hit\s+points?\b`, "iu");
-const HEAL_FR = new RegExp(String.raw`\b(?:regagn(?:e|ez|es|ent)|r[ée]cup[èe]r(?:e|ez|es|ent)|rend(?:ez|s)?|restaur(?:e|ez))\s+(?:jusqu'[àa]\s+)?(${FORMULA})\s+points?\s+de\s+vie\b`, "iu");
+const HEAL_FR = new RegExp(String.raw`\b(?:regagn(?:e|ez|es|ent)|r[ée]cup[èéeê]r(?:e|ez|es|ent)|rend(?:ez|s)?|restaur(?:e|ez))\s+(?:jusqu'[àa]\s+)?(${FORMULA})\s+points?\s+de\s+vie\b`, "iu");
 const CONSUME_EN = new RegExp(String.raw`\b(?:expend|expends|spend|spends)\s+${NUM}\s+(?:or\s+more\s+)?(?:of\s+(?:its|the)\s+)?charges?\b`, "iu");
 const CONSUME_FR = new RegExp(String.raw`\bd[ée]pens(?:er|ez|e)\s+${NUM}\s+charges?(?:\s+ou\s+plus)?\b`, "iu");
 const CAST_EN = /(?<!can't\s)(?<!cannot\s)(?<!not\s)\bcast\s+(?:the\s+)?([\p{L}'-]+(?:\s+[\p{L}'-]+){0,3}?)(?:\s+spell)?(?:\s*\(([^)]*)\))?(?=\s*[.,;:]|\s+(?:from|with|using|by|at|as|once|without|requiring|expending|on|to|and|or|but|if)\b|\s*$)/iu;
