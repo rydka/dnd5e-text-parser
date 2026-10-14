@@ -230,7 +230,7 @@ function itemActivity(plan, context, { item, resolveSpell, notes }) {
  * (flat bonus only when the text states one; the extra damage of the text is a damage part), `save`, `damage`,
  * `heal`, `cast` (needs `resolveSpell`), `utility`. `consume` gives an `itemUses` consumption target on the first
  * activity of that ActivityPlan; without any explicit `consume`, an item with limited uses (uses, recharge,
- * charges, destroyed once empty) consumes 1 use on its first activity.
+ * charges) consumes 1 use on its first activity. A scroll or potion without charges consumes nothing here.
  *
  * @param {object} plan                   FeaturePlan or ItemPlan.
  * @param {object} context
@@ -254,7 +254,7 @@ export function toActivities(plan, { keys, idGen, item, lang = "en", resolveSpel
 
   if ( plan.activities?.length ) {
     const consumable = plan.details?.consumable;
-    const limited = Boolean(plan.uses || plan.recharge || consumable?.charges || consumable?.destroyOnEmpty);
+    const limited = Boolean(plan.uses || plan.recharge || consumable?.charges || plan.details?.charges);
     const explicit = plan.activities.some(activity => activity.consume || activity.cast?.charges);
     let defaulted = false;
     for ( const activityPlan of plan.activities ) {

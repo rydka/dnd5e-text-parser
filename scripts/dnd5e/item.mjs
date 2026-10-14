@@ -34,8 +34,8 @@ function buildUses(plan, keys) {
     max ??= 1;
     recovery.push({ period: "recharge", type: "recoverAll", formula: String(plan.recharge.min) });
   }
-  // A consumable that is destroyed once used (scroll, potion...) has a single use
-  if ( max === null && plan.details?.consumable?.destroyOnEmpty ) max = 1;
+  // No uses are invented for a consumable without charges (scroll, potion): dnd5e handles their consumption by type.
+  // `autoDestroy` only makes sense with charges ("the wand crumbles into ashes" on its last charge).
   if ( max === null ) return null;
   const uses = { max: String(max), recovery };
   if ( plan.details?.consumable?.destroyOnEmpty ) uses.autoDestroy = true;

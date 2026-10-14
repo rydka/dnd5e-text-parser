@@ -212,7 +212,7 @@ export function describe(planOrChanges) {
     const c = details.consumable;
     const paths = [];
     if ( c.type ) paths.push("system.type");
-    if ( c.charges || c.destroyOnEmpty ) paths.push("system.uses");
+    if ( c.charges ) paths.push("system.uses");
     detail("Consumable", { type: c.type, charges: c.charges?.max ?? null }, c, paths);
   }
   if ( details.charges ) detail("Charges", { charges: details.charges.max }, details.charges, ["system.uses"]);
