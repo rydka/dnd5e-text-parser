@@ -99,7 +99,7 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `validateFallbackFacts(facts, { keys?, sentence? }) -> { facts, rejected }` | Contrôle des propositions d'un résolveur (types, clés, bornes) |
 | `parseActor(actor, opts?) -> ActorPlan` | Acteur (source dnd5e) : traits, ressources légendaires, incantation, plan par capacité |
 | `parseSpellcasting(html, opts?) -> SpellcastingPlan\|null` | En-tête et listes de sorts |
-| `nameKey(name) -> string` | Clé de comparaison d'un nom (minuscules, sans accents, sans mention « (Recharge 5-6) », « (3/Day) »…) |
+| `nameKey(name) -> string` | Clé de comparaison d'un nom (minuscules, sans accents, sans ponctuation ni parenthèses, sans mention « (Recharge 5-6) », « (3/Day) »… : « Hunter's Mark » = « Hunters Mark », « Rope, Hempen (50 feet) » = « Rope Hempen 50 feet ») |
 | `htmlToText`, `splitSentences`, `splitLines`, `toFeet`, `toPounds` | Utilitaires de texte et d'unités |
 
 `opts` : `{ languages?: ("en"|"fr")[], keys?: Keys }` (les deux langues par défaut).
@@ -115,7 +115,7 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `toSpellStubs(spellcastingPlan) -> object[]` | Sorts listés -> données minimales (aucun contenu inventé) |
 | `toDamagePart(part, keys?) -> object` | Une partie de dégâts du plan -> `DamageData` |
 
-Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "N"` ; DD fixe `save.dc = { calculation: "", formula: "N" }` ; `damage.includeBase = false` quand les dégâts sont écrits ; usages sur l'objet (`system.uses`) + cible de consommation `itemUses` sur l'activité ; recharge `{ period: "recharge", formula: "5" }`. Seules des clés présentes dans `keys` sont écrites.
+Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "N"` ; DD fixe `save.dc = { calculation: "", formula: "N" }` ; `damage.includeBase = false` quand les dégâts sont écrits ; usages sur l'objet (`system.uses`) + cible de consommation `itemUses` sur l'activité ; recharge « Recharge 5-6 » = `uses.max "1"` + `uses.recovery [{ period: "recharge", type: "recoverAll", formula: "5" }]` (période fixe de dnd5e 6, hors `limitedUsePeriods`). Seules des clés présentes dans `keys` sont écrites.
 
 ### Fusion
 
