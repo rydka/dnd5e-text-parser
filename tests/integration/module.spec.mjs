@@ -1,15 +1,14 @@
+import fs from "node:fs";
 import { expect, test } from "../../../../test-env/fixtures.mjs";
 
 const MODULE_ID = "dnd5e-text-parser";
 
-test("L8: the API is frozen, versioned, and identical to the ES import", async ({ foundry }) => {
+test("L8: the API is frozen, versioned, and identical to the ES import", async ({ foundry }, testInfo) => {
   const state = await foundry(async (id) => {
     const mod = game.modules.get(id);
     const api = mod?.api;
     const es = await import(`/modules/${id}/scripts/index.mjs`);
     const names = ["parseFeature", "parseItem", "parseActor", "parseSpellcasting", "toActivities", "toEffects", "toItemPatch", "toActorPatch", "mergeMissing", "describe", "registerFallback", "keysFromConfig", "keysSnapshot", "parseItemAsync", "parseFeatureAsync", "validateFallbackFacts"];
-    let threw = false;
-    try { "use strict"; api.parseFeature = null; } catch { threw = true; }
     return {
       active: mod?.active ?? false,
       frozen: Object.isFrozen(api),
@@ -18,10 +17,10 @@ test("L8: the API is frozen, versioned, and identical to the ES import", async (
       esVersion: es.API_VERSION,
       missing: names.filter(n => typeof api?.[n] !== "function"),
       sameFunctions: names.every(n => api?.[n] === es[n]),
-      stillFunction: typeof api?.parseFeature === "function",
-      threwOrIgnored: threw || typeof api?.parseFeature === "function"
+      stillFunction: (() => { try { api.parseFeature = null; } catch { /* frozen */ } return typeof api?.parseFeature === "function"; })()
     };
   }, MODULE_ID);
+  fs.writeFileSync(testInfo.outputPath("L8-api.json"), JSON.stringify(state, null, 1));
   expect(state.active).toBe(true);
   expect(state.frozen).toBe(true);
   expect(state.apiVersion).toMatch(/^\d+\.\d+\.\d+$/);
