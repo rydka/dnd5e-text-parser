@@ -131,8 +131,8 @@ export function parseFeature(name, html, opts = {}) {
   }
 
   // Sentences that no recognizer covered
-  const spans = [...attack.spans, ...rangeTarget.spans, ...damage.spans, ...saveArea.spans, ...uses.spans,
-    ...activation.spans, ...legendarySpans];
+  const spans = [...attack.spans, ...rangeTarget.spans, ...damage.spans, ...(damage.covered ?? []), ...saveArea.spans,
+    ...uses.spans, ...activation.spans, ...legendarySpans];
   for ( const sentence of splitSentences(text) ) {
     const words = sentence.text.replace(/[:.]+$/, "").split(/\s+/).filter(Boolean);
     if ( words.length < 2 || !/[\p{L}\d]/u.test(sentence.text) ) continue;

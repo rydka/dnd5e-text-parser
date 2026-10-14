@@ -147,6 +147,18 @@ const lines = parser.describe(plan).map(d => game.i18n.format(d.key, d.data));
 
 Clés : `dnd5e-text-parser.Describe.{Attack, Range, Target, Damage, ExtraDamage, Save, Template, Uses, Recharge, LegendaryResistance, Activation, Activity, Heal, Cast, Consume, Skipped, Weapon, Armor, Consumable, Charges, Rarity, Attunement, Weight, Price, Effect, Field, Fallback}` et `dnd5e-text-parser.Note.*`. Une donnée proposée par le secours porte `data.origin === "fallback"` : ajoutez `Describe.Fallback` (« proposé par l'assistant »).
 
+#### Ambiguïtés et abstentions (`plan.ambiguous`, `plan.notes`)
+
+Quand le texte ne permet pas d'écrire un fait sans l'inventer, la bibliothèque s'abstient et le dit (L3). Les descripteurs ci-dessous portent toujours `data.raw` (le passage source) ; ceux qui offrent un choix donnent `data.choices` au consommateur (un module peut les proposer à l'utilisateur ou à un résolveur).
+
+| Clé (`dnd5e-text-parser.Note.*`) | Où | `data` | Cas |
+|---|---|---|---|
+| `AttackBonusMissing` | `notes` | `{ raw }` | En-tête d'attaque sans nombre (« Automatic hit ») : pas d'`attack`, dégâts seuls |
+| `AttackBonuses` | `ambiguous` | `{ values: number[], raw: string[] }` | Plusieurs bonus différents : pas d'`attack`, dégâts conservés |
+| `DamagePenalty` | `ambiguous` | `{ raw }` | « subtracts 3 (1d6) from its damage rolls » : pas de partie de dégâts |
+| `SaveAbilities` | `ambiguous` | `{ values: { ability, dc }[], raw: string[] }` | Plusieurs sauvegardes différentes : pas de `save` |
+| `DamageWithheld` | `ambiguous` | `{ raw: string[] }` | Dégâts qui dépendent d'une sauvegarde ambiguë : non écrits |
+
 ### Structure intermédiaire (plans, `SCHEMA_VERSION = 1`)
 
 ```js
