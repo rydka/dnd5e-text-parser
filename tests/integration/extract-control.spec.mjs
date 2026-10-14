@@ -9,7 +9,8 @@ test.setTimeout(600_000);
 test("extract creature abilities from dnd5e.monsters and dnd5e.actors24", async ({ foundry }) => {
   const salt = process.env.SALT ?? "";
   const quota = Number(process.env.QUOTA ?? 130);
-  const out = await foundry(async ({ salt, quota }) => {
+  const pick = Number(process.env.PICK ?? 3);
+  const out = await foundry(async ({ salt, quota, pick }) => {
     const hash = (s) => { let h = 2166136261; for ( const c of s ) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
     const simplify = (html) => {
       // eslint-disable-next-line no-undef
@@ -35,7 +36,7 @@ test("extract creature abilities from dnd5e.monsters and dnd5e.actors24", async 
         for ( const item of items ) {
           const acts = Array.from(item.system.activities ?? []);
           if ( !acts.length || !acts.some(a => ["attack", "save", "damage", "heal", "utility"].includes(a.type)) ) continue;
-          if ( hash(item.id + actor.id + salt + "pick") % 3 !== 0 ) continue;
+          if ( hash(item.id + actor.id + salt + "pick") % pick !== 0 ) continue;
           if ( count >= quota ) break;
           let enriched;
           try {
@@ -56,7 +57,7 @@ test("extract creature abilities from dnd5e.monsters and dnd5e.actors24", async 
       }
     }
     return result;
-  }, { salt, quota });
+  }, { salt, quota, pick });
   fs.writeFileSync(process.env.OUT, JSON.stringify(out));
   console.log("extracted", out.length);
 });

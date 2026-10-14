@@ -1,0 +1,1337 @@
+{
+ "description": "Third control set: compendium items and hand-written French items, truth annotated by hand from what each name and description state.",
+ "cases": [
+  {
+   "id": "g-en-1",
+   "lang": "en",
+   "source": "dnd5e.items/Shield +1",
+   "name": "Shield +1",
+   "itemType": "equipment",
+   "html": "<p>While holding this shield, you have a bonus to AC of +1. This bonus is in addition to the shield's normal bonus to AC.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-2",
+   "lang": "en",
+   "source": "dnd5e.items/Glaive +3",
+   "name": "Glaive +3",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 3,
+    "weapon.baseItem": "glaive"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-3",
+   "lang": "en",
+   "source": "dnd5e.items/Crowbar",
+   "name": "Crowbar",
+   "itemType": "loot",
+   "html": "<p>Using a crowbar grants advantage to Strength checks where the crowbar's leverage can be applied.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-4",
+   "lang": "en",
+   "source": "dnd5e.items/Breastplate",
+   "name": "Breastplate",
+   "itemType": "equipment",
+   "html": "<p>This armor consists of a fitted metal chest piece worn with supple leather. Although it leaves the legs and arms relatively unprotected, this armor provides good protection for the wearer's vital organs while leaving the wearer relatively unencumbered.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "armor.type",
+    "armor.ac",
+    "armor.dexCap",
+    "armor.strength",
+    "armor.stealthDisadvantage"
+   ]
+  },
+  {
+   "id": "g-en-5",
+   "lang": "en",
+   "source": "dnd5e.items/Vicious Quarterstaff",
+   "name": "Vicious Quarterstaff",
+   "itemType": "weapon",
+   "html": "<p>A thick shaft of wood wrapped with a sturdy grip makes a highly functional weapon in addition to a stout walking stick.</p>\n<p>When you roll a 20 on your attack roll with this magic weapon, your critical hit deals an extra 2d6 damage of the weapon's type.</p>",
+   "expected": {
+    "weapon.baseItem": "quarterstaff"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-6",
+   "lang": "en",
+   "source": "dnd5e.items/Flail",
+   "name": "Flail",
+   "itemType": "weapon",
+   "html": "<p>A heavy iron ball attached to a stout wooden shaft with a heavy chain, allowing it to deal devastating damage at the end of wide, sweeping swings.</p>",
+   "expected": {
+    "weapon.baseItem": "flail"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-7",
+   "lang": "en",
+   "source": "dnd5e.items/Scimitar +2",
+   "name": "Scimitar +2",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 2,
+    "weapon.baseItem": "scimitar"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-8",
+   "lang": "en",
+   "source": "dnd5e.items/Studded Leather Armor +3",
+   "name": "Studded Leather Armor +3",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 3
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-9",
+   "lang": "en",
+   "source": "dnd5e.items/Wand of Web",
+   "name": "Wand of Web",
+   "itemType": "equipment",
+   "html": "<p><em>Wand (requires attunement by a spellcaster)</em></p><p>This wand has [[lookup @item.uses.max]] charges. While holding it, you can use an action to expend 1 of its charges to cast the @UUID[Compendium.dnd5e.spells.Item.UJJu9c2UvCzVljiP]{Web} spell (save DC 15) from it.</p><p>The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll a d20. On a 1, the wand crumbles into ashes and is destroyed.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "a spellcaster"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-10",
+   "lang": "en",
+   "source": "dnd5e.items/Mace +1",
+   "name": "Mace +1",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "mace"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-11",
+   "lang": "en",
+   "source": "dnd5e.items/Hide Armor +1",
+   "name": "Hide Armor +1",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-12",
+   "lang": "en",
+   "source": "dnd5e.items/Wand of the War Mage +2",
+   "name": "Wand of the War Mage +2",
+   "itemType": "equipment",
+   "html": "<p><em>Wand (requires attunement by a spellcaster)</em></p><p>While holding this wand, you gain a bonus to spell attack rolls of +2. In addition, you ignore &amp;reference[half cover] when making a spell attack.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "a spellcaster"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-13",
+   "lang": "en",
+   "source": "dnd5e.items/Studded Leather Armor +2",
+   "name": "Studded Leather Armor +2",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-14",
+   "lang": "en",
+   "source": "dnd5e.items/Ioun Stone of Strength",
+   "name": "Ioun Stone of Strength",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>An Ioun Stone is named after Ioun, a god of knowledge and prophecy revered on some worlds. Many types of Ioun stone exist, each type a distinct combination of shape and color.</p>\n<p>When you use an action to toss one of these stones into the air, the stone orbits your head at a distance of 1d3 feet and confers a benefit to you. Thereafter, another creature must use an action to grasp or net the stone to separate it from you, either by making a successful attack roll against AC 24 or a successful DC 24 Dexterity (Acrobatics) check. You can use an action to seize and stow the stone, ending its effect.</p>\n<p>A stone has AC 24, 10 hit points, and resistance to all damage. It is considered to be an object that is being worn while it orbits your head.</p>\n<p><strong>Stone of Strength</strong>. Your Strength score increases by 2, to a maximum of 20, while this pale blue rhomboid orbits your head.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-15",
+   "lang": "en",
+   "source": "dnd5e.items/Rod of Rulership",
+   "name": "Rod of Rulership",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>You can use an action to present the rod and command obedience from each creature of your choice that you can see within 120 feet of you. Each target must succeed on a DC 15 Wisdom saving throw or be charmed by you for 8 hours. While charmed in this way, the creature regards you as its trusted leader. If harmed by you or your companions, or commanded to do something contrary to its nature, a target ceases to be charmed in this way. The rod can't be used again until the next dawn.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-16",
+   "lang": "en",
+   "source": "dnd5e.items/Rod of Security",
+   "name": "Rod of Security",
+   "itemType": "equipment",
+   "html": "<p>While holding this rod, you can use an action to activate it. The rod then instantly transports you and up to 199 other willing creatures you can see to a paradise that exists in an extraplanar space. You choose the form that the paradise takes. It could be a tranquil garden, lovely glade, cheery tavern, immense palace, tropical island, fantastic carnival, or whatever else you can imagine. Regardless of its nature, the paradise contains enough water and food to sustain its visitors. Everything else that can be interacted with inside the extraplanar space can exist only there. For example, a flower picked from a garden in the paradise disappears if it is taken outside the extraplanar space.</p>\n<p>For each hour spent in the paradise, a visitor regains hit points as if it had spent 1 Hit Die. Also, creatures don't age while in the paradise, although time passes normally. Visitors can remain in the paradise for up to 200 days divided by the number of creatures present (round down).</p>\n<p>When the time runs out or you use an action to end it, all visitors reappear in the location they occupied when you activated the rod, or an unoccupied space nearest that location. The rod can't be used again until ten days have passed.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-17",
+   "lang": "en",
+   "source": "dnd5e.items/Feather Token Bird",
+   "name": "Feather Token Bird",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item</em></p><p>This tiny object looks like a feather. Different types of feather tokens exist, each with a different single-use effect. The GM chooses the kind of token or determines it randomly from the @UUID[Compendium.dnd5e.tables.RollTable.OEdr086W61t1DRJo]{Feather Token} table.</p><p><strong>Bird.</strong> You can use an action to toss the token 5 feet into the air. The token disappears and an enormous, multicolored bird takes its place. The bird has the statistics of a @UUID[Compendium.dnd5e.monsters.Actor.p980augbCIdpK9ZX]{Roc}, but it obeys your simple commands and can't attack. It can carry up to 500 pounds while flying at its maximum speed (16 miles an hour for a maximum of 144 miles per day, with a one-hour rest for every 3 hours of flying), or 1,000 pounds at half that speed. The bird disappears after flying its maximum distance for a day or if it drops to 0 hit points. You can dismiss the bird as an action.</p><section class=\"secret foundry-note\" id=\"secret-MSLq8LtzkIiyNC0O\"><p><strong>Foundry Note</strong></p><p>The 144 charges represent the 144 miles the bird can travel when being able to travel at maximum speed to enable accurate distance-tracking as required.</p></section>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-18",
+   "lang": "en",
+   "source": "dnd5e.items/Hempen Rope (50 ft.)",
+   "name": "Hempen Rope (50 ft.)",
+   "itemType": "consumable",
+   "html": "<p>Rope, whether made of hemp or silk, has 2 hit points and can be burst with a DC 17 Strength check.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-19",
+   "lang": "en",
+   "source": "dnd5e.items/Torch",
+   "name": "Torch",
+   "itemType": "consumable",
+   "html": "<p>A torch burns for 1 hour, providing bright light in a 20-foot radius and dim light for an additional 20 feet. If you make a melee attack with a burning torch and hit, it deals 1 fire damage.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-20",
+   "lang": "en",
+   "source": "dnd5e.items/Padded Armor +1",
+   "name": "Padded Armor +1",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-21",
+   "lang": "en",
+   "source": "dnd5e.items/Berserker Handaxe",
+   "name": "Berserker Handaxe",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>You gain a +1 bonus to attack and damage rolls made with this magic weapon. In addition, while you are attuned to this weapon, your hit point maximum increases by 1 for each level you have attained.</p>\n<p><strong>Curse</strong>. This axe is cursed, and becoming attuned to it extends the curse to you. As long as you remain cursed, you are unwilling to part with the axe, keeping it within reach at all times. You also have disadvantage on attack rolls with weapons other than this one, unless no foe is within 60 feet of you that you can see or hear.</p>\n<p>Whenever a hostile creature damages you while the axe is in your possession, you must succeed on a DC 15 Wisdom saving throw or go berserk. While berserk, you must use your action each round to attack the creature nearest to you with the axe. If you can make extra attacks as part of the Attack action, you use those extra attacks, moving to attack the next nearest creature after you fell your current target.</p>\n<p>If you have multiple possible targets, you attack one at random. You are berserk until you start your turn with no creatures within 60 feet of you that you can see or hear.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "handaxe"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-22",
+   "lang": "en",
+   "source": "dnd5e.items/Battleaxe +3",
+   "name": "Battleaxe +3",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 3,
+    "weapon.baseItem": "battleaxe"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-23",
+   "lang": "en",
+   "source": "dnd5e.items/Goggles of Night",
+   "name": "Goggles of Night",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item</em></p>\n<p>While wearing these dark lenses, you have darkvision out to a range of 60 feet. If you already have darkvision, wearing the goggles increases its range by 60 feet.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-24",
+   "lang": "en",
+   "source": "dnd5e.items/Lance +2",
+   "name": "Lance +2",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>\n<p><strong>Special</strong>. You have disadvantage when you use a lance to attack a target within 5 feet of you. Also, a lance requires two hands to wield when you aren't mounted.</p>",
+   "expected": {
+    "weapon.magicalBonus": 2,
+    "weapon.baseItem": "lance"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-25",
+   "lang": "en",
+   "source": "dnd5e.items/Defender Greatsword",
+   "name": "Defender Greatsword",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p><p>You gain a +3 bonus to attack and damage rolls made with this magic weapon.</p><p>The first time you attack with the sword on each of your turns, you can transfer some or all of the sword's bonus to your Armor Class, instead of using the bonus on any attacks that turn. For example, you could reduce the bonus to your attack and damage rolls to +1 and gain a +2 bonus to AC. The adjusted bonuses remain in effect until the start of your next turn, although you must hold the sword to gain a bonus to AC from it.</p><section class=\"secret foundry-note\" id=\"secret-vPTn0EbT3KHUiRNN\"><p><strong>Foundry Note</strong></p><p>The sword's bonus to attack and damage rolls have been included; please remember to manually subtract should the user transfer any of the bonus to their AC.</p></section>",
+   "expected": {
+    "attunement": "required",
+    "weapon.magicalBonus": 3,
+    "weapon.baseItem": "greatsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-26",
+   "lang": "en",
+   "source": "dnd5e.items/Vicious Shortbow",
+   "name": "Vicious Shortbow",
+   "itemType": "weapon",
+   "html": "<p>This two handed bow is somewhat smaller than the traditional longbow variant, making it well suited for rapid attacks while on the move or mounted from horseback.</p>\n<p>When you roll a 20 on your attack roll with this magic weapon, your critical hit deals an extra 2d6 damage of the weapon's type.</p>",
+   "expected": {
+    "weapon.baseItem": "shortbow"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-27",
+   "lang": "en",
+   "source": "dnd5e.items/Basic Poison",
+   "name": "Basic Poison",
+   "itemType": "consumable",
+   "html": "<p>You can use the poison in this vial to coat one slashing or piercing weapon or up to three pieces of ammunition. Applying the poison takes an action. A creature hit by the poisoned weapon or ammunition must make a [[/save]] saving throw or take [[/damage]] damage. Once applied, the poison retains potency for 1 minute before drying.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-28",
+   "lang": "en",
+   "source": "dnd5e.items/Medallion of Thoughts",
+   "name": "Medallion of Thoughts",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>The medallion has 3 charges. While wearing it, you can use an action and expend 1 charge to cast the @UUID[Compendium.dnd5e.spells.Item.ppWAAEul0QHtm4er]{Detect Thoughts} spell (save DC 13) from it. The medallion regains 1d3 expended charges daily at dawn.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-29",
+   "lang": "en",
+   "source": "dnd5e.items/Half Plate Armor +2",
+   "name": "Half Plate Armor +2",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-30",
+   "lang": "en",
+   "source": "dnd5e.items/Longbow +1",
+   "name": "Longbow +1",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "longbow"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-31",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Invisibility",
+   "name": "Potion of Invisibility",
+   "itemType": "consumable",
+   "html": "<p><em>This potion's container looks empty but feels as though it holds liquid.</em></p><p>When you drink it, you become &amp;reference[invisible] for [[lookup @labels.duration activity=V2JumDYJgM7ktIzw]]. Anything you wear or carry is invisible with you. The effect ends early if you attack or cast a spell.</p>",
+   "expected": {
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-32",
+   "lang": "en",
+   "source": "dnd5e.items/Oil Flask",
+   "name": "Oil Flask",
+   "itemType": "consumable",
+   "html": "<p>Oil usually comes in a clay flask that holds 1 pint. As an action, you can splash the oil in this flask onto a creature within 5 feet of you or throw it up to 20 feet, shattering it on impact. Make a ranged attack against a target creature or object, treating the oil as an improvised weapon.</p>\n<p>On a hit, the target is covered in oil. If the target takes any fire damage before the oil dries (after 1 minute), the target takes an additional 5 fire damage from the burning oil. You can also pour a flask of oil on the ground to cover a 5-foot-square area, provided that the surface is level.</p>\n<p>If lit, the oil burns for 2 rounds and deals 5 fire damage to any creature that enters the area or ends its turn in the area. A creature can take this damage only once per turn.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-33",
+   "lang": "en",
+   "source": "dnd5e.items/Dart +1",
+   "name": "Dart +1",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "dart"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-34",
+   "lang": "en",
+   "source": "dnd5e.items/Ring of Psychic Resistance",
+   "name": "Ring of Psychic Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p><em>This ring has been inlaid with a jade stone that gleams when it catches the light.</em></p>\n<p>You have resistance to psychic damage while wearing this ring.</p>\n<p>For other rings of resistance, roll on the @UUID[Compendium.dnd5e.tables.RollTable.MdTxWyYVhTIgtNcG]{Ring of Resistance} table.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [
+    {
+     "kind": "resistance",
+     "scope": "psychic",
+     "value": null
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "g-en-35",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Longevity",
+   "name": "Potion of Longevity",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Very Rare</em></p><p>When you drink this potion, your physical age is reduced by 1d6 + 6 years, to a minimum of 13 years. Each time you subsequently drink a Potion of Longevity, there is 10 percent cumulative chance that you instead age by 1d6 + 6 years.</p><p>Suspended in this amber liquid is a tiny heart that, against all reason, is still beating. These ingredients vanish when the potion is opened.</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-36",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Manual of Golems",
+   "name": "Manual of Golems",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Very Rare</em></p><p>This tome contains information and incantations necessary to make a particular type of golem. The DM chooses the type or determines it randomly by rolling on the accompanying table. To decipher and use the manual, you must be a spellcaster with at least two level 5 spell slots. A creature that can't use a <em>Manual of Golems</em> and attempts to read it takes [[/damage 6d6 type=psychic]] damage.</p><p>To create a golem, you must spend the time shown on the table, working without interruption with the manual at hand and resting no more than 8 hours per day. You must also pay the specified cost to purchase supplies.</p><p>Once you finish creating the golem, the book is consumed in eldritch flames. The golem becomes animate when the ashes of the manual are sprinkled on it. See the <em>Monster Manual</em> for the golem's stat block. The golem is under your control, and it understands and obeys your commands.</p><p>@Embed[Compendium.dnd5e.tables24.RollTable.dmgManualOfGolem rollable]</p><section class=\"secret\" id=\"secret-8T2YtEsnAW7JZ5Bp\"><p><strong>Foundry Note</strong></p><p>After determining the type of golem this manual creates, you may delete the other unneeded activities.</p></section>",
+   "expected": {
+    "rarity": "veryRare"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-37",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Longsword",
+   "name": "Longsword",
+   "itemType": "weapon",
+   "html": "",
+   "expected": {
+    "weapon.baseItem": "longsword"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-38",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Dust of Sneezing and Choking",
+   "name": "Dust of Sneezing and Choking",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous Item, Uncommon</em></p><p>Found in a small container, this powder resembles @UUID[Compendium.dnd5e.equipment24.Item.dmgDustOfDisappe]{Dust of Disappearance}, and <em>Identify</em> reveals it to be such. There is enough of it for one use.</p><p>As a Utilize action, you can throw the dust into the air, forcing yourself and every creature in a 30-foot Emanation originating from you to make a DC 15 Constitution saving throw. Constructs, Elementals, Oozes, Plants, and Undead succeed on the save automatically.</p><p>On a failed save, a creature begins sneezing uncontrollably; it has the Incapacitated condition and is suffocating. The creature [[/save ability=con dc=15]]{repeats the save} at the end of each of its turns, ending the effect on itself on a success. The effect also ends on any creature targeted by a <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplLesserRest]{Lesser Restoration}</em> spell.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-39",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ring of Water Walking",
+   "name": "Ring of Water Walking",
+   "itemType": "equipment",
+   "html": "<p><em>Ring, Uncommon</em></p><p>While wearing this ring, you cast @UUID[Compendium.dnd5e.spells24.Item.phbsplWaterWalk0]{Water Walk} from it, targeting only yourself.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-40",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Vitality",
+   "name": "Potion of Vitality",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Very Rare</em></p><p>When you drink this potion, it removes any &amp;Reference[Exhaustion apply=false] levels you have and ends the &amp;Reference[Poisoned apply=false] condition on you. For the next 24 hours, you regain the maximum number of Hit Points for any Hit Point Die you spend.</p><p>This potion's crimson liquid regularly pulses with dull light, calling to mind a heartbeat.</p><section class=\"secret\" id=\"secret-z0SSGecWIDLeIdS3\"><p><strong>Foundry Note</strong></p><p>The <strong>Full of Vitality</strong> Active Effect can be used for tracking.</p></section>",
+   "expected": {
+    "rarity": "veryRare",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-41",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Brass Horn of Valhalla",
+   "name": "Brass Horn of Valhalla",
+   "itemType": "equipment",
+   "html": "<p><em>See: @UUID[Compendium.dnd5e.equipment24.Item.dmgHornofValhall]{Horn of Valhalla}</em></p><p><em>Requirement: Proficiency with all Simple weapons</em></p><p><em>Spirits: 3</em></p><p>You can take a Magic action to blow this horn. In response, warrior spirits from the plane of Ysgard appear in unoccupied spaces within 60 feet of you. Each spirit uses the <strong>@UUID[Compendium.dnd5e.actors24.Actor.mmBerserker00000]{Berserker}</strong> stat block and returns to Ysgard after 1 hour or when it drops to 0 Hit Points. The spirits look like living, breathing warriors, and they have Immunity to the &amp;Reference[Charmed apply=false] and &amp;Reference[Frightened apply=false] conditions. Once you use the horn, it can't be used again until 7 days have passed.</p><p>If you blow the horn without meeting its requirement, the summoned spirits attack you. If you meet the requirement, they are Friendly to you and your allies and follow your commands.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-42",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ioun Stone of Intellect",
+   "name": "Ioun Stone of Intellect",
+   "itemType": "equipment",
+   "html": "<p><em>See: @UUID[Compendium.dnd5e.equipment24.Item.dmgIounStone0000]{Ioun Stone}</em></p><p>When you take a Magic action to toss an <em>Ioun Stone</em> into the air, the stone orbits your head at a distance of 1d3 feet, conferring its benefit to you while doing so. You can have up to three <em>Ioun Stones</em> orbiting your head at the same time.</p><p>As a Utilize action, you can seize and stow any number of <em>Ioun Stones</em> orbiting your head. If your Attunement to an <em>Ioun Stone</em> ends while it's orbiting your head, the stone falls as though you had dropped it.</p><p>Your Intelligence increases by 2, to a maximum of 20, while this marbled scarlet and blue sphere orbits your head.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-43",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Hammer of Thunderbolts",
+   "name": "Hammer of Thunderbolts",
+   "itemType": "weapon",
+   "html": "<p><em>Weapon (@UUID[Compendium.dnd5e.equipment24.Item.phbwepMaul000000]{Maul} or @UUID[Compendium.dnd5e.equipment24.Item.phbwepWarhammer0]{Warhammer}), Legendary (Requires Attunement)</em></p><p>You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon.</p><p>The weapon has 5 charges. You can expend 1 charge and make a ranged attack with the weapon, hurling it as if it had the Thrown property with a normal range of 20 feet and a long range of 60 feet. If the attack hits, the weapon unleashes a thunderclap audible out to 300 feet. The target and every creature within 30 feet of it other than you must succeed on a DC 17 Constitution saving throw or have the Stunned condition until the end of your next turn. Immediately after hitting or missing, the weapon flies back to your hand. The weapon regains 1d4 + 1 expended charges daily at dawn.</p><p><strong>Giant's Bane.</strong> While you are attuned to the weapon and wearing either a <em>Belt of Giant Strength</em> or <em>Gauntlets of Ogre Power</em> to which you are also attuned, you gain the following benefits:</p><details><summary><strong>Giants' Bane.</strong></summary><p>When you roll a 20 on the d20 for an attack roll made with this weapon against a Giant, the creature must succeed on a DC 17 Constitution saving throw or die.</p></details><details><summary><strong>Might of Giants.</strong></summary><p>The Strength score bestowed by your <em>Belt of Giant Strength</em> or <em>Gauntlets of Ogre Power</em> increases by 4, to a maximum of 30.</p></details> <p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required",
+    "weapon.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "weapon.baseItem"
+   ]
+  },
+  {
+   "id": "g-en-44",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Wand of Lightning Bolts",
+   "name": "Wand of Lightning Bolts",
+   "itemType": "equipment",
+   "html": "<p><em>Wand, Rare (Requires Attunement by a Spellcaster)</em></p><p>This wand has 7 charges. While holding it, you can expend no more than 3 charges to cast @UUID[Compendium.dnd5e.spells24.Item.phbsplLightningB]{Lightning Bolt} (save DC 15) from it. For 1 charge, you cast the level 3 version of the spell. You can increase the spell's level by 1 for each additional charge you expend.</p><p><em><strong>Regaining Charges.</strong></em> The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll [[/r 1d20]]. On a 1, the wand crumbles into ashes and is destroyed.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required",
+    "attunementCondition": "a spellcaster",
+    "consumable.type": "wand",
+    "consumable.charges": "7/dawn/1d6+1",
+    "consumable.destroyOnEmpty": true
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-45",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Lantern of Revealing",
+   "name": "Lantern of Revealing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon</em></p><p>While lit, this hooded lantern burns for 6 hours on 1 pint of oil, shedding Bright Light in a 30-foot radius and Dim Light for an additional 30 feet. &amp;Reference[Invisible apply=false] creatures and objects are visible as long as they are in the lantern's Bright Light. You can take a Utilize action to lower the hood, reducing the lantern's light to Dim Light in a 5-foot radius.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-46",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Staff of the Python",
+   "name": "Staff of the Python",
+   "itemType": "weapon",
+   "html": "<p><em>@UUID[Compendium.dnd5e.equipment24.Item.phbafcStaffalsoa]{Staff}, Uncommon (Requires Attunement)</em></p><p>As a Magic action, you can throw this staff so that it lands in an unoccupied space within 10 feet of you, causing the staff to become a <strong>Giant Constrictor Snake</strong> in that space. The snake is under your control and shares your Initiative count, taking its turn immediately after yours.</p><p>On your turn, you can mentally command the snake (no action required) if it is within 60 feet of you and you don't have the Incapacitated condition. You decide what action the snake takes and where it moves during its turn, or you can issue it a general command, such as to attack your enemies or guard a location. Absent commands from you, the snake defends itself.</p><p>As a Bonus Action, you can command the snake to revert to staff form in its current space, and you can't use the staff's property again for 1 hour. If the snake is reduced to 0 Hit Points, it dies and reverts to its staff form; the staff then shatters and is destroyed. If the snake reverts to staff form before losing all its Hit Points, it regains all of them.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "weapon.baseItem"
+   ]
+  },
+  {
+   "id": "g-en-47",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Sentinel Shield",
+   "name": "Sentinel Shield",
+   "itemType": "equipment",
+   "html": "<p><em>Armor (Shield), Uncommon</em></p><p>While holding this Shield, you have Advantage on Initiative rolls and Wisdom (Perception) checks. The Shield is emblazoned with a symbol of an eye.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "armor.type": "shield"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "armor.ac"
+   ]
+  },
+  {
+   "id": "g-en-48",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ammunition of Slaying",
+   "name": "Ammunition of Slaying",
+   "itemType": "consumable",
+   "html": "<p>This magic ammunition is meant to slay creatures of a particular type, which the GM chooses or determines randomly by rolling on the table below. If a creature of that type takes damage from the ammunition, the creature makes a DC 17 Constitution saving throw, taking an extra 6d10 Force damage on a failed save or half as much extra damage on a successful one.</p><p>After dealing its extra damage to a creature, the ammunition becomes nonmagical.</p><details><summary>Creature Type Table (click to expand)</summary><p>@Embed[Compendium.dnd5e.tables24.RollTable.dmgSlayingAmmuni rollable]</p></details> <p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-en-49",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Rope of Climbing",
+   "name": "Rope of Climbing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon</em></p><p>This 60-foot length of rope can hold up to 3,000 pounds. While holding one end of the rope, you can take a Magic action to command the other end of the rope to animate and move toward a destination you choose, up to the rope's length away from you. That end moves 10 feet on your turn when you first command it and 10 feet at the start of each of your subsequent turns until reaching its destination or until you tell it to stop. You can also tell the rope to fasten itself securely to an object or to unfasten itself, to knot or unknot itself, or to coil itself for carrying.</p><p>If you tell the rope to knot, large knots appear at 1-foot intervals along the rope. While knotted, the rope shortens to a 50-foot length and grants Advantage on ability checks made to climb using the rope.</p><p>The rope has AC 20, HP 20, and Immunity to Poison and Psychic damage. It regains 1 Hit Point every 5 minutes as long as it has at least 1 Hit Point. If the rope drops to 0 Hit Points, it is destroyed.</p><section class=\"secret\" id=\"secret-S4xxCILbyoIPQL7g\"><p><strong>Foundry Note</strong></p><p>The item includes 20 uses for tracking its HP. The <strong>Damage Rope</strong> activity can be used to apply damage and the <strong>Repair Rope</strong> activity can be used to restore its HP.</p></section>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-50",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Tome of Clear Thought",
+   "name": "Tome of Clear Thought",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Very Rare</em></p><p>This book contains memory and logic exercises, and its words are charged with magic. If you spend 48 hours over a period of 6 days or fewer studying the book's contents and practicing its guidelines, your Intelligence increases by 2, to a maximum of 30. The manual then loses its magic but regains it in a century.</p><section class=\"secret\" id=\"secret-IEz5CmdQakntpRWJ\"><p><strong>Foundry Note</strong></p><p>This item includes 48 max uses for tracking hours read.</p><p>The <strong>Read</strong> activity includes a scaling value that lets you enter the amount of hours you've read. Once you hit 48 you can use the included Active Effect to increase your Intelligence.</p><p>The <strong>Reset Progress</strong> activity resets your uses to 0 if you fail to complete the book within 6 days and need to start over.</p></section>",
+   "expected": {
+    "rarity": "veryRare"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-51",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Luck Blade",
+   "name": "Luck Blade",
+   "itemType": "weapon",
+   "html": "<p><em>Weapon (@UUID[Compendium.dnd5e.equipment24.Item.phbwepGlaive0000]{Glaive}, @UUID[Compendium.dnd5e.equipment24.Item.phbwepGreatsword]{Greatsword}, @UUID[Compendium.dnd5e.equipment24.Item.phbwepLongsword0]{Longsword}, @UUID[Compendium.dnd5e.equipment24.Item.phbwepRapier0000]{Rapier}, @UUID[Compendium.dnd5e.equipment24.Item.phbwepScimitar00]{Scimitar}, @UUID[Compendium.dnd5e.equipment24.Item.phbwepSickle0000]{Sickle}, or @UUID[Compendium.dnd5e.equipment24.Item.phbwepShortsword]{Shortsword}), Legendary (Requires Attunement)</em></p><p>You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon. While the weapon is on your person, you also gain a +1 bonus to saving throws.</p><p><strong>Luck.</strong> If the weapon is on your person, you can call on its luck (no action required) to reroll one failed D20 Test if you don't have the Incapacitated condition. You must use the second roll. Once used, this property can't be used again until the next dawn.</p><p><strong>Wish.</strong> The weapon has [[/r 1d3#Initial Charges]] charges. While holding it, you can expend 1 charge and cast <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplWish000000]{Wish}</em> from it. Once used, this property can't be used again until the next dawn. The weapon loses this property if it has no charges.</p><p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required",
+    "weapon.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "weapon.baseItem"
+   ]
+  },
+  {
+   "id": "g-en-52",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Robe of Stars",
+   "name": "Robe of Stars",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Very Rare (Requires Attunement)</em></p><p>This black or dark-blue robe is embroidered with small white or silver stars. You gain a +1 bonus to saving throws while you wear it.</p><p>Six stars, located on the robe's upper-front portion, are particularly large. While wearing this robe, you can take a Magic action to remove one of the stars and expend it to cast the level 5 version of @UUID[Compendium.dnd5e.spells24.Item.phbsplMagicMissi]{Magic Missile}. Daily at dusk, 1d6 removed stars reappear on the robe.</p><p>While you wear the robe, you can take a Magic action to enter the Astral Plane along with everything you are wearing and carrying. You remain there until you take a Magic action to return to the plane you were on. You reappear in the last space you occupied or, if that space is occupied, the nearest unoccupied space.</p><section class=\"secret\" id=\"secret-a1r37HVL7VTqMrwu\"><p><strong>Foundry Note</strong></p><p>The <strong>Enter/Exit Astral Plane</strong> activity includes a 5 foot measured template that can be used to mark where you exited the Astral Plane for tracking.</p></section>",
+   "expected": {
+    "rarity": "veryRare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-53",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Cubic Gate",
+   "name": "Cubic Gate",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Legendary</em></p></div><p>This cube is 3 inches across and radiates palpable magical energy. The six sides of the cube are each keyed to a different plane of existence, one of which is the Material Plane. The other sides are linked to planes determined by the DM.</p><p>The cube has 3 charges and regains 1d3 expended charges daily at dawn. As a Magic action, you can expend 1 of the cube's charges to cast one of the following spells using the cube.</p><p><strong>Gate.</strong> Pressing one side of the cube, you cast <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplGate000000]{Gate}</em>, opening a portal to the plane of existence keyed to that side.</p><p><strong>Plane Shift.</strong> Pressing one side of the cube twice, you cast <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplPlaneShift]{Plane Shift}</em>, transporting the targets to the plane of existence keyed to that side.</p>",
+   "expected": {
+    "rarity": "legendary"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-54",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Carpet of Flying",
+   "name": "Carpet of Flying",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Very Rare</em></p></div><p>You can make this carpet hover and fly by taking a Magic action and using the carpet's command word. It moves according to your directions if you are within 30 feet of it.</p><p>Four sizes of <em>Carpet of Flying</em> exist. The GM chooses the size of a given carpet or determines it randomly by rolling on the following table. A carpet can carry up to twice the weight shown on the table, but its Fly Speed is halved if it carries more than its normal capacity.</p><p>@Embed[Compendium.dnd5e.tables24.RollTable.dmgCarpetOfFlyin rollable]</p><section class=\"secret\" id=\"secret-T3avxyNy4el35GqZ\"><p><strong>Foundry Note</strong></p><p>The four provided summoning activities represent the possible sizes of the carpet. When the GM chooses a size, the three activities corresponding to the other sizes should be deleted.</p></section>",
+   "expected": {
+    "rarity": "veryRare"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-55",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Energy Bow",
+   "name": "Energy Bow",
+   "itemType": "weapon",
+   "html": "<p><em>Weapon (@UUID[Compendium.dnd5e.equipment24.Item.phbwepLongbow000]{Longbow} or @UUID[Compendium.dnd5e.equipment24.Item.phbwepShortbow00]{Shortbow}), Very Rare (Requires Attunement)</em></p><p>You gain a +1 bonus to attack rolls and damage rolls made with this magic weapon, which has no string. Each time you pull your arm back in a firing motion, a magical arrow made of golden energy appears nocked and ready to fire. An arrow produced by this weapon deals Force damage instead of Piercing damage on a hit, and it disappears after it hits or misses its target. Until it disappears, the arrow emits Bright Light in a 20-foot radius and Dim Light for an additional 20 feet.</p><p>This weapon has the following additional properties.</p><details><summary><strong>Arrow of Restraint.</strong></summary><p>Whenever you use this weapon to make a ranged attack against a creature, you can try to restrain the target instead of dealing damage to it. If the arrow hits, the target must succeed on a [[/save ability=str dc=15 format=long]] or have the &amp;Reference[Restrained apply=false] condition for 1 minute. As an action, a creature Restrained by an arrow can make a [[/check ability=str skill=ath dc=20 format=long]] to try to break the restraint, ending the effect on itself on a successful check.</p></details><details><summary><strong>Arrow of Transport.</strong></summary><p>As a Magic action, you can fire one energy arrow from this weapon at a target you can see within 60 feet of yourself. The target can be either a willing Medium or smaller creature or an object that isn't being worn or carried, provided the object is small enough to fit inside a 5-foot Cube. The arrow teleports the target to an unoccupied space you can see within 10 feet of you.</p></details><details><summary><strong>Energy Ladder.</strong></summary><p>As a Magic action, you can loose a flurry of energy arrows from this weapon at a wall up to 60 feet away from yourself. The arrows become glowing rungs that stick out of the wall, forming a magical ladder up to 60 feet long on the wall. This ladder lasts for 1 minute before disappearing.</p></details> <p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "attunement": "required",
+    "weapon.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "weapon.baseItem"
+   ]
+  },
+  {
+   "id": "g-en-56",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Bronze Horn of Valhalla",
+   "name": "Bronze Horn of Valhalla",
+   "itemType": "equipment",
+   "html": "<p><em>See: @UUID[Compendium.dnd5e.equipment24.Item.dmgHornofValhall]{Horn of Valhalla}</em></p><p><em>Requirement: Training with all Medium armor</em></p><p><em>Spirits: 4</em></p><p>You can take a Magic action to blow this horn. In response, warrior spirits from the plane of Ysgard appear in unoccupied spaces within 60 feet of you. Each spirit uses the <strong>@UUID[Compendium.dnd5e.actors24.Actor.mmBerserker00000]{Berserker}</strong> stat block and returns to Ysgard after 1 hour or when it drops to 0 Hit Points. The spirits look like living, breathing warriors, and they have Immunity to the &amp;Reference[Charmed apply=false] and &amp;Reference[Frightened apply=false] conditions. Once you use the horn, it can't be used again until 7 days have passed.</p><p>If you blow the horn without meeting its requirement, the summoned spirits attack you. If you meet the requirement, they are Friendly to you and your allies and follow your commands.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-57",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Gloves of Swimming and Climbing",
+   "name": "Gloves of Swimming and Climbing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>While wearing these gloves, you have a Climb Speed and a Swim Speed equal to your Speed, and you gain a +5 bonus to Strength (Athletics) checks made to climb or swim.</p><section class=\"secret\" id=\"secret-9sClXeq4AMq44GSR\"><p><strong>Foundry Note</strong></p><p>The +5 bonus to checks made to climb or swim should be added as a situational bonus when applicable.</p></section>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-58",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Horn of Blasting",
+   "name": "Horn of Blasting",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Rare</em></p><p>You can take a Magic action to blow the horn, which emits a thunderous blast in a 30-foot Cone that is audible out to 600 feet. Each creature in the Cone makes a DC 15 Constitution saving throw. On a failed save, a creature takes 5d8 Thunder damage and has the &amp;Reference[Deafened apply=false] condition for 1 minute. On a successful save, a creature takes half as much damage only. Glass or crystal objects in the Cone that aren't being worn or carried take 10d8 Thunder damage.</p><p>Each use of the horn's magic has a 20 percent chance of causing the horn to explode. The explosion deals 10d6 Force damage to the user and destroys the horn.</p><section class=\"secret\" id=\"secret-rkHeC2mFJBKqNOh0\"><p><strong>Foundry Note</strong></p><p>The <strong>Roll for Explosion Chance</strong> activity will return 1 if it explodes otherwise it will return 0.</p></section>",
+   "expected": {
+    "rarity": "rare"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-59",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Slippers of Spider Climbing",
+   "name": "Slippers of Spider Climbing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>While you wear these light shoes, you can move up, down, and across vertical surfaces and along ceilings, while leaving your hands free. You have a Climb Speed equal to your Speed. However, the slippers don't allow you to move this way on a slippery surface, such as one covered by ice or oil.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-60",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Belt of Dwarvenkind",
+   "name": "Belt of Dwarvenkind",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Rare (Requires Attunement)</em></p></div><p>While wearing this belt, you gain the following benefits:</p><div class=\"def-block\"><p><strong>Dwarvish.</strong> You know Dwarvish.</p><p><strong>Friend of Dwarvenkind.</strong> You have Advantage on Charisma (Persuasion) checks made to interact with dwarves and duergar.</p><p><strong>Toughness.</strong> Your Constitution increases by 2, to a maximum of 20.</p></div><p>In addition, while attuned to the belt, you have a 50 percent chance each day at dawn of growing a full beard if you can grow one, or a thicker beard if you already have one.</p><p>If you aren't a dwarf or duergar, you gain the following additional benefits while wearing the belt:</p><div class=\"def-block\"><p><strong>Darkvision.</strong> You have Darkvision with a range of 60 feet.</p><p><strong>Resilience.</strong> You have Resistance to Poison damage. You also have Advantage on saving throws you make to avoid or end the Poisoned condition.</p></div>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-61",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ring of Elemental Command",
+   "name": "Ring of Elemental Command",
+   "itemType": "equipment",
+   "html": "<p><em>Ring, Legendary (Requires Attunement)</em></p><p>Each Ring of Elemental Command is linked to one of the four Elemental Planes. The DM chooses or randomly determines the linked plane. For example, a Ring of Elemental Command (air) is linked to the Elemental Plane of Air.</p><p>Every Ring of Elemental Command has the following two properties:</p><p><strong>Elemental Bane.</strong> While wearing the ring, you have Advantage on attack rolls against Elementals and they have Disadvantage on attack rolls against you.</p><p><strong>Elemental Compulsion.</strong> While wearing the ring, you can take a Magic action to try to compel an Elemental you see within 60 feet of yourself. The Elemental makes a DC 18 Wisdom saving throw. On a failed save, the Elemental has the Charmed condition until the start your next turn, and you determine what it does with its move and action on its next turn.</p><p><strong>Elemental Focus.</strong> While wearing the ring, you benefit from additional properties corresponding to the ring's linked Elemental Plane:</p><p><strong>Air.</strong> You know Auran, you have Resistance to Lightning damage, and you have a Fly Speed equal to your Speed and can hover.</p><p><strong>Earth.</strong> You know Terran, and you have Resistance to Acid damage. Terrain composed of rubble, rocks, or dirt isn't Difficult Terrain for you. In addition, you can move through solid earth or rock as if those areas were Difficult Terrain without disturbing the matter through which you pass. If you end your turn in solid earth or rock, you are shunted out to the nearest unoccupied space you last occupied.</p><p><strong>Fire.</strong> You know Ignan, and you have Immunity to Fire damage.</p><p><strong>Water.</strong> You know Aquan, you gain a Swim Speed of 60 feet, and you can breathe underwater.</p><p><strong>Spellcasting.</strong> The ring has 5 charges and regains 1d4 + 1 expended charges daily at dawn. While wearing the ring, you can cast a spell from it. Choose the spell from the list of available spells based on the Elemental Plane the ring is linked to, as shown in the following table. The table indicates how many charges you must expend to cast the spell, which has a save DC of 18.</p><table><thead><tr><td><p>Plane</p></td><td><p>Spells (Charges)</p></td></tr></thead><tbody><tr><td><p>@UUID[Compendium.dnd5e.equipment24.Item.dmgAirRingOfElem]{Air Ring}</p></td><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplChainLight]{Chain Lightning} (3 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplFeatherFal]{Feather Fall} (0 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplGustofWind]{Gust of Wind} (2 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplWindWall00]{Wind Wall} (1 charge)</p></td></tr><tr><td><p>@UUID[Compendium.dnd5e.equipment24.Item.dmgEarthRingOfEl]{Earth Ring}</p></td><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplEarthquake]{Earthquake} (5 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplStoneShape]{Stone Shape} (2 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplStoneskin0]{Stoneskin} (3 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplWallofSton]{Wall of Stone} (3 charges)</p></td></tr><tr><td><p>@UUID[Compendium.dnd5e.equipment24.Item.dmgFireRingOfEle]{Fire Ring}</p></td><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplBurningHan]{Burning Hands} (1 charge), @UUID[Compendium.dnd5e.spells24.Item.phbsplFireball00]{Fireball} (2 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplFireStorm0]{Fire Storm} (4 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplWallofFire]{Wall of Fire} (3 charges)</p></td></tr><tr><td><p>@UUID[Compendium.dnd5e.equipment24.Item.dmgWaterRingOfEl]{Water Ring}</p></td><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplCreateorDe]{Create or Destroy Water} (1 charge), @UUID[Compendium.dnd5e.spells24.Item.phbsplIceStorm00]{Ice Storm} (2 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplTsunami000]{Tsunami} (5 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplWallofIce0]{Wall of Ice} (3 charges), @UUID[Compendium.dnd5e.spells24.Item.phbsplWaterWalk0]{Water Walk} (2 charges)</p></td></tr></tbody></table>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-62",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Cape of the Mountebank",
+   "name": "Cape of the Mountebank",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Rare</em></p></div><p>This cape smells faintly of brimstone. While wearing it, you can use it to cast <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplDimensionD]{Dimension Door}</em> as a Magic action. This property can't be used again until the next dawn.</p><p>When you teleport with that spell, you leave behind a cloud of smoke. The space you left is &amp;Reference[LightlyObscured] by that smoke until the end of your next turn.</p>",
+   "expected": {
+    "rarity": "rare"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-en-63",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Trident",
+   "name": "Trident",
+   "itemType": "weapon",
+   "html": "",
+   "expected": {
+    "weapon.baseItem": "trident"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-en-64",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Cube of Force",
+   "name": "Cube of Force",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Rare (Requires Attunement)</em></p></div><p>This cube is about an inch across. Each face has a distinct marking on it. You can press one of those faces, expend the number of charges required for it, and thereby cast the spell associated with it (save DC 17), as shown in the Cube of Force Faces table.</p><p>The cube starts with 10 charges, and it regains 1d6 <span class=\"no-break\">expended</span> charges daily at dawn.</p><table><caption>Cube of Force Faces</caption><thead><tr><td>Spell</td><td>Charge Cost</td></tr></thead><tbody><tr><td><em>@UUID[Compendium.dnd5e.spells24.Item.phbsplMageArmor0]{Mage Armor}</em></td><td>1</td></tr><tr><td><em>@UUID[Compendium.dnd5e.spells24.Item.phbsplShield0000]{Shield}</em></td><td>1</td></tr><tr><td><em>@UUID[Compendium.dnd5e.spells24.Item.phbsplLeomundsTi]{Tiny Hut}</em></td><td>3</td></tr><tr><td><em>@UUID[Compendium.dnd5e.spells24.Item.phbPrivateSanctu]{Private Sanctum}</em></td><td>4</td></tr><tr><td><em>@UUID[Compendium.dnd5e.spells24.Item.phbsplOtilukesRe]{Resilient Sphere}</em></td><td>4</td></tr><tr><td><em>@UUID[Compendium.dnd5e.spells24.Item.phbsplWallofForc]{Wall of Force}</em></td><td>5</td></tr></tbody></table>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-1",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Bouclier +1",
+   "itemType": "equipment",
+   "html": "<p>Tant que vous tenez ce bouclier, vous bénéficiez d'un bonus de +1 à la CA. Ce bonus s'ajoute au bonus normal du bouclier.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-fr-2",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Armure de cuir clouté +3",
+   "itemType": "equipment",
+   "html": "<p>Cette armure a été ornée de runes puissantes, forgée dans des feux ensorcelés ou bénie par un être puissant. Vous bénéficiez d'un bonus à la CA tant que vous portez cette armure.</p>",
+   "expected": {
+    "armor.magicalBonus": 3
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "g-fr-3",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Cimeterre +2",
+   "itemType": "weapon",
+   "html": "<p>Vous avez un bonus aux jets d'attaque et de dégâts effectués avec cette arme magique.</p>",
+   "expected": {
+    "weapon.magicalBonus": 2,
+    "weapon.baseItem": "scimitar"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-4",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Masse d'armes +1",
+   "itemType": "weapon",
+   "html": "<p>Vous avez un bonus aux jets d'attaque et de dégâts effectués avec cette arme magique.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "mace"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-5",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Arc long +1",
+   "itemType": "weapon",
+   "html": "<p>Vous avez un bonus aux jets d'attaque et de dégâts effectués avec cette arme magique.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "longbow"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-6",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Hache d'armes +3",
+   "itemType": "weapon",
+   "html": "<p>Vous avez un bonus aux jets d'attaque et de dégâts effectués avec cette arme magique.</p>",
+   "expected": {
+    "weapon.magicalBonus": 3,
+    "weapon.baseItem": "battleaxe"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-7",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Baguette de toile d'araignée",
+   "itemType": "equipment",
+   "html": "<p>Baguette (nécessite un lien d'harmonisation avec un lanceur de sorts). Cette baguette possède 7 charges. Quand vous la tenez, vous pouvez utiliser une action et dépenser 1 charge pour lancer le sort Toile d'araignée (DD de sauvegarde 15). La baguette récupère 1d6 + 1 charges dépensées chaque jour à l'aube.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "un lanceur de sorts"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-fr-8",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Médaillon des pensées",
+   "itemType": "equipment",
+   "html": "<p>Objet merveilleux, peu commun (nécessite un lien d'harmonisation). Le médaillon possède 3 charges. Quand vous le portez, vous pouvez utiliser une action et dépenser 1 charge pour lancer Détection des pensées (DD de sauvegarde 13). Le médaillon récupère 1d3 charges dépensées chaque jour à l'aube.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-fr-9",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Anneau de résistance psychique",
+   "itemType": "equipment",
+   "html": "<p>(Nécessite un lien d'harmonisation) Cet anneau est serti d'une pierre de jade qui brille à la lumière. Vous avez la résistance aux dégâts psychiques tant que vous portez cet anneau.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [
+    {
+     "kind": "resistance",
+     "scope": "psychic",
+     "value": null
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "g-fr-10",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Potion de longévité",
+   "itemType": "consumable",
+   "html": "<p>Potion, très rare. Quand vous buvez cette potion, votre âge physique est réduit de 1d6 + 6 ans, jusqu'à un minimum de 13 ans. Chaque fois que vous buvez ensuite une potion de longévité, vous avez 10 % de chances cumulées de vieillir de 1d6 + 6 ans à la place.</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-fr-11",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Anneau de marche sur l'eau",
+   "itemType": "equipment",
+   "html": "<p>Anneau, peu commun. Tant que vous portez cet anneau, vous lancez Marche sur l'eau grâce à lui, en ne vous ciblant que vous-même.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-12",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Bouclier de sentinelle",
+   "itemType": "equipment",
+   "html": "<p>Armure (bouclier), peu commun. Tant que vous tenez ce bouclier, vous avez l'avantage aux jets d'initiative et aux tests de Sagesse (Perception). Le bouclier est orné d'un symbole d'œil.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "armor.type": "shield"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "armor.ac"
+   ]
+  },
+  {
+   "id": "g-fr-13",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Lame de chance",
+   "itemType": "weapon",
+   "html": "<p>Arme (glaive, espadon, épée longue, rapière, cimeterre, serpe ou épée courte), légendaire (nécessite un lien d'harmonisation). Vous bénéficiez d'un bonus de +1 aux jets d'attaque et de dégâts effectués avec cette arme magique. Tant que l'arme est sur vous, vous bénéficiez aussi d'un bonus de +1 aux jets de sauvegarde.</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required",
+    "weapon.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "weapon.baseItem"
+   ]
+  },
+  {
+   "id": "g-fr-14",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Gants de nage et d'escalade",
+   "itemType": "equipment",
+   "html": "<p>Objet merveilleux, peu commun (nécessite un lien d'harmonisation). Tant que vous portez ces gants, vous avez une vitesse d'escalade et une vitesse de nage égales à votre vitesse, et vous bénéficiez d'un bonus de +5 aux tests de Force (Athlétisme) effectués pour grimper ou nager.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-15",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Chaussons d'araignée",
+   "itemType": "equipment",
+   "html": "<p>Objet merveilleux, peu commun (nécessite un lien d'harmonisation). Tant que vous portez ces chaussures légères, vous pouvez vous déplacer vers le haut, vers le bas et le long des surfaces verticales et des plafonds, en gardant les mains libres.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-16",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Marteau de foudre",
+   "itemType": "weapon",
+   "html": "<p>Arme (maillet d'armes ou marteau de guerre), légendaire (nécessite un lien d'harmonisation). Vous bénéficiez d'un bonus de +1 aux jets d'attaque et de dégâts effectués avec cette arme magique. L'arme possède 5 charges.</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required",
+    "weapon.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "weapon.baseItem"
+   ]
+  },
+  {
+   "id": "g-fr-17",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Cape du saltimbanque",
+   "itemType": "equipment",
+   "html": "<p>Objet merveilleux, rare. Cette cape sent légèrement le soufre. Quand vous la portez, vous pouvez lancer Porte dimensionnelle en tant qu'action magique. Cette propriété ne peut plus être utilisée avant l'aube suivante.</p>",
+   "expected": {
+    "rarity": "rare"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-18",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Baguette d'éclairs",
+   "itemType": "equipment",
+   "html": "<p>Baguette, rare (nécessite un lien d'harmonisation avec un lanceur de sorts). Cette baguette possède 7 charges. Quand vous la tenez, vous pouvez dépenser 3 charges au maximum pour lancer Éclair (DD de sauvegarde 15). La baguette récupère 1d6 + 1 charges dépensées chaque jour à l'aube. Si vous dépensez la dernière charge de la baguette, lancez un d20. Sur un 1, la baguette tombe en cendres et est détruite.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required",
+    "attunementCondition": "un lanceur de sorts",
+    "consumable.type": "wand",
+    "consumable.charges": "7/dawn/1d6+1",
+    "consumable.destroyOnEmpty": true
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "g-fr-19",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Cube de force",
+   "itemType": "equipment",
+   "html": "<p>Objet merveilleux, rare (nécessite un lien d'harmonisation). Ce cube mesure environ 2,5 cm de côté. Vous pouvez appuyer sur l'une de ses faces et dépenser les charges requises pour lancer le sort associé (DD de sauvegarde 17). Le cube commence avec 10 charges et récupère 1d6 charges dépensées chaque jour à l'aube.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "g-fr-20",
+   "lang": "fr",
+   "source": "hand-written",
+   "name": "Hachette berserker",
+   "itemType": "weapon",
+   "html": "<p>(Nécessite un lien d'harmonisation) Vous bénéficiez d'un bonus de +1 aux jets d'attaque et de dégâts effectués avec cette arme magique. De plus, tant que vous êtes lié à cette arme, votre maximum de points de vie augmente de 1 par niveau que vous avez atteint.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "handaxe"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  }
+ ]
+}
