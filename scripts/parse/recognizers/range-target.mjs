@@ -3,12 +3,12 @@ import { parseNumber, toFeet } from "../text.mjs";
 
 const NUM = "(\\d+(?:[.,]\\d+)?)";
 const FT = "\\s*(?:ft\\.?|feet|foot)";
-const M = "\\s*m(?:[eè]tres?)?(?![\\p{L}])";
 
 const EN_REACH = new RegExp(`\\breach\\s+${NUM}${FT}`, "giu");
 const EN_RANGE = new RegExp(`\\brange\\s+${NUM}(?:\\s*/\\s*${NUM})?${FT}`, "giu");
-const FR_REACH = new RegExp(`\\ballonge\\s+(?:de\\s+)?${NUM}${M}`, "giu");
-const FR_RANGE = new RegExp(`\\bportée\\s+(?:de\\s+)?${NUM}(?:\\s*/\\s*${NUM})?${M}`, "giu");
+const FR_UNIT = "\\s*(m(?:[eè]tres?)?|pieds?|pi|ft\\.?)(?![\\p{L}])";
+const FR_REACH = new RegExp(`\\ballonge\\s+(?:de\\s+)?${NUM}${FR_UNIT}`, "giu");
+const FR_RANGE = new RegExp(`\\bportée\\s+(?:de\\s+)?${NUM}(?:\\s*/\\s*${NUM})?${FR_UNIT}`, "giu");
 
 function targetPattern(langs) {
   const words = alternation("numbers", langs).split("|").filter(word => word !== "a" && word !== "an").join("|");
@@ -34,8 +34,10 @@ export function recognizeRangeTarget(text, ctx = {}) {
   let long = null;
   const raws = [];
 
-  const take = (pattern, unit, kind) => {
+  const take = (pattern, defaultUnit, kind) => {
     for ( const match of source.matchAll(pattern) ) {
+      // French patterns capture their unit last (metres or feet)
+      const unit = defaultUnit === "m" ? (/^m/i.test(match.at(-1) ?? "m") ? "m" : "ft") : defaultUnit;
       const convert = number => (number === undefined ? null : toFeet(parseNumber(number), unit));
       spans.push(spanOf(kind, match));
       if ( kind === "reach" ) {
