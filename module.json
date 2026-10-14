@@ -1,0 +1,49 @@
+{
+  "id": "dnd5e-text-parser",
+  "title": "dnd5e Text Parser",
+  "description": "Shared library that parses dnd5e stat block and item text (English and French) into dnd5e 6 data.",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Rydka"
+    }
+  ],
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "dnd5e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "6.0.0",
+          "verified": "6.0.6"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/dnd5e-text-parser.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
+    }
+  ],
+  "url": "https://github.com/rydka/dnd5e-text-parser",
+  "manifest": "https://github.com/rydka/dnd5e-text-parser/releases/latest/download/module.json",
+  "download": "https://github.com/rydka/dnd5e-text-parser/releases/latest/download/module.zip",
+  "bugs": "https://github.com/rydka/dnd5e-text-parser/issues"
+}

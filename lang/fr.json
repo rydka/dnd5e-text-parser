@@ -1,0 +1,13 @@
+{
+  "dnd5e-text-parser": {
+    "settings": {
+      "enabled": {
+        "name": "Activer dnd5e Text Parser",
+        "hint": "Active ou désactive les fonctionnalités du module pour ce monde."
+      }
+    },
+    "errors": {
+      "wrongSystem": "dnd5e Text Parser nécessite le système dnd5e."
+    }
+  }
+}
