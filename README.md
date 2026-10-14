@@ -156,6 +156,7 @@ Quand le texte ne permet pas d'écrire un fait sans l'inventer, la bibliothèque
 | `AttackBonusMissing` | `notes` | `{ raw }` | En-tête d'attaque sans nombre (« Automatic hit ») : pas d'`attack`, dégâts seuls |
 | `AttackBonuses` | `ambiguous` | `{ values: number[], raw: string[] }` | Plusieurs bonus différents : pas d'`attack`, dégâts conservés |
 | `DamagePenalty` | `ambiguous` | `{ raw }` | « subtracts 3 (1d6) from its damage rolls » : pas de partie de dégâts |
+| `AmbiguousDamageType` | `ambiguous` | `{ word, choices: string[], raw }` | « 3 (1d6) lightning or thunder damage », « bludgeoning, piercing, or slashing » : la partie est écrite avec ses dés et `types: []`, `part.typeChoices` = `choices` (clés dnd5e, par exemple `["lightning", "thunder"]`) |
 | `SaveAbilities` | `ambiguous` | `{ values: { ability, dc }[], raw: string[] }` | Plusieurs sauvegardes différentes : pas de `save` |
 | `DamageWithheld` | `ambiguous` | `{ raw: string[] }` | Dégâts qui dépendent d'une sauvegarde ambiguë : non écrits |
 
@@ -173,7 +174,8 @@ FeaturePlan = { schema: 1, skip: "multiattack"|null,
   uses: { max, period: "day"|"dawn"|"dusk"|"sr"|"lr", recoverFormula }|null,
   recharge: { min }|null, legendaryResistance: number|null,
   notes: Descriptor[], ambiguous: Descriptor[], unrecognized: { text, index }[] }
-DamagePart = { number, denomination, bonus, type, raw }
+DamagePart = { number, denomination, bonus, type, raw,
+  typeChoices?: string[] }                               // « lightning or thunder damage » : type null, choix listés (Note.AmbiguousDamageType)
 ```
 
 ```js

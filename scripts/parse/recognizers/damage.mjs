@@ -81,7 +81,7 @@ function typeFromEnglish(phrase, languages) {
   if ( !words.length ) return { type: null, status: "none", phrase: "" };
   const { known, unknown } = classifyWords(words, languages);
   if ( known.length === 1 && !unknown ) return { type: known[0], status: "ok", phrase: phrase.trim() };
-  if ( known.length > 1 ) return { type: null, status: "ambiguous", phrase: phrase.trim() };
+  if ( known.length > 1 ) return { type: null, status: "ambiguous", phrase: phrase.trim(), choices: known };
   return { type: null, status: "unknown", phrase: phrase.trim() };
 }
 
@@ -122,7 +122,7 @@ function typeFromFrench(tail, languages) {
   const unique = [...new Set(known)];
   const phrase = tail.slice(0, consumed).trim();
   if ( unique.length === 1 ) return { type: unique[0], status: "ok", consumed, phrase };
-  if ( unique.length > 1 ) return { type: null, status: "ambiguous", consumed, phrase };
+  if ( unique.length > 1 ) return { type: null, status: "ambiguous", consumed, phrase, choices: unique };
   return { type: null, status: unknown ? "unknown" : "none", consumed: 0, phrase: unknown ?? "" };
 }
 
@@ -224,10 +224,14 @@ export function recognizeDamage(text, ctx = {}) {
       type = null;
     } else if ( typeInfo.status === "unknown" ) {
       notes.push({ key: "dnd5e-text-parser.Note.UnknownDamageType", data: { word: typeInfo.phrase } });
-    } else if ( typeInfo.status === "ambiguous" ) {
-      ambiguous.push({ key: "dnd5e-text-parser.Note.AmbiguousDamageType", data: { word: typeInfo.phrase } });
     }
     const part = { ...entry.part, type, raw: source.slice(entry.start, entry.end).trim() };
+    // "lightning or thunder damage": the dice are kept, the type is left empty and the choices are reported
+    if ( typeInfo.status === "ambiguous" ) {
+      const choices = (typeInfo.choices ?? []).filter(choice => keyAllowed(ctx.keys, "damageTypes", choice));
+      part.typeChoices = choices;
+      ambiguous.push({ key: "dnd5e-text-parser.Note.AmbiguousDamageType", data: { word: typeInfo.phrase, choices, raw: part.raw } });
+    }
     parts.push(part);
     spans.push({ kind: "damage", start: entry.start, end: entry.end, text: part.raw });
     if ( previous && CHAIN_SEP.test(source.slice(previous.end, entry.start)) ) chains.at(-1).push(part);

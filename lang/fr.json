@@ -43,7 +43,7 @@
       "SaveAbilities": "Plusieurs jets de sauvegarde différents trouvés : aucun n'a été choisi.",
       "DamageWithheld": "Les dégâts dépendent d'une sauvegarde ambiguë et n'ont pas été écrits : {raw}",
       "SaveDcFormula": "Le DD du jet de sauvegarde est une formule ({raw}), pas un nombre fixe : il a été écrit {formula}.",
-      "AmbiguousDamageType": "Le type de dégâts « {word} » est ambigu et a été laissé vide.",
+      "AmbiguousDamageType": "Le type de dégâts « {word} » est ambigu ({choices}) : il a été laissé vide.",
       "DamagePenalty": "Pénalité aux jets, pas des dégâts : rien n'a été écrit : {raw}",
       "UnknownDamageType": "Type de dégâts inconnu « {word} » : laissé vide.",
       "RangeNotCarried": "Allonge ({reach} pi) et portée ({value} pi) trouvées : la portée n'a pas pu être reportée.",
