@@ -4,7 +4,11 @@
 //   node tests/tools/build-control-features.mjs <raw.json> [out.json]
 import fs from "node:fs";
 
-const [rawFile, outFile = new URL("../fixtures/control/features-en.json", import.meta.url).pathname.replace(/^\/(\w:)/, "$1")] = process.argv.slice(2);
+const flag = (n, d) => process.argv.find(a => a.startsWith(`--${n}=`))?.slice(n.length + 3) ?? d;
+const rawFile = process.argv[2];
+const setDir = flag("dir", "control");
+const outFile = new URL(`../fixtures/${setDir}/features-en.json`, import.meta.url).pathname.replace(/^\/(\w:)/, "$1");
+const excludeFiles = flag("exclude", "").split(",").filter(Boolean);
 const raw = JSON.parse(fs.readFileSync(rawFile, "utf8"));
 
 const plain = (html) => html.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
@@ -94,7 +98,9 @@ function build(x) {
   return { text, expected, ignore: [...new Set(ignore)] };
 }
 
+const prefix = flag("prefix", "c");
 const seen = new Set();
+for ( const f of excludeFiles ) for ( const c of JSON.parse(fs.readFileSync(f, "utf8")).cases ) seen.add(plain(c.html ?? ""));
 const cases = [];
 let zero = 0;
 for ( const x of raw ) {
@@ -106,7 +112,7 @@ for ( const x of raw ) {
   const n = Object.values(expected).reduce((s, v) => s + v.length, 0);
   if ( n === 0 && (zero++ % 2) ) continue;
   cases.push({
-    id: `c-en-${cases.length + 1}`, lang: "en", source: `${x.pack}/${x.actor}/${x.name}`,
+    id: `${prefix}-en-${cases.length + 1}`, lang: "en", source: `${x.pack}/${x.actor}/${x.name}`,
     name: x.name, html: x.html, activityTypes: x.activities.map(a => a.type), expected, ignore, facts: n
   });
 }
@@ -115,12 +121,12 @@ const withFacts = cases.filter(c => c.facts > 0).length;
 console.log(`cases=${cases.length} withFacts=${withFacts} facts=${cases.reduce((s, c) => s + c.facts, 0)}`);
 
 // French translations written by hand from selected English cases; the truth is that of the English case.
-const frSource = JSON.parse(fs.readFileSync(new URL("../fixtures/control/features-fr-source.json", import.meta.url), "utf8"));
+const frSource = JSON.parse(fs.readFileSync(new URL(`../fixtures/${setDir}/features-fr-source.json`, import.meta.url), "utf8"));
 const byId = new Map(cases.map(c => [c.id, c]));
 const frCases = frSource.map((t, i) => {
   const en = byId.get(t.from);
   if ( !en ) throw new Error(`unknown case ${t.from}`);
-  return { id: `c-fr-${i + 1}`, lang: "fr", source: `translation of ${en.source}`, name: t.name, html: t.html, expected: en.expected, ignore: en.ignore, facts: en.facts };
+  return { id: `${prefix}-fr-${i + 1}`, lang: "fr", source: `translation of ${en.source}`, name: t.name, html: t.html, expected: en.expected, ignore: en.ignore, facts: en.facts };
 });
 fs.writeFileSync(outFile.replace("features-en", "features-fr"), JSON.stringify({ description: "Control set: French translations of control abilities.", cases: frCases }, null, 1));
 console.log(`fr cases=${frCases.length}`);

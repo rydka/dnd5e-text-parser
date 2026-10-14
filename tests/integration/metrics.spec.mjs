@@ -7,6 +7,7 @@ import { expect, test } from "../../../../test-env/fixtures.mjs";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/(\w:)/, "$1")), "../..");
 
+// eslint-disable-next-line no-empty-pattern
 test("M2/M3: recall and precision on the reference and control sets (recorded, not asserted)", async ({}, testInfo) => {
   for ( const set of ["reference", "control"] ) {
     const out = testInfo.outputPath(`M2-M3-${set}.json`);
@@ -19,6 +20,7 @@ test("M2/M3: recall and precision on the reference and control sets (recorded, n
   }
 });
 
+// eslint-disable-next-line no-empty-pattern
 test("M5: time of a full stat block without fallback (recorded, not asserted)", async ({}, testInfo) => {
   const out = testInfo.outputPath("M5-timing.json");
   const run = spawnSync(process.execPath, [path.join(root, "tests/metrics/measure.mjs"), `--out=${out}`], { cwd: root, encoding: "utf8" });

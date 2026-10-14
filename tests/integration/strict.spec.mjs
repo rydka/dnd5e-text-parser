@@ -74,6 +74,7 @@ test("L7: the effects of an object are v14 effects (change.type, no mode), trans
     const keys = P.keysFromConfig(CONFIG.DND5E);
     const plan = P.parseItem("Ring of Protection", "<p><em>Ring, rare (requires attunement)</em></p><p>You gain a +1 bonus to AC. You also gain a +1 bonus to all saving throws.</p>", { keys, itemType: "equipment" });
     const effects = P.toEffects(plan, { keys, idGen: () => foundry.utils.randomID(), name: "Ring of Protection" });
+    // eslint-disable-next-line no-undef
     const item = await Item.implementation.create({ name: "L7 ring", type: "equipment", effects }, { strict: true });
     const created = item.effects.contents.map(e => ({ transfer: e.transfer, changes: e.system.changes.map(c => ({ key: c.key, type: c.type, value: c.value })) }));
     await item.delete();
