@@ -161,8 +161,8 @@ export function toPounds(value, unit = "lb") {
 }
 
 /**
- * Key used to match a feature name: accents removed, lowercase, and the mentions
- * "(Recharge 5-6)", "(3/Day)", "(Costs 2 Actions)" removed.
+ * Key used to match a feature name: accents removed, lowercase, the mentions "(Recharge 5-6)", "(3/Day)",
+ * "(Costs 2 Actions)" removed, apostrophes dropped and any other punctuation ignored.
  * @param {string} name
  * @returns {string}
  */
@@ -172,5 +172,9 @@ export function nameKey(name) {
     .replace(/\(+\s*(?:recharge|recharges)\b[^)]*\)+/g, " ")
     .replace(/\(+\s*\d+\s*\/\s*(?:day|jour|short rest|long rest|repos court|repos long)[^)]*\)+/g, " ")
     .replace(/\(+\s*(?:costs?|coute)\s*\d+\s*actions?\s*\)+/g, " ")
-    .replace(/\s+/g, " ").trim();
+    // Apostrophes dropped ("Hunter's Mark" = "Hunters Mark"), any other punctuation becomes a space ("Claw." = "claw",
+    // "Rope, Hempen (50 feet)" = "Rope Hempen 50 feet"); "+" is kept ("Longsword +1")
+    .replace(/'/g, "")
+    .replace(/[^\p{L}\p{N}+]+/gu, " ")
+    .trim();
 }
