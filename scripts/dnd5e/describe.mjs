@@ -67,8 +67,8 @@ const damageEntry = (part, save, options, name = "Damage") => entry(name, {
 /** Number of activities `toActivities` makes for an ActivityPlan. */
 function activityCount(activity) {
   if ( activity.cast || activity.heal ) return 1;
-  const count = (activity.attack && (activity.attack.type || activity.attack.classification) ? 1 : 0)
-    + (activity.save?.ability ? 1 : 0);
+  const hasAttack = Boolean(activity.attack && (activity.attack.type || activity.attack.classification));
+  const count = (hasAttack ? 1 : 0) + (activity.save?.ability ? 1 : 0) + (!hasAttack && activity.damage?.length ? 1 : 0);
   return count || 1;
 }
 
@@ -106,7 +106,7 @@ function featureFacts(plan, paths, out, { rawOf = fact => fact?.raw } = {}) {
 function flatPaths(plan) {
   const attack = plan.attack && (plan.attack.type || plan.attack.classification);
   const save = plan.save?.ability;
-  const damage = !attack && !save && plan.damage?.length;
+  const damage = !attack && plan.damage?.length;
   let next = 0;
   const attackAt = attack ? next++ : -1;
   const saveAt = save ? next++ : -1;
@@ -142,9 +142,11 @@ export function describe(planOrChanges) {
       const count = activityCount(activity);
       const all = range(offset, count);
       const hasAttack = activity.attack && (activity.attack.type || activity.attack.classification);
+      const saveAt = activity.save?.ability ? (hasAttack ? 1 : 0) : -1;
+      const damageAt = hasAttack ? 0 : (saveAt >= 0 ? 1 : 0);
       const paths = {
         all, first: all.slice(0, 1), attack: hasAttack ? all.slice(0, 1) : [],
-        save: activity.save?.ability ? all.slice(hasAttack ? 1 : 0, (hasAttack ? 1 : 0) + 1) : [], damage: all.slice(0, 1)
+        save: saveAt >= 0 ? all.slice(saveAt, saveAt + 1) : [], damage: all.slice(damageAt, damageAt + 1)
       };
       offset += count;
       result.push(entry("Activity", { kind: activity.kind, name: activity.name ?? "" }, activity, {

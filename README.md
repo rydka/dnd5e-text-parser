@@ -115,6 +115,8 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `toSpellStubs(spellcastingPlan) -> object[]` | Sorts listés -> données minimales (aucun contenu inventé) |
 | `toDamagePart(part, keys?) -> object` | Une partie de dégâts du plan -> `DamageData` |
 
+Disposition des activités d'un `FeaturePlan` : `attack` (avec `plan.damage`), puis `save` (avec `save.damage`), puis `damage` si `plan.damage` est renseigné sans attaque (dégâts seuls, ou dégâts d'un état continu à côté d'une sauvegarde : « takes 21 (6d6) acid damage at the start of each of its turns » pendant que la cible est avalée, empoisonnée, agrippée…), puis la résistance légendaire.
+
 Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "N"` ; DD fixe `save.dc = { calculation: "", formula: "N" }` ; `damage.includeBase = false` quand les dégâts sont écrits ; usages sur l'objet (`system.uses`) + cible de consommation `itemUses` sur l'activité ; recharge « Recharge 5-6 » = `uses.max "1"` + `uses.recovery [{ period: "recharge", type: "recoverAll", formula: "5" }]` (période fixe de dnd5e 6, hors `limitedUsePeriods`). Seules des clés présentes dans `keys` sont écrites.
 
 ### Fusion
@@ -175,8 +177,11 @@ FeaturePlan = { schema: 1, skip: "multiattack"|null,
   recharge: { min }|null, legendaryResistance: number|null,
   notes: Descriptor[], ambiguous: Descriptor[], unrecognized: { text, index }[] }
 DamagePart = { number, denomination, bonus, type, raw,
-  typeChoices?: string[] }                               // « lightning or thunder damage » : type null, choix listés (Note.AmbiguousDamageType)
+  typeChoices?: string[],                                // « lightning or thunder damage » : type null, choix listés (Note.AmbiguousDamageType)
+  condition?: string }                                   // second résultat « , or 11 (2d8 + 2) Piercing damage if the creature is Bloodied » : partie ajoutée à la suite, condition en texte
 ```
+
+Dégâts d'une capacité : `damage` reçoit les dégâts du coup (ou les dégâts seuls), puis les **dégâts continus** d'un état (« While swallowed… takes 21 (6d6) acid damage at the start of each of its turns », « While Poisoned… », « Until the grapple ends… »), qui ne sont jamais `save.damage` ; `save.damage` reçoit les dégâts de l'échec (« Failure: 9 (2d8) Piercing damage », « …or take 12 (2d8 + 3) bludgeoning damage »). Un second résultat (« , or N (dés) type damage if/when/while… ») suit la partie qu'il remplace dans la même liste, avec `condition` ; dnd5e 6 n'ayant pas de dégâts conditionnels, les deux parties sont écrites sur l'activité. Les tournures « instead », « à la place » et « if used with two hands » restent ignorées (usage polyvalent d'une arme).
 
 ```js
 ItemPlan = FeaturePlan & { name, itemKind: "weapon"|"armor"|"potion"|"scroll"|"wand"|"rod"|"staff"|"ring"|"wondrous"|"ammo"|"poison"|"food"|null,

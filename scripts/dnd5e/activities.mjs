@@ -137,9 +137,11 @@ function featureActivities(plan, context, { item, consume = true } = {}) {
     activities.push(save);
   }
 
-  if ( !activities.length && (plan.damage?.length || plan.extraDamage) ) {
-    const damage = baseActivity("damage", plan, context, consume);
-    const parts = [...(plan.damage ?? []), ...(plan.extraDamage ? [plan.extraDamage] : [])];
+  // Damage without an attack: alone, or next to a save when it is not the save's damage (ongoing damage of a condition)
+  const standalone = !activities.length;
+  if ( !activities.some(activity => activity.type === "attack") && (plan.damage?.length || (standalone && plan.extraDamage)) ) {
+    const damage = baseActivity("damage", plan, context, consume && standalone);
+    const parts = [...(plan.damage ?? []), ...(standalone && plan.extraDamage ? [plan.extraDamage] : [])];
     damage.damage = { parts: parts.map(part => toDamagePart(part, keys)) };
     activities.push(damage);
   }
@@ -218,7 +220,8 @@ function itemActivity(plan, context, { item, resolveSpell, notes }) {
  * FeaturePlan:
  * - `attack` plan -> attack activity (flat bonus, damage of the hit, `damage.includeBase = false` when written).
  * - `save` plan -> save activity (fixed DC: `calculation: ""` + `formula`); also created next to an attack.
- * - damage alone (no attack, no save) -> damage activity.
+ * - damage alone (no attack, no save) -> damage activity; `damage` next to a `save` (ongoing damage of a condition,
+ *   never the save's own damage) -> a damage activity after the save activity.
  * - `legendaryResistance` -> utility activity consuming `resources.legres`.
  * - uses / recharge -> an `itemUses` consumption target on the first activity only.
  * A `multiattack` plan, or a plan without any of these facts, gives no activity.
