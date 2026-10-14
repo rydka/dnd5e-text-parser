@@ -152,9 +152,9 @@ describe("bug 5: the second result 'or N (dice) ... if' is kept", () => {
     expect(dice(plan.damage)).toEqual(["2d8 piercing", "1d8 piercing"]);
   });
 
-  it("two-handed variant", () => {
+  it("a two-handed (versatile) alternative is not extra damage", () => {
     const plan = feature("Sword Cut", "<p>Melee Weapon Attack: +4 to hit, reach 5 ft, one target. Hit: 6 (1d8 + 2) slashing damage, or 7 (1d10 + 2) slashing damage if used with two hands.</p>");
-    expect(dice(plan.damage)).toEqual(["1d8+2 slashing", "1d10+2 slashing"]);
+    expect(dice(plan.damage)).toEqual(["1d8+2 slashing"]);
   });
 
   it("French 'ou ... si'", () => {

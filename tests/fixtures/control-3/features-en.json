@@ -1064,8 +1064,7 @@
      "1 target"
     ],
     "damage": [
-     "1d8+1 slashing",
-     "1d10+1 slashing"
+     "1d8+1 slashing"
     ]
    },
    "ignore": [
@@ -1075,7 +1074,7 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 4
+   "facts": 3
   },
   {
    "id": "e-en-37",
@@ -1754,8 +1753,7 @@
      "1 target"
     ],
     "damage": [
-     "1d8+3 slashing",
-     "1d10+3 slashing"
+     "1d8+3 slashing"
     ]
    },
    "ignore": [
@@ -1765,7 +1763,7 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 4
+   "facts": 3
   },
   {
    "id": "e-en-61",
@@ -4800,8 +4798,7 @@
      "1 target"
     ],
     "damage": [
-     "1d6+1 piercing",
-     "1d8+1 piercing"
+     "1d6+1 piercing"
     ]
    },
    "ignore": [
@@ -4813,7 +4810,7 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 2
+   "facts": 1
   },
   {
    "id": "e-en-165",

@@ -794,8 +794,7 @@
      "1 target"
     ],
     "damage": [
-     "1d8+1 slashing",
-     "1d10+1 slashing"
+     "1d8+1 slashing"
     ]
    },
    "ignore": [
@@ -805,7 +804,7 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 4
+   "facts": 3
   },
   {
    "id": "e-fr-30",
