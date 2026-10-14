@@ -1,5 +1,8 @@
 import { fold, damageKey, conditionKey } from "../lexicon/index.mjs";
 
+/** Damage types that `bypasses` apply to. */
+const PHYSICAL = new Set(["bludgeoning", "piercing", "slashing"]);
+
 /** Order in which bypasses are listed. */
 const BYPASS_ORDER = ["mgc", "ada", "sil"];
 
@@ -44,6 +47,8 @@ function bypassesIn(folded) {
   if ( /non[- ]?magi/.test(folded) ) found.add("mgc");
   if ( /adamant/.test(folded) ) found.add("ada");
   if ( /silver|argent/.test(folded) ) found.add("sil");
+  // "nonmagical attacks that aren't silvered": the silvered / adamantine bypass is the one that matters
+  if ( found.has("sil") || found.has("ada") ) found.delete("mgc");
   return BYPASS_ORDER.filter(key => found.has(key));
 }
 
@@ -86,9 +91,11 @@ export function parseTraitBody(body, kind, options = {}) {
       entries.push({ part, target: damage ? kind : condition ? "ci" : null, key: damage ?? condition });
     }
 
+    // dnd5e applies `bypasses` to physical damage only: a group without physical types (or bypasses) fits any set
     const signature = bypasses.join(",");
-    if ( mechanical === null && entries.some(e => e.target) ) mechanical = signature;
-    const isMechanical = mechanical === signature;
+    const relevant = bypasses.length > 0 || entries.some(e => e.target && PHYSICAL.has(e.key));
+    if ( relevant && mechanical === null && entries.some(e => e.target) ) mechanical = signature;
+    const isMechanical = !relevant || mechanical === signature;
     if ( !isMechanical && entries.some(e => e.target) ) {
       // A different bypass set than the first group: cannot share the trait's single `bypasses`.
       traits[kind].custom.push(group);

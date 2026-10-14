@@ -7,7 +7,7 @@ const NAME_RE = /^(?:innate\s+)?spellcasting\b|^incantation\b/;
 const ABILITY_RES = [
   new RegExp(String.raw`spellcasting ability (?:is|:)\s*(${ABILITY_RE})`),
   new RegExp(String.raw`using (${ABILITY_RE}) as (?:its|the|their|his|her)? ?spellcasting ability`),
-  new RegExp(String.raw`caracteristique d'incantation\s*(?:est|:)\s*(?:l[ae]\s+|l')?(${ABILITY_RE})`),
+  new RegExp(String.raw`caracteristique d'incantation(?:\s+innee)?(?:\s+(?:du|de la|de l'|des|d')\s*[^.:()]{1,40}?)?\s*(?:est|:)\s*(?:l[ae]\s+|l')?(${ABILITY_RE})`),
   new RegExp(String.raw`(?:utilisant|avec)\s+(?:l[ae]\s+|l')?(${ABILITY_RE}) comme caracteristique d'incantation`)
 ];
 const DC_RES = [/spell save dc\s*(\d+)/, /\bdd(?:\s+de\s+sauvegarde)?(?:\s+des\s+sorts?)?\s*(\d+)/, /\bdd\s+de\s+sort\s*(\d+)/];
