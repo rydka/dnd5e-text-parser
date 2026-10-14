@@ -54,7 +54,11 @@ export function recognizeRangeTarget(text, ctx = {}) {
   const found = source.matchAll(targetPattern([en && "en", fr && "fr"].filter(Boolean))).next().value;
   if ( found ) {
     const count = toCount(found[1]);
-    if ( count ) {
+    // "a creature" / "une créature" is an article, not a count, unless it follows a comma ("range 30 ft., une créature") or targets a saving throw
+    const article = /^(?:un|une|a|an)$/iu.test(found[1]);
+    const afterComma = /,\s*$/.test(source.slice(0, found.index));
+    const inSave = /saving throw|jet de sauvegarde/iu.test(source.slice(found.index).split(/[.!?](?:\s|$)/u)[0]);
+    if ( count && (!article || afterComma || inSave) ) {
       spans.push(spanOf("target", found));
       target = {
         count, type: /^(creature|cr[ée]ature)/i.test(found[2]) ? "creature" : "",

@@ -79,7 +79,7 @@ export function recognizeSaveArea(text, ctx = {}) {
     if ( distinct.size > 1 ) {
       ambiguous.push({
         key: "dnd5e-text-parser.Note.SaveAbilities",
-        data: { values: [...distinct].map(value => {
+        data: { raw: saves.map(entry => entry.raw), values: [...distinct].map(value => {
           const [ability, dc] = value.split(":");
           return { ability, dc: Number(dc) };
         }) }

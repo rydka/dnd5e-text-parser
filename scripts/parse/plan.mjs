@@ -69,6 +69,8 @@ export function parseFeature(name, html, opts = {}) {
   plan.uses = uses.fact.uses;
   plan.recharge = uses.fact.recharge;
   plan.legendaryResistance = legendary.fact?.legres ?? null;
+  // Legendary Resistance is a trait, even when filed under a "Legendary Actions" header (C12)
+  if ( plan.legendaryResistance && plan.activation?.type === "legendary" ) plan.activation = null;
 
   // Attack type from the range when the text has no "Melee"/"Ranged" header
   if ( plan.attack && !plan.attack.type && plan.range ) {
