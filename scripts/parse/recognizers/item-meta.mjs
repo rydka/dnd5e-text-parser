@@ -3,7 +3,7 @@ import { lookup } from "../lexicon/index.mjs";
 import { parseNumber, toPounds } from "../text.mjs";
 
 const EN_ATTUNEMENT = /\brequires?\s+attunement(?:\s+by\s+([^)\n.;,]+?))?(?=\s*[).;,]|\s*$)/imu;
-const FR_ATTUNEMENT = /\bn[ée]cessite\s+un\s+lien(?:\s+(?:avec|par)\s+([^)\n.;,]+?))?(?=\s*[).;,]|\s*$)/imu;
+const FR_ATTUNEMENT = /\b(?:n[ée]cessite|requiert)\s+un\s+lien(?:\s+d['’]harmonisation)?(?:\s+(?:avec|par)\s+([^)\n.;,]+?))?(?=\s*[).;,]|\s*$)/imu;
 const EN_WEIGHT = /\b(?:weight|weighs)\s*:?\s*(\d+(?:[.,]\d+)?)\s*(lbs?|pounds?|kg)\b\.?/iu;
 const FR_WEIGHT = /\bpoids\s*:?\s*(\d+(?:[.,]\d+)?)\s*(kg|lbs?|livres?)\b\.?/iu;
 const EN_PRICE = /\b(?:price|costs?|worth)\s*:?\s*(\d[\d,]*(?:\.\d+)?)\s*(cp|sp|ep|gp|pp)\b\.?/iu;
