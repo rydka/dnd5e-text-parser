@@ -1,13 +1,30 @@
 {
   "dnd5e-text-parser": {
-    "settings": {
-      "enabled": {
-        "name": "Activer dnd5e Text Parser",
-        "hint": "Active ou désactive les fonctionnalités du module pour ce monde."
-      }
+    "Describe": {
+      "Attack": "Attaque : {type} {classification} {bonus}",
+      "Range": "Portée : allonge {reach}, portée {value}, longue {long}",
+      "Target": "Cible : {count} {type}",
+      "Damage": "Dégâts : {formula} {type}",
+      "Save": "Jet de sauvegarde : {ability} DD {dc}, en cas de réussite : {onSave}",
+      "Template": "Zone : {type} {size}",
+      "Uses": "Utilisations : {max} par {period}",
+      "Recharge": "Recharge : {min}-6",
+      "LegendaryResistance": "Résistance légendaire : {count}/jour",
+      "Activation": "Activation : {type} {cost}",
+      "Skipped": "Non interprété : {reason}",
+      "Weapon": "Arme : {category} {baseItem} {base}",
+      "Armor": "Armure : {type} CA {ac}",
+      "Consumable": "Consommable : {type}, charges : {charges}",
+      "Rarity": "Rareté : {rarity}",
+      "Attunement": "Harmonisation : {attunement}",
+      "Weight": "Poids : {value} {units}",
+      "Price": "Prix : {value} {denomination}",
+      "Effect": "Effet : {kind} {value} {scope}",
+      "Field": "Rempli : {path}",
+      "Fallback": "proposé par l'assistant"
     },
-    "errors": {
-      "wrongSystem": "dnd5e Text Parser nécessite le système dnd5e."
+    "Note": {
+      "Unrecognized": "Phrase non reconnue : {text}"
     }
   }
 }

@@ -5,12 +5,19 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
-    "vitest": "^5.0.4"
-  }
+    "vitest": "^5.0.4",
+    "@vitest/coverage-v8": "^5.0.4"
+  },
+  "version": "1.0.0-dev",
+  "exports": {
+    ".": "./scripts/index.mjs"
+  },
+  "main": "./scripts/index.mjs"
 }

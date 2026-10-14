@@ -16,14 +16,25 @@ const foundryGlobals = {
   Roll: "readonly"
 };
 
+// Pure library code: no Foundry (or browser) global allowed, only ECMAScript built-ins.
+const pure = ["scripts/parse/**/*.mjs", "scripts/dnd5e/**/*.mjs", "scripts/index.mjs", "scripts/registry.mjs"];
+
 export default [
   js.configs.recommended,
   {
-    files: ["scripts/**/*.{js,mjs}"],
+    files: ["scripts/module.mjs"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: { ...globals.browser, ...foundryGlobals }
+    }
+  },
+  {
+    files: pure,
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {}
     }
   },
   {

@@ -1,13 +1,30 @@
 {
   "dnd5e-text-parser": {
-    "settings": {
-      "enabled": {
-        "name": "Enable dnd5e Text Parser",
-        "hint": "Turn the module's features on or off for this world."
-      }
+    "Describe": {
+      "Attack": "Attack: {type} {classification} {bonus}",
+      "Range": "Range: reach {reach}, range {value}, long {long}",
+      "Target": "Target: {count} {type}",
+      "Damage": "Damage: {formula} {type}",
+      "Save": "Saving throw: {ability} DC {dc}, on a success: {onSave}",
+      "Template": "Area: {type} {size}",
+      "Uses": "Uses: {max} per {period}",
+      "Recharge": "Recharge: {min}-6",
+      "LegendaryResistance": "Legendary Resistance: {count}/day",
+      "Activation": "Activation: {type} {cost}",
+      "Skipped": "Not interpreted: {reason}",
+      "Weapon": "Weapon: {category} {baseItem} {base}",
+      "Armor": "Armor: {type} AC {ac}",
+      "Consumable": "Consumable: {type}, charges: {charges}",
+      "Rarity": "Rarity: {rarity}",
+      "Attunement": "Attunement: {attunement}",
+      "Weight": "Weight: {value} {units}",
+      "Price": "Price: {value} {denomination}",
+      "Effect": "Effect: {kind} {value} {scope}",
+      "Field": "Filled: {path}",
+      "Fallback": "proposed by the assistant"
     },
-    "errors": {
-      "wrongSystem": "dnd5e Text Parser requires the dnd5e system."
+    "Note": {
+      "Unrecognized": "Sentence not recognized: {text}"
     }
   }
 }
