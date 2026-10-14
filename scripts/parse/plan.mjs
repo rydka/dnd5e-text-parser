@@ -102,7 +102,15 @@ export function parseFeature(name, html, opts = {}) {
   const after = chains.filter(chain => chain.start >= saveStart);
   let hit = null;
   let onSave;
-  if ( plan.save && !plan.attack ) {
+  // C4: damage that depends on an ambiguous attack (several bonuses) or an ambiguous save (several saving throws)
+  // is withheld with it: no damage activity is invented for an ability whose damage belongs to the unresolved fact
+  const withheld = (!plan.attack && attack.ambiguous?.length) || (!plan.save && saveArea.ambiguous?.length);
+  if ( withheld ) {
+    if ( chains.length ) {
+      plan.ambiguous.push({ key: "dnd5e-text-parser.Note.DamageWithheld", data: { raw: chains.flatMap(chain => chain.parts.map(part => part.raw)) } });
+    }
+    onSave = null;
+  } else if ( plan.save && !plan.attack ) {
     onSave = after[0] ?? before[0] ?? null;
   } else {
     hit = before[0] ?? (plan.save ? null : chains[0]) ?? null;
@@ -111,7 +119,7 @@ export function parseFeature(name, html, opts = {}) {
   if ( hit ) plan.damage = hit.parts;
   if ( plan.save && onSave ) plan.save.damage = onSave.parts;
   for ( const chain of chains ) {
-    if ( chain === hit || chain === onSave ) continue;
+    if ( withheld || chain === hit || chain === onSave ) continue;
     // Ongoing damage of a follow-up sentence ("takes 5 (1d10) fire damage at the start of each of its turns")
     if ( hit && (ONGOING_AFTER.test(text.slice(chain.end, chain.end + 80))
       || ONGOING_BEFORE.test(text.slice(Math.max(0, chain.start - 90), chain.start))) ) {

@@ -40,6 +40,7 @@
       "SpellcastingAbilityConflict": "Plusieurs caractéristiques d'incantation trouvées ({abilities}) : aucune n'a été choisie.",
       "AttackBonuses": "Plusieurs bonus d'attaque différents trouvés ({values}) : aucun n'a été choisi.",
       "SaveAbilities": "Plusieurs jets de sauvegarde différents trouvés : aucun n'a été choisi.",
+      "DamageWithheld": "Les dégâts dépendent d'une attaque ou d'une sauvegarde ambiguë et n'ont pas été écrits : {raw}",
       "SaveDcFormula": "Le DD du jet de sauvegarde est une formule ({raw}), pas un nombre fixe : il a été écrit {formula}.",
       "AmbiguousDamageType": "Le type de dégâts « {word} » est ambigu et a été laissé vide.",
       "UnknownDamageType": "Type de dégâts inconnu « {word} » : laissé vide.",
