@@ -51,7 +51,7 @@
     { "id": "r-hellfire-orb", "lang": "en", "ref": "2aOhiN3r78gxqLZ5", "tags": ["save", "template", "half", "within-ignored"], "expected": { "activation": "action", "save": "dex 18 half", "saveDamage": ["10d6 fire", "10d6 necrotic"], "template": "sphere 20" } },
     { "id": "r-death-coil", "lang": "en", "ref": "27LDfBCZ6xeZNVg1", "tags": ["attack", "reach-and-range", "escape-dc-not-save"], "expected": { "activation": "action", "attack": "melee/- +10", "range": "reach 5 range 120", "target": "1 creature", "damage": ["4d8 necrotic"] } },
     { "id": "r-necrotic-bolt", "lang": "en", "ref": "QYu2cQWS9QIoxESm", "tags": ["negative", "header"], "expected": { "activation": "action" } },
-    { "id": "r-paralyzing-touch", "lang": "en", "ref": "9fHPw76P36p8tfCJ", "tags": ["negative", "header", "within-ignored"], "expected": { "activation": "action" } },
+    { "id": "r-paralyzing-touch", "lang": "en", "ref": "9fHPw76P36p8tfCJ", "tags": ["header", "within-ignored", "target"], "expected": { "activation": "action", "target": "1 creature" } },
     { "id": "r-disrupt-life", "lang": "en", "ref": "mjHM7gLXRXTZO1gy", "tags": ["save", "within-ignored"], "expected": { "activation": "action", "save": "con 18 none" } },
     { "id": "r-claim-soul", "lang": "en", "ref": "3bJ4fHKFNNr4vqZT", "tags": ["negative", "header", "within-ignored"], "expected": { "activation": "reaction" } },
     { "id": "r-call-of-the-grave", "lang": "en", "ref": "r7TO7ON2hQ7rPiFE", "tags": ["negative", "header", "within-ignored"], "expected": { "activation": "reaction" } },
