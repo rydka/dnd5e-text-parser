@@ -27,14 +27,14 @@ describe("L6: translation of details", () => {
     const c = cases.find(x => x.id === "o-en-shield-plus2");
     const plan = P.parseItem(c.name, c.html, { itemType: c.itemType });
     expect(plan.effects).toEqual([]);
-    expect(P.toItemPatch(plan, { item: { type: c.itemType } }).armor?.magicalBonus).toBe(2);
+    expect(P.toItemPatch(plan, { item: { type: c.itemType } }).armor?.magicalBonus).toBe("2") // FormulaField: a string;
   });
 
   it("weapon bonus goes to magicalBonus, never to an effect", () => {
     const c = cases.find(x => x.id === "o-en-longsword-plus1");
     const plan = P.parseItem(c.name, c.html, { itemType: c.itemType });
     expect(plan.effects).toEqual([]);
-    expect(P.toItemPatch(plan, { item: { type: c.itemType } }).magicalBonus).toBe(1);
+    expect(P.toItemPatch(plan, { item: { type: c.itemType } }).magicalBonus).toBe("1") // FormulaField: a string;
   });
 
   it("rarity is written as a Set-compatible 'rarities' value (dnd5e 6), not 'rarity'", () => {

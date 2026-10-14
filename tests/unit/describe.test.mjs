@@ -64,12 +64,16 @@ suite("L10: describe output", () => {
     expect(seen.size).toBeGreaterThan(5);
   });
 
-  it("descriptors are neutral objects { key, data } (no localized string)", () => {
+  it("descriptors are neutral objects { key, data, group, raw, origin, paths } (no localized string)", () => {
     const plan = parseFeature("Bite", "<p>Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) piercing damage.</p>");
     const list = describe(plan);
     expect(list.length).toBeGreaterThan(2);
     for ( const d of list ) {
-      expect(Object.keys(d).sort()).toEqual(["data", "key"]);
+      expect(Object.keys(d).sort()).toEqual(["data", "group", "key", "origin", "paths", "raw"]);
+      expect([null, "details", "activities", "effects"]).toContain(d.group);
+      expect(["rules", "fallback"]).toContain(d.origin);
+      expect(Array.isArray(d.paths)).toBe(true);
+      expect(typeof d.raw === "string" || d.raw == null).toBe(true);
       expect(d.key.startsWith("dnd5e-text-parser.")).toBe(true);
     }
   });
