@@ -28,7 +28,9 @@ function buildUses(plan, keys) {
       ? { period: charges.period, type: "formula", formula: charges.formula }
       : { period: charges.period, type: "recoverAll" });
   } else if ( charges ) max = charges.max;
-  if ( plan.recharge && isValidKey(keys, "limitedUsePeriods", "recharge") ) {
+  // "recharge" is not a `limitedUsePeriods` key in dnd5e 6: it is a fixed period handled by `UsesField`
+  // (data/shared/uses-field.mjs, `recovery.period === "recharge"`, formula = minimum d6 result, type recoverAll)
+  if ( plan.recharge && Number.isFinite(plan.recharge.min) ) {
     max ??= 1;
     recovery.push({ period: "recharge", type: "recoverAll", formula: String(plan.recharge.min) });
   }
