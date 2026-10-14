@@ -210,7 +210,7 @@ export function segmentText(text, ctx = {}) {
       const end = start + sentence.text.length;
       const activation = recognizeItemActivation(sentence.text, ctx);
       // A second activation starts a new segment only when the sentence is built around it ("You can use...")
-      const leading = activation && /^(?:(?:you|vous)s+(?:can|may|pouvez)s+|ass+|ens+tants+|usings+)?$/iu
+      const leading = activation && /^(?:(?:you|vous)\s+(?:can|may|pouvez)\s+|as\s+|en\s+tant\s+|using\s+)?$/iu
         .test(sentence.text.slice(0, activation.index));
       if ( current && leading && current.activated ) {
         segments.push(current);
