@@ -2,8 +2,12 @@ import { hasLang, languagesOf, alternation, ORIGIN } from "./common.mjs";
 import { lookup } from "../lexicon/index.mjs";
 import { parseNumber, toPounds } from "../text.mjs";
 
-const EN_ATTUNEMENT = /\brequires?\s+attunement(?:\s+by\s+([^)\n.;,]+?))?(?=\s*[).;,]|\s*$)/imu;
-const FR_ATTUNEMENT = /\b(?:n[ée]cessite|requiert)\s+un\s+lien(?:\s+d['’]harmonisation)?(?:\s+(?:avec|par)\s+([^)\n.;,]+?))?(?=\s*[).;,]|\s*$)/imu;
+// A condition may be a list: "by a Bard, Cleric, or Druid", "avec un barde, un clerc ou un druide" (one word per
+// item after a comma, with an optional article and conjunction, so "by a wizard, who must..." stops at the comma)
+const CONDITION_LIST = String.raw`(?:\s*,\s*(?:(?:or|and|ou|et)\s+)?(?:(?:an?|une?|les?|la|des?|du)\s+)?[\p{L}'-]+(?:\s+(?:or|ou|and|et)\s+(?:(?:an?|une?|les?|la|des?|du)\s+)?[\p{L}'-]+)?)*`;
+const EN_ATTUNEMENT = new RegExp(String.raw`\brequires?\s+attunement(?:\s+by\s+([^)\n.;,]+?${CONDITION_LIST}))?(?=\s*[).;,]|\s*$)`, "imu");
+const FR_ATTUNEMENT = new RegExp(
+  String.raw`\b(?:n[ée]cessite|requiert)\s+un\s+lien(?:\s+d['’]harmonisation)?(?:\s+(?:avec|par)\s+([^)\n.;,]+?${CONDITION_LIST}))?(?=\s*[).;,]|\s*$)`, "imu");
 const EN_WEIGHT = /\b(?:weight|weighs)\s*:?\s*(\d+(?:[.,]\d+)?)\s*(lbs?|pounds?|kg)\b\.?/iu;
 const FR_WEIGHT = /\bpoids\s*:?\s*(\d+(?:[.,]\d+)?)\s*(kg|lbs?|livres?)\b\.?/iu;
 const EN_PRICE = /\b(?:price|costs?|worth)\s*:?\s*(\d[\d,]*(?:\.\d+)?)\s*(cp|sp|ep|gp|pp)\b\.?/iu;
