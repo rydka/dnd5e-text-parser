@@ -82,7 +82,7 @@ function build(x) {
     const found = [];
     for ( const m of text.matchAll(/(\d+)-foot(?:-radius)?[- ](Cone|Cube|Sphere|Cylinder)\b/gi) ) found.push(`${m[2].toLowerCase()} ${m[1]}`);
     for ( const m of text.matchAll(/(\d+)-foot-long, (\d+)-foot-wide Line/gi) ) found.push(`line ${m[1]}x${m[2]}`);
-    const emanation = /Emanation|Emanating|wall/i.test(text);
+    const emanation = /Emanation|Emanating|\bwall\b/i.test(text);
     if ( found.length === 1 && !emanation ) add("template", found[0]);
     else if ( found.length > 1 || emanation ) ignore.push("template");
   }
@@ -91,7 +91,7 @@ function build(x) {
 
   if ( /\b(strength|dexterity|constitution|intelligence|wisdom|charisma) or (strength|dexterity|constitution|intelligence|wisdom|charisma)\b/i.test(text) ) ignore.push("save", "saveDamage");
   if ( /\)\s+damage\b|\bextra \d+d\d+ damage|\d+d\d+ damage\b|Hit: \d+ damage/i.test(text) ) ignore.push("damage", "saveDamage");
-  if ( !expected.template && /(Cone|Line|Cube|Sphere|Cylinder|radius)/.test(text) && !ignore.includes("template") ) ignore.push("template");
+  if ( !expected.template && /\b(Cone|Line|Cube|Sphere|Cylinder|radius)\b/.test(text) && !ignore.includes("template") ) ignore.push("template");
 
   // Facts the plan models but the data cannot back up from the displayed text.
   ignore.push("activation", "uses", "recharge", "legendaryResistance", "skip");
