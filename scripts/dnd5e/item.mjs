@@ -32,6 +32,8 @@ function buildUses(plan, keys) {
     max ??= 1;
     recovery.push({ period: "recharge", type: "recoverAll", formula: String(plan.recharge.min) });
   }
+  // A consumable that is destroyed once used (scroll, potion...) has a single use
+  if ( max === null && plan.details?.consumable?.destroyOnEmpty ) max = 1;
   if ( max === null ) return null;
   const uses = { max: String(max), recovery };
   if ( plan.details?.consumable?.destroyOnEmpty ) uses.autoDestroy = true;
@@ -138,7 +140,12 @@ export function toItemPatch(plan, { keys, item } = {}) {
   if ( details.price && isValidKey(keys, "currencies", details.price.denomination) ) {
     system.price = { value: details.price.value, denomination: details.price.denomination };
   }
-  if ( details.magical ) properties.add("mgc");
+  if ( details.magical ) {
+    const group = item?.type === "weapon" || details.weapon ? "weapon"
+      : item?.type === "consumable" || details.consumable ? "consumable" : "equipment";
+    const valid = keys?.validProperties?.[group];
+    if ( !valid || valid.has("mgc") ) properties.add("mgc");
+  }
 
   if ( properties.size ) system.properties = Array.from(properties);
   return system;

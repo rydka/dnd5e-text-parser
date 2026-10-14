@@ -8,7 +8,7 @@ const SIMPLE = [
   "abilities", "skills", "damageTypes", "conditionTypes", "areaTargetTypes", "individualTargetTypes",
   "activityActivationTypes", "activityTypes", "limitedUsePeriods", "itemRarity", "attunementTypes",
   "weaponTypes", "weaponMasteries", "armorTypes", "consumableTypes", "currencies", "movementTypes",
-  "spellcasting", "weaponIds", "armorIds"
+  "spellcasting", "weaponIds", "armorIds", "healingTypes"
 ];
 
 /** `validProperties` groups kept, keyed by item type. */
@@ -52,4 +52,21 @@ export function isValidKey(keys, name, key) {
   const set = keys?.[name];
   if ( !set ) return true;
   return set.has(key);
+}
+
+/**
+ * JSON-safe snapshot of the valid keys of a `CONFIG.DND5E` object (each set as a sorted array). `keysFromConfig`
+ * accepts it back, so tests can run without Foundry: save `JSON.stringify(keysSnapshot(CONFIG.DND5E))` once from a
+ * running world, then `keysFromConfig(JSON.parse(text))` in Node. `keysFromConfig(keysSnapshot(c))` equals
+ * `keysFromConfig(c)`.
+ * @param {object} dnd5eConfig  `CONFIG.DND5E`.
+ * @returns {Record<string, string[]> & {validProperties: Record<string, string[]>}}
+ */
+export function keysSnapshot(dnd5eConfig) {
+  const keys = keysFromConfig(dnd5eConfig);
+  const snapshot = {};
+  for ( const name of SIMPLE ) snapshot[name] = [...keys[name]].sort();
+  snapshot.validProperties = {};
+  for ( const group of PROPERTY_GROUPS ) snapshot.validProperties[group] = [...keys.validProperties[group]].sort();
+  return snapshot;
 }

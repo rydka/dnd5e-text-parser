@@ -1,11 +1,12 @@
 import { isValidKey } from "./keys.mjs";
 
 /**
- * Translation of a FeaturePlan into dnd5e 6 activity sources (attack, save, damage, utility).
+ * Translation of a FeaturePlan / ItemPlan into dnd5e 6 activity sources (attack, save, damage, heal, cast, utility).
  * Pure: no Foundry global. Never invents a key: values missing from `keys` are dropped.
  */
 
 const LEGRES_CONDITION = { en: "fails a saving throw", fr: "rate un jet de sauvegarde" };
+const FLAG_SCOPE = "dnd5e-text-parser";
 
 /**
  * Translate a damage part of the plan into a dnd5e `DamageData` source.
@@ -95,53 +96,51 @@ function baseActivity(type, plan, { keys, idGen }, consume = true) {
   return activity;
 }
 
+/** Consumption of `amount` item uses. */
+const itemUses = amount => ({ targets: [{ type: "itemUses", target: "", value: String(amount), scaling: {} }] });
+
 /**
- * Translate a FeaturePlan into activity sources.
- * - `attack` plan -> attack activity (flat bonus, damage of the hit, `damage.includeBase = false` when written).
- * - `save` plan -> save activity (fixed DC: `calculation: ""` + `formula`); also created next to an attack.
- * - damage alone (no attack, no save) -> damage activity.
- * - `legendaryResistance` -> utility activity consuming `resources.legres`.
- * A `multiattack` plan, or a plan without any of these facts, gives no activity.
- * @param {object} plan                   FeaturePlan.
- * @param {object} context
- * @param {object} [context.keys]         Valid keys (see `keysFromConfig`).
- * @param {function(): string} context.idGen  Generator of new activity ids.
- * @param {{type?: string}} [context.item]    Target item (a weapon takes its range from the item).
- * @param {"en"|"fr"} [context.lang]      Language of generated text (legendary resistance condition).
+ * Activities of a feature-like plan (a FeaturePlan or one ActivityPlan): attack, save, damage.
+ * @param {object} plan
+ * @param {object} context  `{ keys, idGen }`.
+ * @param {{item?: object, consume?: boolean}} [options]
  * @returns {object[]}
  */
-export function toActivities(plan, { keys, idGen, item, lang = "en" } = {}) {
-  if ( !plan || plan.skip ) return [];
-  const context = { keys, idGen };
+function featureActivities(plan, context, { item, consume = true } = {}) {
+  const { keys } = context;
   const isWeapon = item?.type === "weapon";
   const activities = [];
 
   if ( plan.attack && (plan.attack.type || plan.attack.classification) ) {
-    const attack = baseActivity("attack", plan, context);
+    const attack = baseActivity("attack", plan, context, consume);
+    const flat = Number.isFinite(plan.attack.bonus);
     attack.attack = {
       ability: "",
-      bonus: String(plan.attack.bonus ?? 0),
-      flat: true,
+      bonus: flat ? String(plan.attack.bonus) : "",
+      flat,
       type: { value: plan.attack.type ?? "", classification: plan.attack.classification ?? "" }
     };
     const parts = (plan.damage ?? []).map(part => toDamagePart(part, keys));
     attack.damage = { includeBase: !parts.length, parts };
+    if ( plan.extraDamage ) attack.damage.parts.push(toDamagePart(plan.extraDamage, keys));
     activities.push(attack);
   }
 
   if ( plan.save?.ability && isValidKey(keys, "abilities", plan.save.ability) ) {
-    const save = baseActivity("save", plan, context, !activities.length);
+    const save = baseActivity("save", plan, context, consume && !activities.length);
     save.save = { ability: [plan.save.ability], dc: { calculation: "", formula: String(plan.save.dc) } };
     save.damage = {
       onSave: plan.save.onSave ?? "none",
       parts: (plan.save.damage ?? []).map(part => toDamagePart(part, keys))
     };
+    if ( plan.extraDamage && !plan.attack ) save.damage.parts.push(toDamagePart(plan.extraDamage, keys));
     activities.push(save);
   }
 
-  if ( !activities.length && plan.damage?.length ) {
-    const damage = baseActivity("damage", plan, context);
-    damage.damage = { parts: plan.damage.map(part => toDamagePart(part, keys)) };
+  if ( !activities.length && (plan.damage?.length || plan.extraDamage) ) {
+    const damage = baseActivity("damage", plan, context, consume);
+    const parts = [...(plan.damage ?? []), ...(plan.extraDamage ? [plan.extraDamage] : [])];
+    damage.damage = { parts: parts.map(part => toDamagePart(part, keys)) };
     activities.push(damage);
   }
 
@@ -161,6 +160,116 @@ export function toActivities(plan, { keys, idGen, item, lang = "en" } = {}) {
       if ( target ) activity.target = target;
     }
   }
+  return activities;
+}
+
+/**
+ * Activities of one ActivityPlan of an item.
+ * @param {object} plan       ActivityPlan.
+ * @param {object} context    `{ keys, idGen }`.
+ * @param {object} options
+ * @returns {object[]}
+ */
+function itemActivity(plan, context, { item, resolveSpell, notes }) {
+  const { keys, idGen } = context;
+  if ( plan.cast ) {
+    const uuid = resolveSpell?.(plan.cast.name) ?? null;
+    if ( !uuid ) {
+      notes.push({ key: "dnd5e-text-parser.Note.SpellNotFound", data: { name: plan.cast.name } });
+      return [];
+    }
+    const cast = { _id: idGen(), type: "cast", spell: { uuid } };
+    const activation = buildActivation(plan.activation, keys);
+    if ( activation ) cast.activation = activation;
+    const { dc, attack, level } = plan.cast;
+    if ( Number.isFinite(level) ) cast.spell.level = level;
+    if ( Number.isFinite(dc) || Number.isFinite(attack) ) {
+      cast.spell.challenge = { override: true };
+      if ( Number.isFinite(dc) ) cast.spell.challenge.save = String(dc);
+      if ( Number.isFinite(attack) ) cast.spell.challenge.attack = String(attack);
+    }
+    return [cast];
+  }
+  if ( plan.heal ) {
+    const heal = { _id: idGen(), type: "heal" };
+    const activation = buildActivation(plan.activation, keys);
+    if ( activation ) heal.activation = activation;
+    heal.healing = toDamagePart({ ...plan.heal, type: null }, keys);
+    if ( isValidKey(keys, "healingTypes", "healing") ) heal.healing.types = ["healing"];
+    const range = buildRange(plan.range, null);
+    if ( range ) heal.range = range;
+    const target = buildTarget(plan, keys, { affects: true, template: false });
+    if ( target ) heal.target = target;
+    return [heal];
+  }
+  const activities = featureActivities(plan, context, { item, consume: false });
+  if ( !activities.length ) {
+    const utility = { _id: idGen(), type: "utility" };
+    const activation = buildActivation(plan.activation, keys);
+    if ( activation ) utility.activation = activation;
+    activities.push(utility);
+  }
+  return activities;
+}
+
+/**
+ * Translate a plan into activity sources.
+ *
+ * FeaturePlan:
+ * - `attack` plan -> attack activity (flat bonus, damage of the hit, `damage.includeBase = false` when written).
+ * - `save` plan -> save activity (fixed DC: `calculation: ""` + `formula`); also created next to an attack.
+ * - damage alone (no attack, no save) -> damage activity.
+ * - `legendaryResistance` -> utility activity consuming `resources.legres`.
+ * - uses / recharge -> an `itemUses` consumption target on the first activity only.
+ * A `multiattack` plan, or a plan without any of these facts, gives no activity.
+ *
+ * ItemPlan with `activities` (see `parseItem`): one or more activities per ActivityPlan, in order: `attack`
+ * (flat bonus only when the text states one; the extra damage of the text is a damage part), `save`, `damage`,
+ * `heal`, `cast` (needs `resolveSpell`), `utility`. `consume` gives an `itemUses` consumption target on the first
+ * activity of that ActivityPlan; without any explicit `consume`, an item with limited uses (uses, recharge,
+ * charges, destroyed once empty) consumes 1 use on its first activity.
+ *
+ * @param {object} plan                   FeaturePlan or ItemPlan.
+ * @param {object} context
+ * @param {object} [context.keys]         Valid keys (see `keysFromConfig`).
+ * @param {function(): string} context.idGen  Generator of new activity ids.
+ * @param {{type?: string}} [context.item]    Target item (a weapon takes its range from the item).
+ * @param {"en"|"fr"} [context.lang]      Language of generated text (legendary resistance condition).
+ * @param {function(string): (string|null)} [context.resolveSpell]  Spell name -> UUID of a spell item, or null.
+ *   Without it (or when it returns null) a `cast` ActivityPlan gives no activity and a note.
+ * @param {object[]} [context.effects]    Result of `toEffects`: the `_id` of the effects of an activity are listed
+ *   in its `effects`.
+ * @param {object[]} [context.notes]      Receives the descriptors of what could not be translated (also available
+ *   on the returned array as a non-enumerable `notes` property).
+ * @returns {object[]}
+ */
+export function toActivities(plan, { keys, idGen, item, lang = "en", resolveSpell, effects, notes = [] } = {}) {
+  const result = [];
+  Object.defineProperty(result, "notes", { value: notes, enumerable: false });
+  if ( !plan || plan.skip ) return result;
+  const context = { keys, idGen };
+
+  if ( plan.activities?.length ) {
+    const consumable = plan.details?.consumable;
+    const limited = Boolean(plan.uses || plan.recharge || consumable?.charges || consumable?.destroyOnEmpty);
+    const explicit = plan.activities.some(activity => activity.consume || activity.cast?.charges);
+    let defaulted = false;
+    for ( const activityPlan of plan.activities ) {
+      const group = itemActivity(activityPlan, context, { item, resolveSpell, notes });
+      if ( !group.length ) continue;
+      const first = group[0];
+      const amount = activityPlan.consume?.amount ?? activityPlan.cast?.charges ?? null;
+      if ( amount ) first.consumption = itemUses(amount);
+      else if ( limited && !explicit && !defaulted ) { first.consumption = itemUses(1); defaulted = true; }
+      if ( activityPlan.name ) first.name = activityPlan.name;
+      const linked = (effects ?? []).filter(effect => effect.flags?.[FLAG_SCOPE]?.activity === activityPlan.index);
+      if ( linked.length ) first.effects = linked.map(effect => ({ _id: effect._id }));
+      result.push(...group);
+    }
+    return result;
+  }
+
+  result.push(...featureActivities(plan, context, { item }));
 
   if ( plan.legendaryResistance ) {
     const resistance = { _id: idGen(), type: "utility" };
@@ -168,8 +277,7 @@ export function toActivities(plan, { keys, idGen, item, lang = "en" } = {}) {
     resistance.consumption = {
       targets: [{ type: "attribute", target: "resources.legres.value", value: "1", scaling: {} }]
     };
-    activities.push(resistance);
+    result.push(resistance);
   }
-
-  return activities;
+  return result;
 }
