@@ -24,10 +24,17 @@ const TRAIT_FR = new RegExp(
   String.raw`\b(r[ée]sistance|immunit[ée]|vuln[ée]rabilit[ée])\s+(?:aux?\s+d[ée]g[âa]ts\s+(?:de\s+|d')?|contre\s+l'[ée]tat\s+|contre\s+les\s+[ée]tats\s+|aux?\s+)(.+?)(?=\s+(?:tant\s+que|lorsque|quand|si|contre|pendant|jusqu)\b|[.;]|$)`,
   "giu"
 );
+// "immunisé contre la peur" (a creature immune to a condition)
+const IMMUNE_FR = /\b(immunis[ée]e?s?)\s+(?:contre\s+|aux?\s+)(.+?)(?=\s+(?:tant\s+que|lorsque|quand|si|pendant|jusqu)\b|[.;]|$)/giu;
+// "advantage on saving throws against being frightened" / "against poison" / "contre la peur"
+const AGAINST_EN = /\badvantage\s+on\s+(?:all\s+)?saving\s+throws?\s+against\s+(.+?)(?=[.;]|\s+(?:while|when|as\s+long|if)\b|$)/giu;
+const AGAINST_FR = /\bavantage\s+aux\s+jets\s+de\s+sauvegarde\s+contre\s+(.+?)(?=[.;]|\s+(?:tant\s+que|lorsque|quand|si)\b|$)/giu;
+const AGAINST_SPLIT = /\s*(?:,|\band\s+against\b|\band\b|\bor\b|\bet\s+contre\b|\bet\b|\bou\b)\s*/iu;
+const AGAINST_NOISE = /^(?:being|the|l'[ée]tat|les?|la|l'|d[ée]g[âa]ts\s+(?:de\s+|d')?)\s*|\s+(?:condition|damage)$/giu;
 const ADVANTAGE_EN = /\b(advantage|disadvantage)\s+on\s+(?:all\s+)?(?:(\p{L}+)(?:\s*\(\s*([\p{L} ]+?)\s*\))?\s+)?(saving\s+throws?|(?:ability\s+)?checks?)\b(?!\s+(?:against|made|to\b))/giu;
 const ADVANTAGE_FR = /\b(avantage|d[ée]savantage)\s+aux\s+(jets\s+de\s+sauvegarde|tests(?:\s+de\s+caract[ée]ristique)?)(?:\s+de\s+(\p{L}+)(?:\s*\(\s*([\p{L} ]+?)\s*\))?)?(?!\s+contre)/giu;
-const SCORE_EN = /\bYour\s+(\p{L}+)\s+score\s+(?:is|becomes|increases\s+to)\s+(\d+)/giu;
-const SCORE_FR = /\bVotre\s+(?:valeur|score)\s+de\s+(\p{L}+)\s+(?:passe|monte|est\s+port[ée]e?)\s+[àa]\s+(\d+)/giu;
+const SCORE_EN = /\bYour\s+(\p{L}+)(?:\s+score)?\s+(?:is|becomes|increases\s+to)\s+(\d+)/giu;
+const SCORE_FR = /\bVotre\s+(?:(?:valeur|score)\s+(?:de\s+|d'))?(\p{L}+)\s+(?:passe|monte|est|devient|est\s+port[ée]e?)\s+(?:[àa]\s+|de\s+)?(\d+)/giu;
 const SPEED_EN = /\bspeed\s+(?:increases|is\s+increased)\s+by\s+(\d+)\s*(?:feet|ft\.?)/giu;
 const SPEED_FR = /\bvitesse(?:\s+de\s+d[ée]placement)?\s+augmente\s+de\s+(\d+(?:[.,]\d+)?)\s*m\b/giu;
 
@@ -82,7 +89,8 @@ function traitEffects(kind, object, raw, langs, lang) {
   }
   const parts = object.split(/\s*(?:,|\band\b|\bor\b|\bet\b|\bou\b)\s*/i).map(part => part.trim()).filter(Boolean);
   for ( const part of parts ) {
-    const word = part.replace(/^(?:the|les?|l'|la|d'|de\s+|du\s+)\s*/iu, "")
+    const word = part.replace(/^(?:(?:immune|resistant|vulnerable)\s+to|immunis[ée]e?s?\s+(?:contre|[àa]))\s+/iu, "")
+      .replace(/^(?:being|the|les?|l'|la|d'|de\s+|du\s+)\s*/iu, "")
       .replace(/\s+(?:damage|condition|conditions)$/i, "").replace(/^(?:d[ée]g[âa]ts\s+(?:de\s+|d')?)/iu, "").trim();
     const key = damageKey(word) ?? conditionKey(word);
     if ( key ) effects.push({ kind, value: null, scope: key, raw });
@@ -148,6 +156,26 @@ export function recognizeMagicEffects(text, ctx = {}) {
         }
         if ( first && !scope ) continue;
         add([{ kind, value: null, scope, on, raw }]);
+      }
+    }
+
+    for ( const [re, lang] of [[IMMUNE_FR, "fr"]] ) {
+      if ( !hasLang(ctx, lang) ) continue;
+      for ( const match of s.matchAll(re) ) {
+        const result = traitEffects("immunity", match[2].trim(), raw, langs, lang);
+        add(result.effects);
+        ambiguous.push(...result.notes);
+      }
+    }
+
+    for ( const [re, lang] of [[AGAINST_EN, "en"], [AGAINST_FR, "fr"]] ) {
+      if ( !hasLang(ctx, lang) ) continue;
+      for ( const match of s.matchAll(re) ) {
+        for ( const part of match[1].split(AGAINST_SPLIT) ) {
+          const word = part.replace(/^against\s+|^contre\s+/iu, "").replace(AGAINST_NOISE, "").trim();
+          const against = conditionKey(word) ?? damageKey(word);
+          if ( against ) add([{ kind: "advantage", value: null, scope: null, on: "save", against, raw }]);
+        }
       }
     }
 

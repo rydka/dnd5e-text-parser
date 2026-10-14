@@ -9,7 +9,7 @@ export const EN = {
     blinded: "blinded", charmed: "charmed", deafened: "deafened", exhaustion: "exhaustion", frightened: "frightened",
     grappled: "grappled", incapacitated: "incapacitated", invisible: "invisible", paralyzed: "paralyzed",
     petrified: "petrified", poisoned: "poisoned", prone: "prone", restrained: "restrained", stunned: "stunned",
-    unconscious: "unconscious"
+    unconscious: "unconscious", diseased: "diseased", disease: "diseased"
   },
   abilities: {
     strength: "str", dexterity: "dex", constitution: "con", intelligence: "int", wisdom: "wis", charisma: "cha",

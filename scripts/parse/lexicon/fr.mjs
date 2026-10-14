@@ -9,7 +9,8 @@ export const FR = {
     "aveuglé": "blinded", "charmé": "charmed", assourdi: "deafened", "épuisement": "exhaustion",
     "effrayé": "frightened", "agrippé": "grappled", "neutralisé": "incapacitated", invisible: "invisible",
     "paralysé": "paralyzed", "pétrifié": "petrified", empoisonné: "poisoned", "à terre": "prone",
-    "entravé": "restrained", "étourdi": "stunned", inconscient: "unconscious"
+    "entravé": "restrained", "étourdi": "stunned", inconscient: "unconscious", "malade": "diseased",
+    maladie: "diseased", peur: "frightened", charme: "charmed", paralysie: "paralyzed"
   },
   abilities: {
     force: "str", "dextérité": "dex", constitution: "con", intelligence: "int", sagesse: "wis", charisme: "cha",

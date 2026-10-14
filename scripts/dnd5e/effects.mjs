@@ -26,7 +26,7 @@ const rollTypes = (scope, all) => (scope ? (ROLL_TYPES[scope] ?? [scope]) : all)
  */
 function changesOf(effect, keys, notes) {
   const { kind, value, scope } = effect;
-  const skip = () => { notes.push({ key: "dnd5e-text-parser.Note.EffectSkipped", data: { kind, scope: scope ?? "" } }); return []; };
+  const skip = () => { notes.push({ key: "dnd5e-text-parser.Note.EffectSkipped", data: { kind, scope: effect.against ?? scope ?? "" } }); return []; };
   switch ( kind ) {
     case "ac":
       return [change("system.attributes.ac.bonus", "add", value)];
@@ -54,6 +54,8 @@ function changesOf(effect, keys, notes) {
     }
     case "advantage":
     case "disadvantage": {
+      // "advantage on saving throws against being frightened": dnd5e has no key scoped to a condition or damage type
+      if ( effect.against ) return skip();
       const mode = kind === "advantage" ? 1 : -1;
       if ( effect.on === "skill" ) {
         return scope && isValidKey(keys, "skills", scope) ? [change(`system.skills.${scope}.roll.mode`, "add", mode)] : skip();
