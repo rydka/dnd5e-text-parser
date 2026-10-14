@@ -22,7 +22,7 @@ function buildUses(plan, keys) {
     recovery.push(plan.uses.recoverFormula
       ? { period: plan.uses.period, type: "formula", formula: plan.uses.recoverFormula }
       : { period: plan.uses.period, type: "recoverAll" });
-  } else if ( charges && isValidKey(keys, "limitedUsePeriods", charges.period) ) {
+  } else if ( charges?.period && isValidKey(keys, "limitedUsePeriods", charges.period) ) {
     max = charges.max;
     recovery.push(charges.formula
       ? { period: charges.period, type: "formula", formula: charges.formula }

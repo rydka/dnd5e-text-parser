@@ -7,7 +7,7 @@ import { recognizeConsumable } from "./recognizers/consumable.mjs";
 import { recognizeMagicEffects } from "./recognizers/magic-effects.mjs";
 import {
   segmentText, recognizeItemActivation, recognizeHeal, recognizeCast, recognizeConsume, recognizeDuration,
-  hasUseTrigger, hasPassiveMarker
+  hasUseTrigger, hasPassiveMarker, recognizeCastList
 } from "./recognizers/item-activity.mjs";
 
 const EXTRA = /\b(?:extra|additional|supplémentaires?|supplementaires?|en plus)\b/iu;
@@ -109,6 +109,14 @@ export function parseItem(name, html, opts = {}) {
   const sentenceAt = offset => sentences.find(sentence => offset >= sentence.start && offset < sentence.end);
   const notes = [];
 
+  // Spells cast for charges (staffs, wands): the intro and the list / table are covered, one cast activity per spell
+  const castList = recognizeCastList(text, ctx);
+  const listSegment = castList ? segments.find(segment => castList.start >= segment.start && castList.start < segment.end) : null;
+  if ( castList ) {
+    coverSpans.push({ start: castList.start, end: castList.end });
+    activitySpans.push({ start: castList.start, end: castList.end });
+  }
+
   for ( const segment of segments ) {
     segment.activation = recognizeItemActivation(segment.text, ctx);
     segment.heal = recognizeHeal(segment.text, ctx);
@@ -155,6 +163,22 @@ export function parseItem(name, html, opts = {}) {
       const lead = at >= 0 ? cutSegment.slice(Math.max(0, at - 40), at) : "";
       const trail = at >= 0 ? cutSegment.slice(at + part.raw.length, at + part.raw.length + 30) : "";
       (EXTRA.test(lead) || EXTRA.test(part.raw) || EXTRA_AFTER.test(trail) ? extra : damage).push(part);
+    }
+    if ( segment === listSegment ) {
+      const activation = segment.activation ? withoutIndex(segment.activation) : feature.activation;
+      for ( const entry of castList.entries ) {
+        const activity = {
+          kind: "cast", name: entry.name, raw: entry.raw, index: -1, activation,
+          attack: null, range: null, target: null, template: null, damage: [], save: null, heal: null,
+          cast: { name: entry.name, level: entry.level, dc: castList.dc, attack: null, charges: entry.charges,
+            raw: entry.raw, origin: "rules" },
+          consume: { target: "itemUses", amount: entry.charges, raw: entry.raw, origin: "rules" },
+          extraDamage: null, origin: "rules"
+        };
+        segment.activity ??= activity;
+        activities.push(activity);
+      }
+      continue;
     }
     const keep = segment.activation || segment.heal || segment.cast || segment.consume || segment.forced
       || feature.attack || feature.save || damage.length || extra.length;

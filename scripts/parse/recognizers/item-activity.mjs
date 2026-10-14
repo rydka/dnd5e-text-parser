@@ -124,8 +124,8 @@ export function recognizeCast(text, ctx = {}) {
     if ( !hasLang(ctx, lang) ) continue;
     const match = source.match(re);
     if ( !match ) continue;
-    const name = match[1].trim().replace(/^(?:the|le|la|les|l')\s*/i, "");
-    if ( !name || NOT_SPELL.has(fold(name)) ) continue;
+    const name = match[1].trim().replace(/^(?:(?:the|le|la|les)\s+|l')/i, "");
+    if ( !name || NOT_SPELL.has(fold(name)) || /\b(?:following|suivants?)\b/i.test(name) ) continue;
     const detail = match[2] ?? "";
     const tail = source.slice(match.index + match[0].length, match.index + match[0].length + 120);
     // "DC 8 plus your Dexterity modifier" is a formula: not a fixed DC
@@ -144,6 +144,63 @@ export function recognizeCast(text, ctx = {}) {
     };
   }
   return null;
+}
+
+const LIST_INTRO_EN = /\bexpend\s+(?:\d+|one|an?)(?:\s+or\s+more)?\s+(?:of\s+(?:its|the)\s+)?charges?\s+to\s+cast\s+(?:one\s+of\s+)?(?:the\s+following|these)\s+spells?\b[^:\n]*:?/iu;
+const LIST_INTRO_FR = /\bd[ée]penser\s+(?:\d+|une?)\s+charges?(?:\s+ou\s+plus)?\s+(?:afin\s+de|pour)\s+lancer\s+l'un\s+des\s+sorts\s+suivants\b[^:\n]*:?/iu;
+const LIST_ENTRY = /(?<![\p{L}'-])([\p{L}][\p{L}' -]*?)\s*\(([^()]*?)(\d+)\s+charges?\)/giu;
+const LIST_ROW = /^([\p{L}][^\d\n]*?(?:\([^)\n]*\))?)\s+(\d+)(?:\s+charges?)?$/iu;
+const LIST_LEVEL = /(\d)(?:st|nd|rd|th)[- ]level|niveau\s+(\d)/iu;
+
+/**
+ * Spells a staff or wand casts for charges ("expend 1 or more of its charges to cast one of the following spells:
+ * cone of cold (5 charges), fireball (5th-level version, 5 charges)", or a table of spell and charges below it).
+ * @param {string} text  Plain text.
+ * @param {object} [ctx]
+ * @returns {{ entries: { name: string, level: number|null, charges: number, raw: string }[], dc: number|null,
+ *   start: number, end: number }|null}  `start` / `end`: the intro and the list in `text`.
+ */
+export function recognizeCastList(text, ctx = {}) {
+  const source = String(text ?? "");
+  let intro = null;
+  for ( const [re, lang] of [[LIST_INTRO_EN, "en"], [LIST_INTRO_FR, "fr"]] ) {
+    if ( hasLang(ctx, lang) ) intro ??= source.match(re);
+  }
+  if ( !intro ) return null;
+  const entries = [];
+  const listStart = intro.index + intro[0].length;
+  let lineEnd = source.indexOf("\n", listStart);
+  if ( lineEnd < 0 ) lineEnd = source.length;
+  const inline = source.slice(listStart, lineEnd);
+  for ( const match of inline.matchAll(LIST_ENTRY) ) {
+    const name = match[1].trim().replace(/^(?:and|or|et|ou)\s+/iu, "").replace(/^(?:(?:the|le|la|les)\s+|l')/iu, "");
+    const level = match[2].match(LIST_LEVEL);
+    if ( name ) entries.push({ name: titleCase(name), level: level ? Number(level[1] ?? level[2]) : null,
+      charges: Number(match[3]), raw: match[0].trim() });
+  }
+  let end = lineEnd;
+  if ( !entries.length ) {
+    // A table: one "spell  charges" row per line below the intro
+    let position = lineEnd + 1;
+    while ( position < source.length ) {
+      let next = source.indexOf("\n", position);
+      if ( next < 0 ) next = source.length;
+      const line = source.slice(position, next).trim();
+      const row = line.match(LIST_ROW);
+      if ( row ) {
+        const level = row[1].match(LIST_LEVEL);
+        entries.push({ name: titleCase(row[1].replace(/\s*\([^)]*\)\s*$/, "").trim()), level: level ? Number(level[1] ?? level[2]) : null,
+          charges: Number(row[2]), raw: line });
+        end = next;
+      } else if ( !/\d/.test(line) && entries.length === 0 ) {
+        end = next;   // the header row ("Spell Charges")
+      } else break;
+      position = next + 1;
+    }
+  }
+  if ( !entries.length ) return null;
+  const dc = (intro[0] + " " + inline).match(/\b(?:save\s+)?(?:DC|DD)\s*(\d+)(?!\s*(?:\+|plus\b))/i)?.[1];
+  return { entries, dc: dc ? Number(dc) : null, start: intro.index, end };
 }
 
 /**
