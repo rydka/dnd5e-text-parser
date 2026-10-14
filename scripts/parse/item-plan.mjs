@@ -11,6 +11,8 @@ import {
 } from "./recognizers/item-activity.mjs";
 
 const EXTRA = /\b(?:extra|additional|supplémentaires?|supplementaires?|en plus)\b/iu;
+// French puts the word after the type: "2d6 dégâts de feu supplémentaires"
+const EXTRA_AFTER = /^\s*(?:suppl[ée]mentaires?|en\s+plus)(?![\p{L}])/iu;
 const overlaps = (a, b) => a.start < b.end && a.end > b.start;
 
 /**
@@ -149,7 +151,8 @@ export function parseItem(name, html, opts = {}) {
     for ( const part of feature.damage ) {
       const at = cutSegment.indexOf(part.raw);
       const lead = at >= 0 ? cutSegment.slice(Math.max(0, at - 40), at) : "";
-      (EXTRA.test(lead) ? extra : damage).push(part);
+      const trail = at >= 0 ? cutSegment.slice(at + part.raw.length, at + part.raw.length + 30) : "";
+      (EXTRA.test(lead) || EXTRA.test(part.raw) || EXTRA_AFTER.test(trail) ? extra : damage).push(part);
     }
     const keep = segment.activation || segment.heal || segment.cast || segment.consume || segment.forced
       || feature.attack || feature.save || damage.length || extra.length;
