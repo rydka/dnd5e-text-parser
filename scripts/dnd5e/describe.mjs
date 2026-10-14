@@ -82,7 +82,7 @@ function featureFacts(plan, paths, out, { rawOf = fact => fact?.raw } = {}) {
   }
   if ( plan.attack ) {
     out.push(entry("Attack", {
-      type: plan.attack.type, classification: plan.attack.classification, bonus: plan.attack.bonus
+      type: plan.attack.type, classification: plan.attack.classification, bonus: plan.attack.bonus ?? ""
     }, plan.attack, { ...options(plan.attack), paths: paths.attack }));
   }
   if ( plan.range ) out.push(entry("Range", { ...plan.range }, plan.range, { ...options(plan.range), paths: paths.first }));

@@ -152,7 +152,7 @@ Clés : `dnd5e-text-parser.Describe.{Attack, Range, Target, Damage, ExtraDamage,
 ```js
 FeaturePlan = { schema: 1, skip: "multiattack"|null,
   activation: { type, cost }|null,                       // action|bonus|reaction|legendary|special
-  attack: { type: "melee"|"ranged"|null, classification: "weapon"|"spell"|null, bonus: number }|null,
+  attack: { type: "melee"|"ranged"|null, classification: "weapon"|"spell"|null, bonus: number|null }|null,  // en-tête sans nombre (« Automatic hit ») : attack null, dégâts seuls, remarque Note.AttackBonusMissing
   range: { reach, value, long }|null,                    // pieds
   target: { count, type }|null,
   damage: DamagePart[],                                  // dégâts du coup, ou dégâts seuls

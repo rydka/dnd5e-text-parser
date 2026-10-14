@@ -20,6 +20,8 @@ const classOf = word => {
 /**
  * Attack header and bonus (C5). English and French headers, "+N to hit" / "+N au toucher",
  * and the 2024 form "Attack Roll: +N". Several different bonuses make the attack ambiguous: no fact.
+ * A header without a number ("Melee Attack Roll: Automatic hit") gives no attack fact, only a
+ * `Note.AttackBonusMissing` note: no bonus is invented (L3) and the damage stands alone.
  * @param {string} text  Plain text.
  * @param {object} [ctx]  `{ languages }`.
  * @returns {{ fact: object|null, spans: object[], ambiguous: object[], notes: object[] }}
@@ -71,11 +73,16 @@ export function recognizeAttack(text, ctx = {}) {
   headers.sort((a, b) => a.start - b.start);
   const header = headers[0] ?? null;
   const raw = [header?.raw, bonuses[0] && source.slice(bonuses[0].start, bonuses[0].end)].filter(Boolean).join(" ");
+  // "Melee Attack Roll: Automatic hit": no number, so no attack (dnd5e would compute a bonus); the damage stands alone
+  if ( !distinct.length ) {
+    const phrase = source.slice(header.start).match(/^[^,.\n]{0,60}/)[0].trim();
+    return { fact: null, spans, ambiguous: [], notes: [{ key: "dnd5e-text-parser.Note.AttackBonusMissing", data: { raw: phrase } }] };
+  }
   return {
     fact: {
       type: header?.type ?? null,
       classification: header?.classification ?? null,
-      bonus: distinct.length ? distinct[0] : 0,
+      bonus: distinct[0],
       raw: raw.trim(), origin: ORIGIN
     },
     spans, ambiguous: [], notes: []

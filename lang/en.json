@@ -39,6 +39,7 @@
       "TraitBypassSkipped": "Bypass conditions for {kind} ({bypasses}) were not written: they would apply to the wrong entries.",
       "SpellcastingAbilityConflict": "Several spellcasting abilities found ({abilities}): none was chosen.",
       "AttackBonuses": "Several different attack bonuses found ({values}): none was chosen.",
+      "AttackBonusMissing": "The attack has no numeric bonus ({raw}): none was written.",
       "SaveAbilities": "Several different saving throws found: none was chosen.",
       "DamageWithheld": "The damage depends on an ambiguous saving throw and was not written: {raw}",
       "SaveDcFormula": "The saving throw DC is a formula ({raw}), not a fixed number: it was written as {formula}.",
