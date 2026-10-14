@@ -23,6 +23,13 @@ function decodeEntities(text) {
   });
 }
 
+/** Readable text of a healing enricher; "hit points" is added unless the text that follows already says it. */
+function healText(body, rest) {
+  const formula = body.match(/(\d+\s*d\s*\d+(?:\s*[+-]\s*\d+)*|\d+)/)?.[1];
+  if ( !formula ) return body;
+  return /^\s*(?:hit\s+points?|points?\s+de\s+vie|PV|HP)(?![\p{L}])/iu.test(rest) ? formula : `${formula} hit points`;
+}
+
 /** Replace Foundry / dnd5e enrichers with their readable text. */
 function stripEnrichers(text) {
   return text
@@ -32,8 +39,12 @@ function stripEnrichers(text) {
     .replace(/&Reference\[([^\]=]*?)(?:\s+[a-z]+=[^\]]*)?\](?:\{([^}]*)\})?/g, (m, a, b) => b ?? a)
     .replace(/\[\[\/save\s+(?:ability=)?(\w+)\s+dc=(\d+)[^\]]*\]\](?:\{([^}]*)\})?/gi,
       (m, ab, dc, label) => label ?? `DC ${dc} ${ABILITY_NAMES[ab.toLowerCase().slice(0, 3)] ?? ab} saving throw`)
-    .replace(/\[\[\/damage\s+([^\]]*?)\]\](?:\{([^}]*)\})?/gi, (m, body, label) => {
+    // Healing without visible words: "[[/heal 2d4 + 2]]" -> "2d4 + 2 hit points"
+    .replace(/\[\[\/heal(?:ing)?\s+([^\]]*?)\]\](?:\{([^}]*)\})?/gi, (m, body, label, offset, all) =>
+      label ?? healText(body, all.slice(offset + m.length)))
+    .replace(/\[\[\/damage\s+([^\]]*?)\]\](?:\{([^}]*)\})?/gi, (m, body, label, offset, all) => {
       if ( label ) return label;
+      if ( /type=heal(?:ing)?\b/i.test(body) ) return healText(body, all.slice(offset + m.length));
       const formula = body.match(/(\d+d\d+(?:\s*[+-]\s*\d+)?|\d+)/)?.[1] ?? body;
       const type = body.match(/type=([a-z,|]+)/i)?.[1] ?? body.replace(/(\d+d\d+(?:\s*[+-]\s*\d+)?|\d+)/, "").trim();
       return `${formula}${type ? ` ${type.split(/[,|]/)[0]}` : ""} damage`;
