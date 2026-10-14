@@ -2,10 +2,11 @@ import { hasLang, alternation, spanOf, ORIGIN } from "./common.mjs";
 import { lookup } from "../lexicon/index.mjs";
 import { parseNumber, toFeet } from "../text.mjs";
 
-const NUM = "(\\d+(?:[.,]\\d+)?)";
-const M = "\\s*m(?:[eè]tres?)?(?![\\p{L}])";
 const HALF_EN = /half\s+as\s+much|half\s+(?:of\s+)?(?:that|the|this)\s+damage|half\s+damage/iu;
-const HALF_FR = /la\s+moiti[ée](?:\s+de\s+(?:ces\s+)?d[ée]g[âa]ts|\s+en\s+cas\s+de)|moiti[ée]\s+moins\s+de\s+d[ée]g[âa]ts|demi-d[ée]g[âa]ts/iu;
+// French distance with its unit (metres or feet); named groups let a pattern hold several distances
+const dist = n => `(?<n${n}>\\d+(?:[.,]\\d+)?)\\s*(?<u${n}>m(?:[eè]tres?)?|pieds?|pi|ft)(?![\\p{L}])`;
+const frFeet = (number, unit) => toFeet(parseNumber(number), /^m/i.test(unit ?? "m") ? "m" : "ft");
+const HALF_FR = /(?:la\s+)?moiti[ée](?:\s+(?:de|des)\s+(?:ces\s+)?d[ée]g[âa]ts|\s+en\s+cas\s+de)|moiti[ée]\s+moins\s+de\s+d[ée]g[âa]ts|demi-d[ée]g[âa]ts/iu;
 const FT = "(?:foot|feet|ft\\.?)";
 
 function savePatterns(langs) {
@@ -13,11 +14,11 @@ function savePatterns(langs) {
   const patterns = [];
   if ( langs.includes("en") ) {
     patterns.push([new RegExp(`\\bDC\\s*(\\d+)\\s*(${abil})\\s*(?:saving\\s+throws?|saves?)(?![\\p{L}])`, "giu"), 2, 1]);
-    patterns.push([new RegExp(`\\b(${abil})\\s*(?:saving\\s+throws?|saves?)\\s*\\(?\\s*DC\\s*(\\d+)`, "giu"), 1, 2]);
+    patterns.push([new RegExp(`\\b(${abil})\\s*(?:saving\\s+throws?|saves?)\\s*[:,(]?\\s*DC\\s*(\\d+)`, "giu"), 1, 2]);
   }
   if ( langs.includes("fr") ) {
     patterns.push([new RegExp(
-      `\\bjets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])\\s*[(,]?\\s*DD\\s*(\\d+)`, "giu"), 1, 2]);
+      `\\bjets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])\\s*[(,:]?\\s*DD\\s*(\\d+)`, "giu"), 1, 2]);
     patterns.push([new RegExp(
       `\\bDD\\s*(\\d+)\\s*[,:;(]?\\s*(?:un\\s+)?jets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])`,
       "giu"), 2, 1]);
@@ -34,13 +35,24 @@ function templatePatterns(langs) {
     patterns.push({ mode: "en-line", re: new RegExp(
       `\\b(\\d+)\\s*${FT}\\s+long\\s+and\\s+(\\d+)\\s*${FT}\\s+wide`, "giu") });
     patterns.push({ mode: "en-radius", re: new RegExp(`\\b(\\d+)\\s*-?\\s*${FT}[-\\s]*radius(?![\\p{L}])`, "giu") });
+    // "60-foot-long, 5-foot-wide Line" and "5-foot-wide, 60-foot-long Line"
+    patterns.push({ mode: "en-line", re: new RegExp(
+      `\\b(\\d+)[-\\s]*${FT}[-\\s]*long\\s*,?\\s*(?:and\\s+)?(\\d+)[-\\s]*${FT}[-\\s]*wide[-\\s]+line(?![\\p{L}])`, "giu") });
+    patterns.push({ mode: "en-line-wide", re: new RegExp(
+      `\\b(\\d+)[-\\s]*${FT}[-\\s]*wide\\s*,?\\s*(?:and\\s+)?(\\d+)[-\\s]*${FT}[-\\s]*long[-\\s]+line(?![\\p{L}])`, "giu") });
   }
   if ( langs.includes("fr") ) {
+    // "un cône de 4,50 m", "un cône de flammes de 4,50 m", "une ligne de 18 m de long", distances in m or feet
+    const lead = "(?:\\bligne\\s+(?:de\\s+)?)?";
+    patterns.push({ mode: "fr-line", re: new RegExp(`\\bligne\\s+de\\s+${dist(1)}\\s+sur\\s+${dist(2)}`, "giu") });
+    patterns.push({ mode: "fr-line", re: new RegExp(
+      `${lead}${dist(1)}\\s+de\\s+long(?:ueur)?\\s*,?\\s*(?:et\\s+)?${dist(2)}\\s+de\\s+large(?:ur)?`, "giu") });
+    patterns.push({ mode: "fr-line-wide", re: new RegExp(
+      `${lead}${dist(1)}\\s+de\\s+large(?:ur)?\\s*,?\\s*(?:et\\s+)?${dist(2)}\\s+de\\s+long(?:ueur)?`, "giu") });
     patterns.push({ mode: "fr-shape", re: new RegExp(
-      `\\b(c[ôo]ne|sph[èe]re|ligne|cube|cylindre)s?\\s+de\\s+${NUM}${M}(?:\\s+de\\s+(?:rayon|c[ôo]t[ée]|haut|long))?`,
-      "giu") });
-    patterns.push({ mode: "fr-line", re: new RegExp(`${NUM}${M}\\s+de\\s+long\\s+et\\s+${NUM}${M}\\s+de\\s+large`, "giu") });
-    patterns.push({ mode: "fr-radius", re: new RegExp(`\\brayon\\s+de\\s+${NUM}${M}`, "giu") });
+      `\\b(c[ôo]ne|sph[èe]re|ligne|cube|cylindre)s?(?:\\s+(?:de\\s+|d')?[\\p{L}'-]+){0,3}?\\s+(?:de\\s+)?${dist(1)}` +
+      "(?:\\s+de\\s+(?:rayon|c[ôo]t[ée]|haut(?:eur)?|long(?:ueur)?))?", "giu") });
+    patterns.push({ mode: "fr-radius", re: new RegExp(`\\brayon\\s+de\\s+${dist(1)}`, "giu") });
   }
   return patterns;
 }
@@ -117,18 +129,20 @@ export function recognizeSaveArea(text, ctx = {}) {
       case "en-shape": type = shapeKey(m[3]); size = Number(m[1]); break;
       case "en-line": type = "line"; size = Number(m[1]); width = Number(m[2]); break;
       case "en-radius": type = "radius"; size = Number(m[1]); break;
-      case "fr-shape": type = shapeKey(m[1]); size = toFeet(parseNumber(m[2]), "m"); break;
-      case "fr-line": type = "line"; size = toFeet(parseNumber(m[1]), "m"); width = toFeet(parseNumber(m[2]), "m"); break;
-      case "fr-radius": type = "radius"; size = toFeet(parseNumber(m[1]), "m"); break;
+      case "en-line-wide": type = "line"; size = Number(m[2]); width = Number(m[1]); break;
+      case "fr-shape": type = shapeKey(m[1]); size = frFeet(m.groups.n1, m.groups.u1); break;
+      case "fr-line": type = "line"; size = frFeet(m.groups.n1, m.groups.u1); width = frFeet(m.groups.n2, m.groups.u2); break;
+      case "fr-line-wide": type = "line"; size = frFeet(m.groups.n2, m.groups.u2); width = frFeet(m.groups.n1, m.groups.u1); break;
+      case "fr-radius": type = "radius"; size = frFeet(m.groups.n1, m.groups.u1); break;
     }
     if ( !type ) continue;
     let raw = m[0];
     let height = null;
     if ( type === "line" && width === null ) {
       const en = source.match(/(\d+)[-\s]*(?:foot|feet|ft\.?)[-\s]*wide/i);
-      const fr = source.match(new RegExp(`${NUM}${M}\\s+de\\s+large`, "iu"));
+      const fr = source.match(new RegExp(`${dist(1)}\\s+de\\s+large(?:ur)?`, "iu"));
       if ( en ) width = Number(en[1]);
-      else if ( fr ) width = toFeet(parseNumber(fr[1]), "m");
+      else if ( fr ) width = frFeet(fr.groups.n1, fr.groups.u1);
       const found = en ?? fr;
       if ( found ) {
         raw = `${raw} ${found[0]}`;
