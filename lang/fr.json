@@ -40,6 +40,7 @@
       "SpellcastingAbilityConflict": "Plusieurs caractéristiques d'incantation trouvées ({abilities}) : aucune n'a été choisie.",
       "AttackBonuses": "Plusieurs bonus d'attaque différents trouvés ({values}) : aucun n'a été choisi.",
       "SaveAbilities": "Plusieurs jets de sauvegarde différents trouvés : aucun n'a été choisi.",
+      "SaveDcFormula": "Le DD du jet de sauvegarde est une formule ({raw}), pas un nombre fixe : il a été écrit {formula}.",
       "AmbiguousDamageType": "Le type de dégâts « {word} » est ambigu et a été laissé vide.",
       "UnknownDamageType": "Type de dégâts inconnu « {word} » : laissé vide.",
       "RangeNotCarried": "Allonge ({reach} pi) et portée ({value} pi) trouvées : la portée n'a pas pu être reportée.",

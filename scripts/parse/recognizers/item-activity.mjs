@@ -128,7 +128,9 @@ export function recognizeCast(text, ctx = {}) {
     if ( !name || NOT_SPELL.has(fold(name)) ) continue;
     const detail = match[2] ?? "";
     const tail = source.slice(match.index + match[0].length, match.index + match[0].length + 120);
-    const dc = (detail.match(/\b(?:DC|DD)\s*(\d+)/i) ?? source.match(/\b(?:save\s+DC|DD(?:\s+de\s+sauvegarde)?)\s*(\d+)/i))?.[1];
+    // "DC 8 plus your Dexterity modifier" is a formula: not a fixed DC
+    const dc = (detail.match(/\b(?:DC|DD)\s*(\d+)(?!\s*(?:\+|plus\b))/i)
+      ?? source.match(/\b(?:save\s+DC|DD(?:\s+de\s+sauvegarde)?)\s*(\d+)(?!\s*(?:\+|plus\b))/i))?.[1];
     const attack = (detail.match(/\+(\d+)\s+(?:to\s+hit|au\s+toucher)/i))?.[1];
     const level = (detail + " " + tail).match(/\b(?:at\s+)?(\d)(?:st|nd|rd|th)[- ]level\b|\bau\s+niveau\s+(\d)\b|\bde\s+niveau\s+(\d)\b/i);
     const consume = recognizeConsume(source, ctx);

@@ -9,19 +9,54 @@ const frFeet = (number, unit) => toFeet(parseNumber(number), /^m/i.test(unit ?? 
 const HALF_FR = /(?:la\s+)?moiti[ée](?:\s+(?:de|des)\s+(?:ces\s+)?d[ée]g[âa]ts|\s+en\s+cas\s+de)|moiti[ée]\s+moins\s+de\s+d[ée]g[âa]ts|demi-d[ée]g[âa]ts/iu;
 const FT = "(?:foot|feet|ft\\.?)";
 
+// "DC 8 plus your Dexterity modifier" is a formula, never a fixed DC of 8
+const dcTerm = abil => new RegExp(`^(?:(?:your|the|votre|le|la)\\s+)?(?:(proficiency\\s+bonus|bonus\\s+de\\s+ma[îi]trise)|` +
+  `(?:(${abil})\\s+modifier|modificateur\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])))\\s*(?:(?:\\+|plus|and|et)\\s*)?`, "iu");
+
+/**
+ * Formula of a DC written "8 plus your Dexterity modifier" (`tail` = text after the 8).
+ * @param {string} tail
+ * @param {string} abil  Alternation of ability words.
+ * @returns {{ formula: string|null }|null}  null when the number is a fixed DC.
+ */
+function dcFormula(tail, abil) {
+  const lead = tail.match(/^\s*(?:\+|plus\b)\s*/iu);
+  if ( !lead ) return null;
+  let rest = tail.slice(lead[0].length);
+  const terms = ["8"];
+  const term = dcTerm(abil);
+  for ( let match = rest.match(term); match; match = rest.match(term) ) {
+    if ( match[1] ) terms.push("@prof");
+    else {
+      const key = lookup("abilities", match[2] ?? match[3]);
+      if ( !key ) break;
+      terms.push(`@abilities.${key}.mod`);
+    }
+    rest = rest.slice(match[0].length);
+  }
+  return { formula: terms.length > 1 ? terms.join(" + ") : null };
+}
+
 function savePatterns(langs) {
   const abil = alternation("abilities", langs);
   const patterns = [];
   if ( langs.includes("en") ) {
-    patterns.push([new RegExp(`\\bDC\\s*(\\d+)\\s*(${abil})\\s*(?:saving\\s+throws?|saves?)(?![\\p{L}])`, "giu"), 2, 1]);
-    patterns.push([new RegExp(`\\b(${abil})\\s*(?:saving\\s+throws?|saves?)\\s*[:,(]?\\s*DC\\s*(\\d+)`, "giu"), 1, 2]);
+    patterns.push([new RegExp(`\\bDC\\s*(\\d+)\\s*(${abil})\\s*(?:saving\\s+throws?|saves?)(?![\\p{L}])`, "giud"), 2, 1]);
+    patterns.push([new RegExp(
+      `\\bDC\\s*(\\d+)\\s*(?:\\+|plus\\b)[^.;]{0,100}?(${abil})\\s*(?:saving\\s+throws?|saves?)(?![\\p{L}])`, "giud"), 2, 1]);
+    patterns.push([new RegExp(
+      `\\b(${abil})\\s*(?:saving\\s+throws?|saves?)\\s*[:,(]?\\s*(?:with\\s+an?\\s+)?DC\\s*(?:equal\\s+to\\s+)?(\\d+)`, "giud"), 1, 2]);
   }
   if ( langs.includes("fr") ) {
     patterns.push([new RegExp(
-      `\\bjets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])\\s*[(,:]?\\s*DD\\s*(\\d+)`, "giu"), 1, 2]);
+      `\\bjets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])\\s*[(,:]?\\s*(?:avec\\s+un\\s+)?DD\\s*(?:[ée]gal\\s+[àa]\\s*)?(\\d+)`,
+      "giud"), 1, 2]);
     patterns.push([new RegExp(
       `\\bDD\\s*(\\d+)\\s*[,:;(]?\\s*(?:un\\s+)?jets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])`,
-      "giu"), 2, 1]);
+      "giud"), 2, 1]);
+    patterns.push([new RegExp(
+      `\\bDD\\s*(\\d+)\\s*(?:\\+|plus\\b)[^.;]{0,100}?jets?\\s+de\\s+sauvegarde\\s+(?:de\\s+|d')\\s*(${abil})(?![\\p{L}])`,
+      "giud"), 2, 1]);
   }
   return patterns;
 }
@@ -75,32 +110,39 @@ export function recognizeSaveArea(text, ctx = {}) {
   const spans = [];
   const ambiguous = [];
   const saves = [];
+  const abil = alternation("abilities", langs);
 
   for ( const [regex, abilityGroup, dcGroup] of savePatterns(langs) ) {
     for ( const match of source.matchAll(regex) ) {
       const ability = lookup("abilities", match[abilityGroup], langs);
       if ( !ability ) continue;
-      saves.push({ ability, dc: Number(match[dcGroup]), start: match.index, raw: match[0] });
+      // "DC 8 plus your Dexterity modifier": a formula (or nothing), never a fixed DC of 8
+      const formula = dcFormula(source.slice(match.indices[dcGroup][1]), abil);
+      saves.push({ ability, dc: formula ? null : Number(match[dcGroup]), dcFormula: formula?.formula ?? null,
+        computed: Boolean(formula), start: match.index, raw: match[0] });
       spans.push(spanOf("save", match));
     }
   }
   let save = null;
   if ( saves.length ) {
     saves.sort((a, b) => a.start - b.start);
-    const distinct = new Set(saves.map(entry => `${entry.ability}:${entry.dc}`));
+    const distinct = new Set(saves.map(entry => `${entry.ability}:${entry.dc ?? entry.dcFormula}`));
     if ( distinct.size > 1 ) {
       ambiguous.push({
         key: "dnd5e-text-parser.Note.SaveAbilities",
         data: { raw: saves.map(entry => entry.raw), values: [...distinct].map(value => {
           const [ability, dc] = value.split(":");
-          return { ability, dc: Number(dc) };
+          return { ability, dc: /^\d+$/.test(dc) ? Number(dc) : null };
         }) }
       });
     } else {
+      if ( saves[0].computed ) {
+        ambiguous.push({ key: "dnd5e-text-parser.Note.SaveDcFormula", data: { raw: saves[0].raw, formula: saves[0].dcFormula ?? "" } });
+      }
       const tail = source.slice(saves[0].start);
       const halfRe = [langs.includes("en") && HALF_EN, langs.includes("fr") && HALF_FR]
         .filter(Boolean).find(re => re.test(tail));
-      save = { ability: saves[0].ability, dc: saves[0].dc, onSave: halfRe ? "half" : "none", damage: [],
+      save = { ability: saves[0].ability, dc: saves[0].dc, dcFormula: saves[0].dcFormula, onSave: halfRe ? "half" : "none", damage: [],
         raw: saves[0].raw, origin: ORIGIN };
       const halfMatch = halfRe && tail.match(halfRe);
       if ( halfMatch ) {

@@ -128,7 +128,7 @@ function featureActivities(plan, context, { item, consume = true } = {}) {
 
   if ( plan.save?.ability && isValidKey(keys, "abilities", plan.save.ability) ) {
     const save = baseActivity("save", plan, context, consume && !activities.length);
-    save.save = { ability: [plan.save.ability], dc: { calculation: "", formula: String(plan.save.dc) } };
+    save.save = { ability: [plan.save.ability], dc: { calculation: "", formula: plan.save.dc != null ? String(plan.save.dc) : (plan.save.dcFormula ?? "") } };
     save.damage = {
       onSave: plan.save.onSave ?? "none",
       parts: (plan.save.damage ?? []).map(part => toDamagePart(part, keys))

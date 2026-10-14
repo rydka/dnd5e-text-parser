@@ -40,6 +40,7 @@
       "SpellcastingAbilityConflict": "Several spellcasting abilities found ({abilities}): none was chosen.",
       "AttackBonuses": "Several different attack bonuses found ({values}): none was chosen.",
       "SaveAbilities": "Several different saving throws found: none was chosen.",
+      "SaveDcFormula": "The saving throw DC is a formula ({raw}), not a fixed number: it was written as {formula}.",
       "AmbiguousDamageType": "The damage type \"{word}\" is ambiguous and was left empty.",
       "UnknownDamageType": "Unknown damage type \"{word}\": left empty.",
       "RangeNotCarried": "Both reach ({reach} ft.) and range ({value} ft.) were found: the range could not be carried over.",
