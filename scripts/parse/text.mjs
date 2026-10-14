@@ -61,6 +61,9 @@ function stripEnrichers(text) {
  */
 export function htmlToText(html) {
   let text = String(html ?? "");
+  // A table cell stays on its row: block tags inside <td> / <th> become spaces, not line breaks
+  text = text.replace(/<(td|th)(?:\s[^>]*)?>([\s\S]*?)<\/\s*\1\s*>/gi,
+    (match, tag, inner) => `<${tag}>${inner.replace(/<\/?\s*(?:p|div|br|h[1-6]|ul|ol|li)(?:\s[^>]*)?\/?>/gi, " ")}</${tag}>`);
   text = text.replace(/<\s*br\s*\/?>/gi, "\n")
     .replace(/<\/\s*(?:p|div|li|tr|h[1-6]|ul|ol|table|section|blockquote)\s*>/gi, "\n")
     .replace(/<\/\s*(?:td|th)\s*>/gi, " ")

@@ -146,10 +146,14 @@ export function recognizeCast(text, ctx = {}) {
   return null;
 }
 
-const LIST_INTRO_EN = /\bexpend\s+(?:\d+|one|an?)(?:\s+or\s+more)?\s+(?:of\s+(?:its|the)\s+)?charges?\s+to\s+cast\s+(?:one\s+of\s+)?(?:the\s+following|these)\s+spells?\b[^:\n]*:?/iu;
-const LIST_INTRO_FR = /\bd[ée]penser\s+(?:\d+|une?)\s+charges?(?:\s+ou\s+plus)?\s+(?:afin\s+de|pour)\s+lancer\s+l'un\s+des\s+sorts\s+suivants\b[^:\n]*:?/iu;
+// "expend 1 or more of its charges to cast one of the following spells:" (DMG 2014),
+// "you can cast one of the spells on the following table from it" (DMG 2024, table of spell and charge cost)
+const LIST_INTRO_EN = /\bexpend\s+(?:\d+|one|an?)(?:\s+or\s+more)?\s+(?:of\s+(?:its|the)\s+)?charges?\s+to\s+cast\s+(?:one\s+of\s+)?(?:the\s+following|these)\s+spells?\b[^:\n]*:?|\bcast\s+one\s+of\s+the\s+spells\s+(?:on|in|from)\s+the\s+(?:following\s+)?table\b[^:\n]*:?/iu;
+// "dépenser 1 ou plusieurs de ses charges afin de lancer l'un des sorts suivants", "dépenser des charges pour lancer…"
+const LIST_INTRO_FR = /\bd[ée]penser\s+(?:\d+|une?|des)\s+(?:ou\s+plusieurs\s+)?(?:de\s+(?:ses|les)\s+)?charges?(?:\s+ou\s+plus)?\s+(?:afin\s+de|pour)\s+lancer\s+l'un\s+des\s+sorts\s+suivants\b[^:\n]*:?/iu;
 const LIST_ENTRY = /(?<![\p{L}'-])([\p{L}][\p{L}' -]*?)\s*\(([^()]*?)(\d+)\s+charges?\)/giu;
-const LIST_ROW = /^([\p{L}][^\d\n]*?(?:\([^)\n]*\))?)\s+(\d+)(?:\s+charges?)?$/iu;
+// Table row: "Ice Storm 4", "Fireball (5th-level version) 5 charges", "Ray of Frost 1 charge per spell level (maximum 2…)"
+const LIST_ROW = /^([\p{L}][^\d\n]*?(?:\([^)\n]*\))?)\s+(\d+)(?:\s+charges?(?:\s+(?:per\s+spell\s+level|par\s+niveau\s+de\s+sort)\b[^\n]*)?)?$/iu;
 const LIST_LEVEL = /(\d)(?:st|nd|rd|th)[- ]level|niveau\s+(\d)/iu;
 
 /**
