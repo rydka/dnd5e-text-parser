@@ -12,7 +12,10 @@ test("M2/M3: recall and precision on the reference and control sets (recorded, n
     const out = testInfo.outputPath(`M2-M3-${set}.json`);
     const run = spawnSync(process.execPath, [path.join(root, "tests/metrics/measure-sets.mjs"), `--set=${set}`, `--out=${out}`], { cwd: root, encoding: "utf8" });
     expect(run.status, run.stderr).toBe(0);
-    fs.writeFileSync(testInfo.outputPath(`M2-M3-${set}.txt`), run.stdout);
+    const txt = testInfo.outputPath(`M2-M3-${set}.txt`);
+    fs.writeFileSync(txt, run.stdout);
+    await testInfo.attach(`M2-M3-${set}.json`, { path: out });
+    await testInfo.attach(`M2-M3-${set}.txt`, { path: txt });
   }
 });
 
@@ -20,5 +23,8 @@ test("M5: time of a full stat block without fallback (recorded, not asserted)", 
   const out = testInfo.outputPath("M5-timing.json");
   const run = spawnSync(process.execPath, [path.join(root, "tests/metrics/measure.mjs"), `--out=${out}`], { cwd: root, encoding: "utf8" });
   expect(run.status, run.stderr).toBe(0);
-  fs.writeFileSync(testInfo.outputPath("M5-timing.txt"), run.stdout);
+  const txt = testInfo.outputPath("M5-timing.txt");
+  fs.writeFileSync(txt, run.stdout);
+  await testInfo.attach("M5-timing.json", { path: out });
+  await testInfo.attach("M5-timing.txt", { path: txt });
 });
