@@ -1,5 +1,5 @@
 // Builds the control set of objects: compendium items (dnd5e.items, dnd5e.equipment24) that are not in the
-// item-configurator sample, with a truth annotated by hand from what each description states.
+// item-configurator sample, with a truth annotated by hand from what each name and description state.
 //   node tests/tools/build-control-objects.mjs <items.json>
 import fs from "node:fs";
 
@@ -11,18 +11,18 @@ const E = (kind, scope, value) => ({ kind, scope, value });
 const A = [
   ["fvezXwRJ5PqUf5NN", { attunement: "required" }, [E("resistance", "cold")]],
   ["FkDyLSpiynKTQZdi", { attunement: "required" }, [], ["effect"]],
-  ["SXjs8JghAPBv7d6j", { "weapon.magicalBonus": 1 }, [], ["effect"]],
-  ["ZwFCZDgQljlidzns", {}, []],
+  ["SXjs8JghAPBv7d6j", { "weapon.magicalBonus": 1, "weapon.baseItem": "longsword" }, [], ["effect"]],
+  ["ZwFCZDgQljlidzns", { "armor.magicalBonus": 3 }, []],
   ["azxwKFHrNmG3HpVy", { attunement: "required" }, []],
-  ["uLY74ppOrTaWKwer", {}, []],
-  ["S7TrIOlE600KIOUx", { "weapon.magicalBonus": 1 }, [], ["effect"]],
-  ["902yxeFDwavpm6cv", { attunement: "required" }, [], ["effect"]],
+  ["uLY74ppOrTaWKwer", { "weapon.magicalBonus": 2, "weapon.baseItem": "rapier" }, []],
+  ["S7TrIOlE600KIOUx", { "weapon.magicalBonus": 1, "weapon.baseItem": "rapier" }, [], ["effect"]],
+  ["902yxeFDwavpm6cv", { attunement: "required", "weapon.baseItem": "shortsword" }, [], ["effect"]],
   ["oN4Glcmi4BhdAI3k", {}, [], ["effect"]],
-  ["dG7iFak1YH1nXRpC", {}, [], ["effect"]],
+  ["dG7iFak1YH1nXRpC", { "weapon.baseItem": "battleaxe" }, [], ["effect"]],
   ["J8gQdJJi5e8LmD7H", { weight: "3 lb" }, []],
   ["44XNWmMGnwXn7bNW", { attunement: "required", attunementCondition: "a spellcaster" }, []],
   ["IY5PveXrF7VoFlWg", {}, []],
-  ["aDEAwKwttl35dWaB", {}, []],
+  ["aDEAwKwttl35dWaB", { "armor.magicalBonus": 1 }, []],
   ["ZYEqOSY9BLZs2GPx", { attunement: "required" }, [], ["effect"]],
   ["LdAj2ES9EzfnWcA1", {}, []],
   ["sXEkkTDXWQDUMzsC", { weight: "1 lb" }, []],

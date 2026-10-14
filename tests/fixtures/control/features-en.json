@@ -1705,8 +1705,7 @@
      "1 target"
     ],
     "damage": [
-     "1d8+6 piercing",
-     "3d6 piercing"
+     "1d8+6 piercing"
     ],
     "save": [
      "con 12 none"
@@ -1719,7 +1718,7 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 6
+   "facts": 5
   },
   {
    "id": "c-en-58",
@@ -1835,6 +1834,8 @@
     ]
    },
    "ignore": [
+    "damage",
+    "saveDamage",
     "activation",
     "uses",
     "recharge",
@@ -3127,6 +3128,8 @@
    "ignore": [
     "range",
     "target",
+    "save",
+    "saveDamage",
     "activation",
     "uses",
     "recharge",
@@ -3695,6 +3698,9 @@
     "attack": [
      "melee/- +8"
     ],
+    "range": [
+     "reach 5"
+    ],
     "damage": [
      "2d6 bludgeoning"
     ]
@@ -3706,7 +3712,7 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 2
+   "facts": 3
   },
   {
    "id": "c-en-126",
@@ -3931,17 +3937,15 @@
   {
    "id": "c-en-134",
    "lang": "en",
-   "source": "dnd5e.actors24/Riswynn/Sneak Attack",
-   "name": "Sneak Attack",
-   "html": "<p>You know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack roll if you have Advantage on the roll and the attack uses a Finesse or a Ranged weapon. The extra damage's type is the same as the weapon's type.</p><p>You don't need Advantage on the attack roll if at least one of your allies is within 5 feet of the target, the ally doesn't have the Incapacitated condition, and you don't have Disadvantage on the attack roll.</p><p>The extra damage increases as you gain Rogue levels, as shown in the Sneak Attack column of the Rogue Features table.</p><p><strong>Current Sneak Attack Damage:</strong> <span>3d6</span></p>",
+   "source": "dnd5e.actors24/Riswynn/Cunning Action",
+   "name": "Cunning Action",
+   "html": "<p>Your quick thinking and agility allow you to move and act quickly. On your turn, you can take one of the following actions as a Bonus Action: <enriched-content><span><a>Dash</a></span></enriched-content>, <enriched-content><span><a>Disengage</a></span></enriched-content>, or <enriched-content><span><a>Hide</a></span></enriched-content>.</p>",
    "activityTypes": [
-    "damage"
+    "utility",
+    "utility",
+    "utility"
    ],
-   "expected": {
-    "damage": [
-     "3d6 acid"
-    ]
-   },
+   "expected": {},
    "ignore": [
     "range",
     "target",
@@ -3951,27 +3955,21 @@
     "legendaryResistance",
     "skip"
    ],
-   "facts": 1
+   "facts": 0
   },
   {
    "id": "c-en-135",
    "lang": "en",
-   "source": "dnd5e.actors24/Riswynn/Cunning Strike",
-   "name": "Cunning Strike",
-   "html": "<p>You've developed cunning ways to use your Sneak Attack. When you deal Sneak Attack damage, you can add one of the following Cunning Strike effects. Each effect has a die cost, which is the number of Sneak Attack damage dice you must forgo to add the effect. You remove the die before rolling, and the effect occurs immediately after the attack's damage is dealt. For example, if you add the Poison effect, remove 1d6 from the Sneak Attack's damage before rolling.</p><p>If a Cunning Strike effect requires a saving throw, the DC equals 8 plus your Dexterity modifier and Proficiency Bonus.</p><p><strong>Poison (Cost: 1d6).</strong> You add a toxin to your strike, forcing the target to make a Constitution saving throw. On a failed save, the target has the <enriched-content><span><a>Poisoned</a><a></a></span></enriched-content> condition for 1 minute. At the end of each of its turns, the Poisoned target repeats the save, ending the effect on itself on a success.</p><p>To use this effect, you must have a Poisoner's Kit on your person.</p><p><strong>Trip (Cost: 1d6).</strong> If the target is Large or smaller, it must succeed on a Dexterity saving throw or have the <enriched-content><span><a>Prone</a><a></a></span></enriched-content> condition.</p><p><strong>Withdraw (Cost: 1d6).</strong> Immediately after the attack, you move up to half your Speed without provoking Opportunity Attacks.</p>",
+   "source": "dnd5e.actors24/Riswynn/Uncanny Dodge",
+   "name": "Uncanny Dodge",
+   "html": "<p>When an attacker that you can see hits you with an attack roll, you can take a Reaction to halve the attack's damage against you (round down).</p>",
    "activityTypes": [
-    "save",
-    "save",
-    "utility",
-    "damage"
+    "utility"
    ],
    "expected": {},
    "ignore": [
     "range",
     "target",
-    "save",
-    "saveDamage",
-    "template",
     "activation",
     "uses",
     "recharge",
@@ -4190,20 +4188,16 @@
   {
    "id": "c-en-143",
    "lang": "en",
-   "source": "dnd5e.actors24/Akra/Breath Weapon",
-   "name": "Breath Weapon",
-   "html": "<p>When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 plus your Constitution modifier and Proficiency Bonus). On a failed save, a creature takes 1d10 damage of the type determined by your Draconic Ancestry trait. On a successful save, a creature takes half as much damage. This damage increases by 1d10 when you reach character levels 5 (2d10), 11 (3d10), and 17&nbsp;(4d10).You can use this Breath Weapon a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest.</p>",
+   "source": "dnd5e.actors24/Akra/Disciple of Life",
+   "name": "Disciple of Life",
+   "html": "<p>When a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points on the turn you cast the spell. The additional Hit Points equal 2 plus the spell slot's level.</p>",
    "activityTypes": [
-    "save",
-    "save"
+    "heal"
    ],
    "expected": {},
    "ignore": [
     "range",
     "target",
-    "save",
-    "saveDamage",
-    "template",
     "activation",
     "uses",
     "recharge",
@@ -4214,29 +4208,6 @@
   },
   {
    "id": "c-en-144",
-   "lang": "en",
-   "source": "dnd5e.actors24/Akra/Sear Undead",
-   "name": "Sear Undead",
-   "html": "<p>Whenever you use Turn Undead, you can roll a number of d8s equal to your Wisdom modifier (minimum of 1d8, currently <span>5</span>) and add the rolls together. Each Undead that fails its saving throw against that use of Turn Undead takes Radiant damage equal to the roll's total. This damage doesn't end the turn effect.</p>",
-   "activityTypes": [
-    "save"
-   ],
-   "expected": {},
-   "ignore": [
-    "range",
-    "target",
-    "save",
-    "saveDamage",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-145",
    "lang": "en",
    "source": "dnd5e.actors24/Young Brass Dragon/Rend",
    "name": "Rend",
@@ -4265,7 +4236,7 @@
    "facts": 3
   },
   {
-   "id": "c-en-146",
+   "id": "c-en-145",
    "lang": "en",
    "source": "dnd5e.actors24/Young Brass Dragon/Fire Breath",
    "name": "Fire Breath",
@@ -4296,7 +4267,7 @@
    "facts": 3
   },
   {
-   "id": "c-en-147",
+   "id": "c-en-146",
    "lang": "en",
    "source": "dnd5e.actors24/Giant Scorpion/Sting",
    "name": "Sting",
@@ -4324,6 +4295,27 @@
     "skip"
    ],
    "facts": 4
+  },
+  {
+   "id": "c-en-147",
+   "lang": "en",
+   "source": "dnd5e.actors24/Zanna/Arcane Recovery",
+   "name": "Arcane Recovery",
+   "html": "<p>You can regain some of your magical energy by studying your spellbook. When you finish a Short Rest, you can choose expended spell slots to recover. The spell slots can have a combined level equal to no more than half your Wizard level (round up), and none of the slots can be level 6 or higher. For example, if you're a level 4 Wizard, you can recover up to two levels' worth of spell slots, regaining either one level 2 spell slot or two level 1 spell slots.</p><p>Once you use this feature, you can't do so again until you finish a Long Rest.</p><p><strong>Combined Level Available:</strong> <a>1</a></p>",
+   "activityTypes": [
+    "utility"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
   },
   {
    "id": "c-en-148",
@@ -4388,31 +4380,6 @@
   {
    "id": "c-en-150",
    "lang": "en",
-   "source": "dnd5e.actors24/Brass Dragon Wyrmling/Sleep Breath",
-   "name": "Sleep Breath",
-   "html": "<p><em>Constitution Saving Throw:</em> DC <span>11</span>, each <span>creature</span> in a <span>15</span>-foot Cone.</p><p><em>Failure:</em> The target has the <enriched-content><span><a>Incapacitated</a></span></enriched-content> condition until the end of its next turn, at which point it repeats the save.</p><p><em>Second Failure:</em> The target has the <enriched-content><span><a>Unconscious</a></span></enriched-content> condition for <span>1</span> minute. This effect ends for the target if it takes damage or a creature within 5 feet of it takes an action to wake it.</p>",
-   "activityTypes": [
-    "save",
-    "save"
-   ],
-   "expected": {},
-   "ignore": [
-    "range",
-    "target",
-    "save",
-    "saveDamage",
-    "template",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-151",
-   "lang": "en",
    "source": "dnd5e.actors24/Wereboar/Javelin (Humanoid or Hybrid Form Only)",
    "name": "Javelin (Humanoid or Hybrid Form Only)",
    "html": "<p><enriched-content><span><em>Melee or Ranged Attack Roll</em>: <span><a>+5</a></span>, reach 5 ft or range 30/120 ft</span></enriched-content>. <enriched-content><span><em>Hit:</em> <a>13 <span>(<span>3d6 + 3</span>)</span> Piercing</a> damage</span></enriched-content>.</p>",
@@ -4436,13 +4403,34 @@
    "facts": 1
   },
   {
+   "id": "c-en-151",
+   "lang": "en",
+   "source": "dnd5e.actors24/Akra/Preserve Life",
+   "name": "Preserve Life",
+   "html": "<p>As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to evoke healing energy that can restore a number of Hit Points equal to five times your Cleric level. Choose <enriched-content><span><a>Bloodied</a></span></enriched-content> creatures within 30 feet of yourself (which can include you), and divide those Hit Points among them. This feature can restore a creature to no more than half its Hit Point maximum.</p>",
+   "activityTypes": [
+    "heal"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
+  },
+  {
    "id": "c-en-152",
    "lang": "en",
-   "source": "dnd5e.actors24/Akra/Draconic Flight",
-   "name": "Draconic Flight",
-   "html": "<p>When you reach character level 5, you can channel draconic magic to give yourself temporary flight. As a Bonus Action, you sprout spectral wings on your back that last for 10 minutes or until you retract the wings (no action required) or have the Incapacitated condition. During that time, you have a Fly Speed equal to your Speed. Your wings appear to be made of the same energy as your Breath Weapon. Once you use this trait, you can't use it again until you finish a Long Rest.</p>",
+   "source": "dnd5e.actors24/Akra/Blessed Healer",
+   "name": "Blessed Healer",
+   "html": "<p>The healing spells you cast on others heal you as well. Immediately after you cast a spell with a spell slot that restores Hit Points to one or more creatures other than yourself, you regain Hit Points equal to 2 plus the spell slot's level.</p>",
    "activityTypes": [
-    "utility"
+    "heal"
    ],
    "expected": {},
    "ignore": [
@@ -4504,6 +4492,8 @@
     ]
    },
    "ignore": [
+    "damage",
+    "saveDamage",
     "activation",
     "uses",
     "recharge",
@@ -4514,28 +4504,6 @@
   },
   {
    "id": "c-en-155",
-   "lang": "en",
-   "source": "dnd5e.actors24/Randal/Vicious Greatsword",
-   "name": "Vicious Greatsword",
-   "html": "<document-embed><figure><p><em>Weapon (Any Simple or Martial), Rare</em></p><p>This magic weapon deals an extra 2d6 damage to any creature it hits. This extra damage is of the same type as the weapon's normal damage.</p><document-embed><figure><section><figure><img></figure><article><h3>Make Magical Items with Templates</h3><p>Magical items can often come with a lot of variants. For example, +1 armor can exist on Light, Medium, or Heavy Armor. For +1-3 armor alone that's <span><em><span>36 items</span></em></span>! To keep your Compendia light and speedy we've created <strong>Template</strong> items which can be used to enchant any item. Now, the <strong>Armor, +1, +2, or +3</strong> item and your chosen armor type is all you need! Here's how you can use them:</p><p>Open an item like the <a>Armor, +1, +2, or +3</a>, change to the <strong>Effects</strong> tab, and drag your effect onto your item. This will automatically apply the enchantment, bring over any helpful Activities and Active Effects, and update the item's description with everything you need to know.</p><p>To remove an enchantment simply open the enchanted item, change to the <strong>Effects</strong> tab and right click on the enchantment where you can disable or delete it.</p></article></section></figure></document-embed><figcaption><cite><a>Vicious Weapon</a></cite></figcaption></figure></document-embed>",
-   "activityTypes": [
-    "attack"
-   ],
-   "expected": {},
-   "ignore": [
-    "attack",
-    "range",
-    "target",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-156",
    "lang": "en",
    "source": "dnd5e.actors24/Randal/Javelin",
    "name": "Javelin",
@@ -4560,11 +4528,11 @@
    "facts": 1
   },
   {
-   "id": "c-en-157",
+   "id": "c-en-156",
    "lang": "en",
-   "source": "dnd5e.actors24/Randal/Indomitable",
-   "name": "Indomitable",
-   "html": "<p>If you fail a saving throw, you can reroll it with a bonus equal to your Fighter level (currently, <span>17</span>). You must use the new roll, and you can't use this feature again until you finish a Long Rest.</p><p>You can use this feature twice before a Long Rest starting at level 13 and three times before a Long Rest starting at level 17.</p>",
+   "source": "dnd5e.actors24/Randal/Action Surge",
+   "name": "Action Surge",
+   "html": "<p>You can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action, except the Magic action.</p><p>Once you use this feature, you can't do so again until you finish a Short or Long Rest. Starting at level 17, you can use it twice before a rest but only once on a turn.</p>",
    "activityTypes": [
     "utility"
    ],
@@ -4581,7 +4549,7 @@
    "facts": 0
   },
   {
-   "id": "c-en-158",
+   "id": "c-en-157",
    "lang": "en",
    "source": "dnd5e.actors24/Ancient Gold Dragon/Rend",
    "name": "Rend",
@@ -4611,7 +4579,7 @@
    "facts": 4
   },
   {
-   "id": "c-en-159",
+   "id": "c-en-158",
    "lang": "en",
    "source": "dnd5e.actors24/Werewolf/Longbow",
    "name": "Longbow",
@@ -4640,7 +4608,7 @@
    "facts": 3
   },
   {
-   "id": "c-en-160",
+   "id": "c-en-159",
    "lang": "en",
    "source": "dnd5e.actors24/Werewolf/Bite (Wolf or Hybrid Form Only)",
    "name": "Bite (Wolf or Hybrid Form Only)",
@@ -4672,6 +4640,27 @@
     "skip"
    ],
    "facts": 4
+  },
+  {
+   "id": "c-en-160",
+   "lang": "en",
+   "source": "dnd5e.actors24/Werewolf/Shape-Shift",
+   "name": "Shape-Shift",
+   "html": "<p>The <span>werewolf</span> shape-shifts into a Large wolf-humanoid hybrid form or a Medium wolf, or it returns to its true humanoid form, or it returns to its true form. Its game statistics, other than its size, are the same in each form. Any equipment it is wearing or carrying isn't transformed.</p>",
+   "activityTypes": [
+    "utility"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
   },
   {
    "id": "c-en-161",
@@ -4736,10 +4725,11 @@
   {
    "id": "c-en-163",
    "lang": "en",
-   "source": "dnd5e.actors24/Morthos/Innate Sorcery",
-   "name": "Innate Sorcery",
-   "html": "<p>An event in your past left an indelible mark on you, infusing you with simmering magic. As a Bonus Action, you can unleash that magic for 1 minute, during which you gain the following benefits:</p><ul><li>The spell save DC of your Sorcerer spells increases by 1.</li><li>You have Advantage on the attack rolls of Sorcerer spells you cast.</li></ul><p>You can use this feature twice, and you regain all expended uses of it when you finish a Long Rest.</p>",
+   "source": "dnd5e.actors24/Morthos/Font of Magic",
+   "name": "Font of Magic",
+   "html": "<p>You can tap into the wellspring of magic within yourself. This wellspring is represented by Sorcery Points, which allow you to create a variety of magical effects.</p><p>You have 2 Sorcery Points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer Features table. You can't have more Sorcery Points than the number shown in the table for your level. You regain all expended Sorcery Points when you finish a Long Rest.</p><p>You can use your Sorcery Points to fuel the options below, along with other features, such as Metamagic, that use those points.</p><p><strong>Converting Spell Slots to Sorcery Points.</strong> You can expend a spell slot to gain a number of Sorcery Points equal to the slot's level (no action required).</p><p><strong>Creating Spell Slots.</strong> As a Bonus Action, you can transform unexpended Sorcery Points into one spell slot. The Creating Spell Slots table shows the cost of creating a spell slot of a given level, and it lists the minimum Sorcerer level you must be to create a slot. You can create a spell slot no higher than level&nbsp;5.</p><p>Any spell slot you create with this feature vanishes when you finish a Long Rest.</p><table><caption>Creating Spell Slots</caption><thead><tr><td>Spell Slot Level</td><td>Sorcery Point Cost</td><td>Min. Sorcerer Level</td></tr></thead><tbody><tr><td>1</td><td>2</td><td>2</td></tr><tr><td>2</td><td>3</td><td>3</td></tr><tr><td>3</td><td>5</td><td>5</td></tr><tr><td>4</td><td>6</td><td>7</td></tr><tr><td>5</td><td>7</td><td>9</td></tr></tbody></table>",
    "activityTypes": [
+    "utility",
     "utility"
    ],
    "expected": {},
@@ -4793,8 +4783,8 @@
     "attack"
    ],
    "expected": {
-    "damage": [
-     "1d8 psychic"
+    "range": [
+     "reach 5"
     ]
    },
    "ignore": [
@@ -4900,20 +4890,16 @@
   {
    "id": "c-en-169",
    "lang": "en",
-   "source": "dnd5e.actors24/Perrin/Unarmed Strike",
-   "name": "Unarmed Strike",
-   "html": "<p><em>See: <a>Martial Arts (Monk)</a></em></p>",
+   "source": "dnd5e.actors24/Perrin/Slow Fall",
+   "name": "Slow Fall",
+   "html": "<p>You can take a Reaction when you fall to reduce any damage you take from the fall by an amount equal to five times your Monk level.</p>",
    "activityTypes": [
-    "attack",
-    "save"
+    "heal"
    ],
    "expected": {},
    "ignore": [
-    "attack",
     "range",
     "target",
-    "save",
-    "saveDamage",
     "activation",
     "uses",
     "recharge",
@@ -4925,18 +4911,17 @@
   {
    "id": "c-en-170",
    "lang": "en",
-   "source": "dnd5e.actors24/Perrin/Stunning Strike",
-   "name": "Stunning Strike",
-   "html": "<p>Once per turn when you hit a creature with a Monk weapon or an Unarmed Strike, you can expend 1 Focus Point to attempt a stunning strike. The target must make a Constitution saving throw. On a failed save, the target has the Stunned condition until the start of your next turn. On a successful save, the target's Speed is halved until the start of your next turn, and the next attack roll made against the target before then has Advantage.</p>",
+   "source": "dnd5e.actors24/Perrin/Heightened Focus",
+   "name": "Heightened Focus",
+   "html": "<p>Your Flurry of Blows, Patient Defense, and Step of the Wind gain the following benefits.</p><p><strong>Flurry of Blows.</strong> You can expend 1 Focus Point to use Flurry of Blows and make three Unarmed Strikes with it instead of two.</p><p><strong>Patient Defense.</strong> When you expend a Focus Point to use Patient Defense, you gain a number of Temporary Hit Points equal to two rolls of your Martial Arts die.</p><p><strong>Step of the Wind.</strong> When you expend a Focus Point to use Step of the Wind, you can choose a willing creature within 5 feet of yourself that is Large or smaller. You move the creature with you until the end of your turn. The creature's movement doesn't provoke Opportunity Attacks.</p>",
    "activityTypes": [
-    "save"
+    "utility",
+    "heal"
    ],
    "expected": {},
    "ignore": [
     "range",
     "target",
-    "save",
-    "saveDamage",
     "activation",
     "uses",
     "recharge",
@@ -4948,16 +4933,18 @@
   {
    "id": "c-en-171",
    "lang": "en",
-   "source": "dnd5e.actors24/Vampire/Misty Escape",
-   "name": "Misty Escape",
-   "html": "<p>If the <span>vampire</span> drops to 0 Hit Points outside its resting place, the <span>vampire</span> uses Shape-Shift to become mist (no action required). If it can't use Shape-Shift, it is destroyed.</p><p>While it has 0 Hit Points in mist form, it can't return to its vampire form, and it must reach its resting place within 2 hours or be destroyed. Once in its resting place, it returns to its vampire form and has the <enriched-content><span><a>Paralyzed</a></span></enriched-content> condition until it regains any Hit Points, and it regains 1 Hit Point after spending 1 hour there.</p>",
+   "source": "dnd5e.actors24/Giant Insect/Venomous Spew (Centipede Only)",
+   "name": "Venomous Spew (Centipede Only)",
+   "html": "<p><em>Constitution Saving Throw:</em> Your spell save DC, one creature the insect can see within 10 feet. <em>Failure:</em> The target has the <enriched-content><span><a>Poisoned</a></span></enriched-content> condition until the start of the insect's next turn.</p>",
    "activityTypes": [
-    "utility"
+    "save"
    ],
    "expected": {},
    "ignore": [
     "range",
     "target",
+    "save",
+    "saveDamage",
     "activation",
     "uses",
     "recharge",
@@ -4998,27 +4985,6 @@
   {
    "id": "c-en-173",
    "lang": "en",
-   "source": "dnd5e.actors24/Sahuagin Warrior/Aquatic Charge",
-   "name": "Aquatic Charge",
-   "html": "<p>The <span>sahuagin warrior</span> swims up to its Swim Speed straight toward an enemy it can see.</p>",
-   "activityTypes": [
-    "utility"
-   ],
-   "expected": {},
-   "ignore": [
-    "range",
-    "target",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-174",
-   "lang": "en",
    "source": "dnd5e.actors24/Rust Monster/Bite",
    "name": "Bite",
    "html": "<p><enriched-content><span><em>Melee Attack Roll</em>: <span><a>+3</a></span>, reach 5 ft</span></enriched-content>. <enriched-content><span><em>Hit:</em> <a>5 <span>(<span>1d8 + 1</span>)</span> Piercing</a> damage</span></enriched-content>.</p>",
@@ -5046,7 +5012,7 @@
    "facts": 3
   },
   {
-   "id": "c-en-175",
+   "id": "c-en-174",
    "lang": "en",
    "source": "dnd5e.actors24/Phase Spider/Bite",
    "name": "Bite",
@@ -5076,18 +5042,44 @@
    "facts": 4
   },
   {
-   "id": "c-en-176",
+   "id": "c-en-175",
    "lang": "en",
-   "source": "dnd5e.actors24/Perrin/Uncanny Metabolism",
-   "name": "Uncanny Metabolism",
-   "html": "<p>When you roll Initiative, you can regain all expended Focus Points. When you do so, roll your Martial Arts die, and regain a number of Hit Points equal to your Monk level plus the number rolled.</p><p>Once you use this feature, you can't use it again until you finish a Long Rest.</p>",
+   "source": "dnd5e.actors24/Hezrou/Leap",
+   "name": "Leap",
+   "html": "<p>The <span>hezrou</span> jumps up to <span>30</span> feet by <span>spending 10 feet of movement</span>.</p>",
    "activityTypes": [
-    "heal"
+    "utility"
    ],
    "expected": {},
    "ignore": [
     "range",
     "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
+  },
+  {
+   "id": "c-en-176",
+   "lang": "en",
+   "source": "dnd5e.actors24/Perrin/Open Hand Technique",
+   "name": "Open Hand Technique",
+   "html": "<p>Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target.</p><p><strong>Addle.</strong> The target can't make Opportunity Attacks until the start of its next turn.</p><p><strong>Push.</strong> The target must succeed on a Strength saving throw or be pushed up to 15 feet away from you.</p><p><strong>Topple.</strong> The target must succeed on a Dexterity saving throw or have the Prone condition.</p>",
+   "activityTypes": [
+    "utility",
+    "save",
+    "save"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "save",
+    "saveDamage",
+    "template",
     "activation",
     "uses",
     "recharge",
@@ -5416,27 +5408,6 @@
   {
    "id": "c-en-188",
    "lang": "en",
-   "source": "dnd5e.actors24/Ancient Silver Dragon/Legendary Resistance",
-   "name": "Legendary Resistance",
-   "html": "<p>If the <span>ancient silver dragon</span> fails a saving throw, it can choose to succeed instead.</p>",
-   "activityTypes": [
-    "utility"
-   ],
-   "expected": {},
-   "ignore": [
-    "range",
-    "target",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-189",
-   "lang": "en",
    "source": "dnd5e.actors24/Ancient Silver Dragon/Cold Breath",
    "name": "Cold Breath",
    "html": "<p><em>Constitution Saving Throw: </em>DC <span>24</span>, each <span>creature</span> in a <span>90</span>-foot Cone.</p><p><em>Failure: </em><enriched-content><a>67 <span>(<span>15d8</span>)</span> Cold</a></enriched-content> damage.</p><p><em>Success:</em> Half damage.</p>",
@@ -5466,7 +5437,7 @@
    "facts": 3
   },
   {
-   "id": "c-en-190",
+   "id": "c-en-189",
    "lang": "en",
    "source": "dnd5e.actors24/Ancient Silver Dragon/Cold Gale",
    "name": "Cold Gale",
@@ -5497,7 +5468,7 @@
    "facts": 3
   },
   {
-   "id": "c-en-191",
+   "id": "c-en-190",
    "lang": "en",
    "source": "dnd5e.actors24/Cloud Giant/Thunderous Mace",
    "name": "Thunderous Mace",
@@ -5527,16 +5498,12 @@
    "facts": 4
   },
   {
-   "id": "c-en-192",
+   "id": "c-en-191",
    "lang": "en",
-   "source": "dnd5e.actors24/Draconic Spirit/Shared Resistances",
-   "name": "Shared Resistances",
-   "html": "<p>When you summon the spirit, choose one of its Resistances. You have <enriched-content><span><a>Resistance</a></span></enriched-content> to the chosen damage type until the spell ends.</p>",
+   "source": "dnd5e.actors24/Adult Bronze Dragon/Pounce",
+   "name": "Pounce",
+   "html": "<p>The <span>adult bronze dragon</span> moves up to half its Speed, and it makes one <enriched-content><span><a>Rend</a></span></enriched-content> attack.</p>",
    "activityTypes": [
-    "utility",
-    "utility",
-    "utility",
-    "utility",
     "utility"
    ],
    "expected": {},
@@ -5552,7 +5519,7 @@
    "facts": 0
   },
   {
-   "id": "c-en-193",
+   "id": "c-en-192",
    "lang": "en",
    "source": "dnd5e.actors24/Draconic Spirit/Rend",
    "name": "Rend",
@@ -5561,8 +5528,8 @@
     "attack"
    ],
    "expected": {
-    "damage": [
-     "1d6+4 piercing"
+    "range": [
+     "reach 10"
     ]
    },
    "ignore": [
@@ -5574,6 +5541,27 @@
     "skip"
    ],
    "facts": 1
+  },
+  {
+   "id": "c-en-193",
+   "lang": "en",
+   "source": "dnd5e.actors24/Zanna/Empowered Evocation",
+   "name": "Empowered Evocation",
+   "html": "<p>Whenever you cast a Wizard spell from the Evocation school, you can add your Intelligence modifier to one damage roll of that spell.</p>",
+   "activityTypes": [
+    "damage"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
   },
   {
    "id": "c-en-194",
@@ -5607,9 +5595,9 @@
   {
    "id": "c-en-195",
    "lang": "en",
-   "source": "dnd5e.actors24/Tiger/Nimble Escape",
-   "name": "Nimble Escape",
-   "html": "<p>The <span>tiger</span> takes the <enriched-content><span><a>Disengage</a></span></enriched-content> or <enriched-content><span><a>Hide</a></span></enriched-content> action.</p>",
+   "source": "dnd5e.actors24/Sphinx of Lore/Legendary Resistance",
+   "name": "Legendary Resistance",
+   "html": "<p>If the <span>sphinx of lore</span> fails a saving throw, it can choose to succeed instead.</p>",
    "activityTypes": [
     "utility"
    ],
@@ -5715,27 +5703,6 @@
   {
    "id": "c-en-199",
    "lang": "en",
-   "source": "dnd5e.actors24/Adult Copper Dragon/Pounce",
-   "name": "Pounce",
-   "html": "<p>The <span>adult copper dragon</span> moves up to half its Speed, and it makes one <enriched-content><span><a>Rend</a></span></enriched-content> attack.</p>",
-   "activityTypes": [
-    "utility"
-   ],
-   "expected": {},
-   "ignore": [
-    "range",
-    "target",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-200",
-   "lang": "en",
    "source": "dnd5e.actors24/Adult Copper Dragon/Slowing Breath",
    "name": "Slowing Breath",
    "html": "<p><em>Constitution Saving Throw:</em> DC <span>18</span>, each creature in a <span>60</span>-foot Cone.</p><p><em>Failure:</em> The target can't take Reactions; its Speed is halved; and it can take either an action or a Bonus Action on its turn, not both. This effect lasts until the end of its next turn.</p>",
@@ -5762,7 +5729,7 @@
    "facts": 2
   },
   {
-   "id": "c-en-201",
+   "id": "c-en-200",
    "lang": "en",
    "source": "dnd5e.actors24/Doppelganger/Slam",
    "name": "Slam",
@@ -5788,7 +5755,7 @@
    "facts": 1
   },
   {
-   "id": "c-en-202",
+   "id": "c-en-201",
    "lang": "en",
    "source": "dnd5e.actors24/Doppelganger/Unsettling Visage",
    "name": "Unsettling Visage",
@@ -5812,6 +5779,28 @@
     "skip"
    ],
    "facts": 1
+  },
+  {
+   "id": "c-en-202",
+   "lang": "en",
+   "source": "dnd5e.actors24/Krusk/Lay on Hands",
+   "name": "Lay on Hands",
+   "html": "<p>Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level.</p><p>As a Bonus Action, you can touch a creature (which could be yourself) and draw power from the pool of healing to restore a number of Hit Points to that creature, up to the maximum amount remaining in the pool.</p><p>You can also expend 5 Hit Points from the pool of healing power to remove the Poisoned condition from the creature; those points don't also restore Hit Points to the creature.</p>",
+   "activityTypes": [
+    "heal",
+    "utility"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
   },
   {
    "id": "c-en-203",
@@ -5846,27 +5835,6 @@
   {
    "id": "c-en-204",
    "lang": "en",
-   "source": "dnd5e.actors24/Randal/Tactical Mind",
-   "name": "Tactical Mind",
-   "html": "<p>You have a mind for tactics on and off the battlefield. When you fail an ability check, you can expend a use of your Second Wind to push yourself toward success. Rather than regaining Hit Points, you roll 1d10 and add the number rolled to the ability check, potentially turning it into a success. If the check still fails, this use of Second Wind isn't expended.</p>",
-   "activityTypes": [
-    "utility"
-   ],
-   "expected": {},
-   "ignore": [
-    "range",
-    "target",
-    "activation",
-    "uses",
-    "recharge",
-    "legendaryResistance",
-    "skip"
-   ],
-   "facts": 0
-  },
-  {
-   "id": "c-en-205",
-   "lang": "en",
    "source": "dnd5e.actors24/Quasit/Scare",
    "name": "Scare",
    "html": "<p><em>Wisdom Saving Throw:</em> DC <span>10</span>, one creature within <span>20</span> feet.</p><p><em>Failure:</em> The target has the <enriched-content><span><a>Frightened</a></span></enriched-content> condition. At the end of each of its turns, the target repeats the save, ending the effect on itself on a success. After 1 minute, it succeeds automatically.</p>",
@@ -5890,7 +5858,7 @@
    "facts": 1
   },
   {
-   "id": "c-en-206",
+   "id": "c-en-205",
    "lang": "en",
    "source": "dnd5e.actors24/Mage/Arcane Burst",
    "name": "Arcane Burst",
@@ -5913,6 +5881,29 @@
     "skip"
    ],
    "facts": 1
+  },
+  {
+   "id": "c-en-206",
+   "lang": "en",
+   "source": "dnd5e.actors24/Flaming Sphere/Flames",
+   "name": "Flames",
+   "html": "<p>You create a 5-foot-diameter sphere of fire in an unoccupied space on the ground within range. It lasts for the duration. Any creature that ends its turn within 5 feet of the sphere makes a Dexterity saving throw, taking 2d6 Fire damage on a failed save or half as much damage on a successful one.</p>",
+   "activityTypes": [
+    "save"
+   ],
+   "expected": {},
+   "ignore": [
+    "range",
+    "target",
+    "save",
+    "saveDamage",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 0
   },
   {
    "id": "c-en-207",

@@ -16,7 +16,9 @@ const mentions = (text, needle) => squash(text).includes(squash(needle));
 function damageTokens(labels, text, prefix) {
   const t = [];
   for ( const d of labels ?? [] ) {
-    if ( !d.formula || !d.damageType || !mentions(text, `(${d.formula})`) && !mentions(text, d.formula) ) continue;
+    if ( !d.formula || !d.damageType ) continue;
+    const f = squash(d.formula).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if ( !new RegExp(`${f}\\)?${d.damageType}`).test(squash(text)) ) continue;
     t.push(`${prefix}=${d.formula.replace(/\s/g, "")} ${d.damageType}`);
   }
   return t;
@@ -44,8 +46,8 @@ function build(x) {
       const parts = [];
       const reach = text.match(/reach (\d+) ?(?:ft|feet)/i);
       const range = text.match(/range (\d+)(?:\/(\d+))? ?(?:ft|feet)/i);
-      if ( reach && x.itemRange?.reach === Number(reach[1]) ) parts.push(`reach ${reach[1]}`);
-      if ( range && x.itemRange?.value === Number(range[1]) ) parts.push(`range ${range[1]}${range[2] ? `/${range[2]}` : ""}`);
+      if ( reach ) parts.push(`reach ${reach[1]}`);
+      if ( range ) parts.push(`range ${range[1]}${range[2] ? `/${range[2]}` : ""}`);
       if ( parts.length ) add("range", parts.join(" "));
     } else ignore.push("range");
     const tgt = text.match(/\bone (target|creature)\b/i);
@@ -81,7 +83,11 @@ function build(x) {
     else if ( found.length > 1 || emanation ) ignore.push("template");
   }
 
-  if ( /Hit: d+ damage/.test(text) ) ignore.push("damage");
+
+
+  if ( /\b(strength|dexterity|constitution|intelligence|wisdom|charisma) or (strength|dexterity|constitution|intelligence|wisdom|charisma)\b/i.test(text) ) ignore.push("save", "saveDamage");
+  if ( /\)\s+damage\b|\bextra \d+d\d+ damage|\d+d\d+ damage\b|Hit: \d+ damage/i.test(text) ) ignore.push("damage", "saveDamage");
+  if ( !expected.template && /(Cone|Line|Cube|Sphere|Cylinder|radius)/.test(text) && !ignore.includes("template") ) ignore.push("template");
 
   // Facts the plan models but the data cannot back up from the displayed text.
   ignore.push("activation", "uses", "recharge", "legendaryResistance", "skip");
