@@ -16,8 +16,13 @@ const FR_BONUS = [
   /\bbonus\s+de\s+\+(\d+)\s+[àa]\s+(?:la\s+|votre\s+)?(?:CA|classe\s+d['’]armure)(?![\p{L}])/iu,
   /\bbonus\s+(?:[àa]|de)\s+(?:la\s+|votre\s+)?(?:CA|classe\s+d['’]armure)\s+de\s+\+(\d+)/iu
 ];
+// "You have a bonus to AC while wearing this armor" (the number is in the name: "Breastplate +3")
+const EN_BONUS_UNNUMBERED = /\bbonus\s+to\s+(?:your\s+)?(?:AC|Armor\s+Class)\b[^.]*\bthis\s+(?:armou?r|shield)\b/iu;
+const FR_BONUS_UNNUMBERED = /\bbonus\s+[àa]\s+(?:la\s+|votre\s+)?(?:CA|classe\s+d['’]armure)(?![\p{L}])[^.]*\bcette\s+armure\b|\bbonus\s+[àa]\s+(?:la\s+|votre\s+)?(?:CA|classe\s+d['’]armure)(?![\p{L}])[^.]*\bce\s+bouclier\b/iu;
 const NAME_BONUS = /(?:^|[\s(,])\+(\d)(?![\d\p{L}])/u;
 const NAME_ARMOR = /\b(?:armou?r|shield|armure|bouclier)\b/iu;
+// Base armor names (dnd5e `armorIds`) in English and French
+const NAME_BASE = /\b(?:breastplate|chain\s+(?:mail|shirt)|half\s+plate|hide|(?:studded\s+)?leather|padded|plate|ring\s+mail|scale\s+mail|splint|cuirasse|(?:cotte|chemise)\s+de\s+mailles|demi-plate|peau|cuir(?:\s+clout[ée])?|matelass[ée]e?|harnois|broigne|[ée]cailles|clibanion)\b/iu;
 const NAME_SHIELD = /\b(?:shield|bouclier)\b/iu;
 
 const span = (kind, start, end, text) => ({ kind, start, end, text });
@@ -58,9 +63,13 @@ export function recognizeArmor(text, ctx = {}, meta = null) {
     if ( match[2] ) armor.dexCap = Number(match[2]);
     spans.push(span("armor", match.index, match.index + match[0].length, match[0]));
   }
-  // An equipment named "Leather Armor +3" / "Shield +2" is armor even when its text says nothing about it
+  // An equipment named "Leather Armor +3" / "Shield +2" / "Breastplate +3" is armor even when its text says nothing
+  // about it, or only "a bonus to AC while wearing this armor" without the number
   const nameBonus = String(ctx.name ?? "").match(NAME_BONUS);
-  const fromName = Boolean(nameBonus) && NAME_ARMOR.test(ctx.name) && !meta?.kind
+  const unnumbered = (hasLang(ctx, "en") && EN_BONUS_UNNUMBERED.test(source))
+    || (hasLang(ctx, "fr") && FR_BONUS_UNNUMBERED.test(source));
+  const fromName = Boolean(nameBonus) && !meta?.kind
+    && (NAME_ARMOR.test(ctx.name) || NAME_BASE.test(ctx.name) || unnumbered)
     && (!ctx.itemType || ["equipment", "armor"].includes(ctx.itemType));
   const isArmor = meta?.kind === "armor" || acMatch || fromName;
   if ( !isArmor ) return { fact: null, spans: [], ambiguous: [], notes: [] };
