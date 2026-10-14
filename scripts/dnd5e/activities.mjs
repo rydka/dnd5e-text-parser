@@ -82,13 +82,14 @@ function buildTarget(plan, keys, include) {
  * @param {string} type
  * @param {object} plan
  * @param {object} context
+ * @param {boolean} [consume=true]  Add the `itemUses` consumption target (only the first activity of a feature does).
  * @returns {object}
  */
-function baseActivity(type, plan, { keys, idGen }) {
+function baseActivity(type, plan, { keys, idGen }, consume = true) {
   const activity = { _id: idGen(), type };
   const activation = buildActivation(plan.activation, keys);
   if ( activation ) activity.activation = activation;
-  if ( plan.uses || plan.recharge ) {
+  if ( consume && (plan.uses || plan.recharge) ) {
     activity.consumption = { targets: [{ type: "itemUses", target: "", value: "1", scaling: {} }] };
   }
   return activity;
@@ -129,7 +130,7 @@ export function toActivities(plan, { keys, idGen, item, lang = "en" } = {}) {
   }
 
   if ( plan.save?.ability && isValidKey(keys, "abilities", plan.save.ability) ) {
-    const save = baseActivity("save", plan, context);
+    const save = baseActivity("save", plan, context, !activities.length);
     save.save = { ability: [plan.save.ability], dc: { calculation: "", formula: String(plan.save.dc) } };
     save.damage = {
       onSave: plan.save.onSave ?? "none",
