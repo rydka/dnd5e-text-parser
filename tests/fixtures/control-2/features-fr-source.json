@@ -1,0 +1,152 @@
+[
+ {
+  "from": "d-en-2",
+  "name": "Souffle glacial",
+  "html": "<p>Le loup arctique expire un souffle de vent glacial dans un cône de 4,50 m. Chaque créature dans cette zone doit faire un jet de sauvegarde de Dextérité DD 12, subissant 18 (4d8) dégâts de froid en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "d-en-8",
+  "name": "Massue",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +6 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 13 (2d8 + 4) dégâts contondants.</p>"
+ },
+ {
+  "from": "d-en-15",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +3 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 4 (1d6 + 1) dégâts perforants.</p>"
+ },
+ {
+  "from": "d-en-23",
+  "name": "Griffe",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +7 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 11 (2d6 + 4) dégâts tranchants.</p>"
+ },
+ {
+  "from": "d-en-64",
+  "name": "Sabots",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +6 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 13 (2d8 + 4) dégâts contondants plus 7 (2d6) dégâts de feu.</p>"
+ },
+ {
+  "from": "d-en-85",
+  "name": "Coup de corne",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +9 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 24 (4d8 + 6) dégâts perforants.</p>"
+ },
+ {
+  "from": "d-en-95",
+  "name": "Tentacule",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +17 pour toucher, allonge 9 m, une créature. <em>Touché :</em> 20 (3d6 + 10) dégâts contondants.</p>"
+ },
+ {
+  "from": "d-en-114",
+  "name": "Morsure (forme de rat ou hybride uniquement)",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 4 (1d4 + 2) dégâts perforants. Si la cible est un humanoïde, elle doit réussir un jet de sauvegarde de Constitution DD 11 sous peine d'être maudite et de contracter la lycanthropie du rat-garou.</p>"
+ },
+ {
+  "from": "d-en-134",
+  "name": "Épée longue",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +14 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 21 (3d8 + 8) dégâts tranchants plus 13 (3d8) dégâts de foudre.</p>"
+ },
+ {
+  "from": "d-en-143",
+  "name": "Projection de flammes",
+  "html": "<p><em>Attaque de sort à distance :</em> +5 pour toucher, portée 45 m, une cible. <em>Touché :</em> 10 (3d6) dégâts de feu. Si la cible est un objet inflammable qui n'est ni porté ni tenu, il prend feu.</p>"
+ },
+ {
+  "from": "d-en-159",
+  "name": "Souffle d'acide",
+  "html": "<p>Le jeune dragon noir expire de l'acide en une ligne de 4,50 m de long et 1,50 m de large. Chaque créature dans cette ligne doit faire un jet de sauvegarde de Dextérité DD 11, subissant 22 (5d8) dégâts d'acide en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "d-en-167",
+  "name": "Coup",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +8 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 14 (2d8 + 5) dégâts contondants.</p>"
+ },
+ {
+  "from": "d-en-178",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +11 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 17 (2d10 + 6) dégâts perforants plus 7 (2d6) dégâts de poison.</p>"
+ },
+ {
+  "from": "d-en-187",
+  "name": "Coup de corne",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +9, allonge 1,50 m. <em>Touché :</em> 19 (2d12 + 6) dégâts perforants.</p>"
+ },
+ {
+  "from": "d-en-197",
+  "name": "Arc long",
+  "html": "<p><em>Jet d'attaque à distance :</em> +3, portée 45/180 m. <em>Touché :</em> 5 (1d8 + 1) dégâts perforants plus 7 (3d4) dégâts de poison.</p>"
+ },
+ {
+  "from": "d-en-241",
+  "name": "Arbalète de poing",
+  "html": "<p><em>Jet d'attaque à distance :</em> +4, portée 9/36 m. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants plus 7 (2d6) dégâts de poison.</p>"
+ },
+ {
+  "from": "d-en-265",
+  "name": "Déchirure",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +15, allonge 1,50 m. <em>Touché :</em> 17 (2d8 + 8) dégâts tranchants plus 9 (2d8) dégâts d'acide.</p>"
+ },
+ {
+  "from": "d-en-281",
+  "name": "Souffle de foudre",
+  "html": "<p><em>Jet de sauvegarde de Dextérité :</em> DD 23, chaque créature dans une ligne de 36 m de long et 3 m de large. <em>Échec :</em> 88 (16d10) dégâts de foudre. <em>Réussite :</em> demi-dégâts.</p>"
+ },
+ {
+  "from": "d-en-301",
+  "name": "Corne radieuse",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +7, allonge 1,50 m. <em>Touché :</em> 9 (1d10 + 4) dégâts radiants.</p>"
+ },
+ {
+  "from": "d-en-310",
+  "name": "Constriction",
+  "html": "<p><em>Jet de sauvegarde de Force :</em> DD 14, une créature de taille G ou inférieure que le serpent peut voir à moins de 3 m. <em>Échec :</em> 13 (2d8 + 4) dégâts contondants, et la cible est agrippée (DD d'évasion 14).</p>"
+ },
+ {
+  "from": "d-en-4",
+  "name": "Griffe",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +15 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 22 (4d6 + 8) dégâts tranchants.</p>"
+ },
+ {
+  "from": "d-en-10",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +16 pour toucher, allonge 4,50 m, une cible. <em>Touché :</em> 20 (2d10 + 9) dégâts perforants plus 11 (2d10) dégâts de foudre.</p>"
+ },
+ {
+  "from": "d-en-18",
+  "name": "Souffle de foudre",
+  "html": "<p>Le dragon expire de la foudre en une ligne de 9 m de long et 1,50 m de large. Chaque créature dans cette ligne doit faire un jet de sauvegarde de Dextérité DD 12, subissant 22 (4d10) dégâts de foudre en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "d-en-35",
+  "name": "Arbalète lourde",
+  "html": "<p><em>Attaque d'arme à distance :</em> +2 pour toucher, portée 30/120 m, une cible. <em>Touché :</em> 5 (1d10) dégâts perforants.</p>"
+ },
+ {
+  "from": "d-en-62",
+  "name": "Arc court",
+  "html": "<p><em>Attaque d'arme à distance :</em> +4 pour toucher, portée 24/96 m, une cible. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants.</p>"
+ },
+ {
+  "from": "d-en-86",
+  "name": "Queue",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +8 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 14 (2d8 + 5) dégâts contondants. Si la cible est une créature, elle doit réussir un jet de sauvegarde de Force DD 16 ou être jetée à terre.</p>"
+ },
+ {
+  "from": "d-en-96",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +17 pour toucher, allonge 4,50 m, une cible. <em>Touché :</em> 21 (2d10 + 10) dégâts perforants.</p>"
+ },
+ {
+  "from": "d-en-129",
+  "name": "Souffle empoisonné",
+  "html": "<p>Le golem de fer expire un gaz empoisonné dans un cône de 4,50 m. Chaque créature dans cette zone doit faire un jet de sauvegarde de Constitution DD 19, subissant 45 (10d8) dégâts de poison en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "d-en-136",
+  "name": "Dard",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +7 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 11 (2d6 + 4) dégâts perforants. La cible doit faire un jet de sauvegarde de Constitution DD 15, subissant 24 (7d6) dégâts de poison en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "d-en-44",
+  "name": "Poing",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +2 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 2 (1d4) dégâts contondants.</p>"
+ }
+]

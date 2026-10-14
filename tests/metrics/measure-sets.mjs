@@ -1,6 +1,6 @@
 // Measures M2 (recall) and M3 (precision, critical errors) per language and per category, on the reference set
 // ("adjustment") or the control set ("generalization"). Never fails: prints and writes JSON.
-//   node tests/metrics/measure-sets.mjs --set=reference|control [--out=<file.json>]
+//   node tests/metrics/measure-sets.mjs --set=reference|control|control-2 [--out=<file.json>]
 import fs from "node:fs";
 import path from "node:path";
 import * as P from "../../scripts/index.mjs";
@@ -10,11 +10,11 @@ import { compare, expectedFeatureTokens, expectedItemTokens, isCritical, produce
 const arg = (n) => process.argv.find(a => a.startsWith(`--${n}=`))?.slice(n.length + 3);
 const set = arg("set") ?? "reference";
 const out = arg("out");
-const control = path.resolve(FIXTURES, "../control");
+const control = path.resolve(FIXTURES, "..", set);
 const readControl = (f) => JSON.parse(fs.readFileSync(path.join(control, f), "utf8")).cases;
 
 let features, objects;
-if ( set === "control" ) {
+if ( set !== "reference" ) {
   features = [...readControl("features-en.json"), ...readControl("features-fr.json")];
   objects = readControl("objects.json");
 } else {

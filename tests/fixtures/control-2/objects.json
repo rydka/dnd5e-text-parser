@@ -1,0 +1,797 @@
+{
+ "description": "Second control set: compendium items, truth annotated by hand from what each name and description state.",
+ "cases": [
+  {
+   "id": "o2-1",
+   "lang": "en",
+   "source": "dnd5e.items/Frost Brand Scimitar",
+   "name": "Frost Brand Scimitar",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>When you hit with an attack using this magic sword, the target takes an extra 1d6 cold damage. In addition, while you hold the sword, you have resistance to fire damage.</p>\n<p>In freezing temperatures, the blade sheds bright light in a 10-foot radius and dim light for an additional 10 feet.</p>\n<p>When you draw this weapon, you can extinguish all nonmagical flames within 30 feet of you. This property can be used no more than once per hour.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.baseItem": "scimitar"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-2",
+   "lang": "en",
+   "source": "dnd5e.items/Brooch of Shielding",
+   "name": "Brooch of Shielding",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While wearing this brooch, you have resistance to force damage, and you have immunity to damage from the <em>@UUID[Compendium.dnd5e.spells.Item.41JIhpDyM9Anm7cs]{Magic Missile}</em> spell.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-3",
+   "lang": "en",
+   "source": "dnd5e.items/Carpet of Flying (3x5)",
+   "name": "Carpet of Flying (3x5)",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item</em></p><p>You can speak the carpet's command word as an action to make the carpet hover and fly. It moves according to your spoken directions, provided that you are within 30 feet of it.</p><p>This carpet is 3 ft. x 5 ft. and has a speed of 80 feet carrying up to 200 lb, or half that speed when carrying up to 400 lb.</p>\n<p>Four sizes of carpet of flying exist. The GM chooses the size of a given carpet or determines it randomly from the @UUID[Compendium.dnd5e.tables.RollTable.Z2OG7jt9R8zofxnJ]{Carpet of Flying} table.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-4",
+   "lang": "en",
+   "source": "dnd5e.items/Dragon Slayer Greatsword",
+   "name": "Dragon Slayer Greatsword",
+   "itemType": "weapon",
+   "html": "<p>You gain a +1 bonus to attack and damage rolls made with this magic weapon.</p><p>When you hit a dragon with this weapon, the dragon takes an extra 3d6 damage of the weapon's type. For the purpose of this weapon, \"dragon\" refers to any creature with the dragon type, including dragon turtles and wyverns.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "greatsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-5",
+   "lang": "en",
+   "source": "dnd5e.items/Vicious Lance",
+   "name": "Vicious Lance",
+   "itemType": "weapon",
+   "html": "<p>A shining steel tip to puncture the hardiest of foe's defences, driven in by the force of a galloping steed. Although best suited for mounted combat, the lance can be brought to lethal effect on foot in the right hands.</p>\n<p>When you roll a 20 on your attack roll with this magic weapon, your critical hit deals an extra 2d6 damage of the weapon's type.</p>\n<p><strong>Special</strong>. You have disadvantage when you use a lance to attack a target within 5 feet of you. Also, a lance requires two hands to wield when you aren't mounted.</p>",
+   "expected": {
+    "weapon.baseItem": "lance"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-6",
+   "lang": "en",
+   "source": "dnd5e.items/Ring of Free Action",
+   "name": "Ring of Free Action",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>While you wear this ring, difficult terrain doesn't cost you extra movement. In addition, magic can neither reduce your speed nor cause you to be paralyzed or restrained.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-7",
+   "lang": "en",
+   "source": "dnd5e.items/Mithral Ring Mail",
+   "name": "Mithral Ring Mail",
+   "itemType": "equipment",
+   "html": "<p>Mithral is a light, flexible metal. A mithral chain shirt or breastplate can be worn under normal clothes. If the armor normally imposes disadvantage on Dexterity (Stealth) checks or has a Strength requirement, the mithral version of the armor doesn't.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-8",
+   "lang": "en",
+   "source": "dnd5e.items/Tome of Understanding",
+   "name": "Tome of Understanding",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item</em></p>\n<p>This book contains intuition and insight exercises, and its words are charged with magic. If you spend 48 hours over a period of 6 days or fewer studying the book's contents and practicing its guidelines, your Wisdom score increases by 2, as does your maximum for that score. The manual then loses its magic, but regains it in a century.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-9",
+   "lang": "en",
+   "source": "dnd5e.items/Boots of Speed",
+   "name": "Boots of Speed",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While you wear these boots, you can use a bonus action and click the boots' heels together. If you do, the boots double your walking speed, and any creature that makes an opportunity attack against you has disadvantage on the attack roll. If you click your heels together again, you end the effect.</p>\n<p>When the boots' property has been used for a total of 10 minutes, the magic ceases to function until you finish a long rest.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-10",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Speed",
+   "name": "Potion of Speed",
+   "itemType": "consumable",
+   "html": "<p><em>The potion's yellow fluid is streaked with black and swirls on its own.</em></p><p>When you drink this potion, you gain the effect of the @UUID[Compendium.dnd5e.spells.Item.Szvk5FEVQW3uhJi5]{haste} spell for [[lookup @labels.duration activity=Hy33WqORkn5GhlSZ]] (no concentration required).</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-11",
+   "lang": "en",
+   "source": "dnd5e.items/Ring Mail +1",
+   "name": "Ring Mail +1",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-12",
+   "lang": "en",
+   "source": "dnd5e.items/Breastplate +3",
+   "name": "Breastplate +3",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 3
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-13",
+   "lang": "en",
+   "source": "dnd5e.items/Vicious Shortsword",
+   "name": "Vicious Shortsword",
+   "itemType": "weapon",
+   "html": "<p>A medium sized blade with a firm crossguard and a leather-wrapped handle. A versatile weapon which makes up in versatility what it lacks in reach.</p>\n<p>When you roll a 20 on your attack roll with this magic weapon, your critical hit deals an extra 2d6 damage of the weapon's type.</p>",
+   "expected": {
+    "weapon.baseItem": "shortsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-14",
+   "lang": "en",
+   "source": "dnd5e.items/Frost Brand Shortsword",
+   "name": "Frost Brand Shortsword",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>When you hit with an attack using this magic sword, the target takes an extra 1d6 cold damage. In addition, while you hold the sword, you have resistance to fire damage.</p>\n<p>In freezing temperatures, the blade sheds bright light in a 10-foot radius and dim light for an additional 10 feet.</p>\n<p>When you draw this weapon, you can extinguish all nonmagical flames within 30 feet of you. This property can be used no more than once per hour.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.baseItem": "shortsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-15",
+   "lang": "en",
+   "source": "dnd5e.items/Dagger of Venom",
+   "name": "Dagger of Venom",
+   "itemType": "weapon",
+   "html": "<p>You gain a +1 bonus to attack and damage rolls made with this magic weapon.</p>\n<p>You can use an action to cause thick, black poison to coat the blade. The poison remains for 1 minute or until an attack using this weapon hits a creature. That creature must succeed on a DC 15 Constitution saving throw or take 2d10 poison damage and become poisoned for 1 minute. The dagger can't be used this way again until the next dawn.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "dagger"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-16",
+   "lang": "en",
+   "source": "dnd5e.items/Boots of Striding and Springing",
+   "name": "Boots of Striding and Springing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While you wear these boots, your walking speed becomes 30 feet, unless your walking speed is higher, and your speed isn't reduced if you are encumbered or wearing heavy armor. In addition, you can jump three times the normal distance, though you can't jump farther than your remaining movement would allow.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-17",
+   "lang": "en",
+   "source": "dnd5e.items/Holy Avenger Shortsword",
+   "name": "Holy Avenger Shortsword",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement by a paladin)</em></p>\n<p>You gain a +3 bonus to attack and damage rolls made with this magic weapon. When you hit a fiend or an undead with it, that creature takes an extra 2d10 radiant damage.</p>\n<p>While you hold the drawn sword, it creates an aura in a 10-foot radius around you. You and all creatures friendly to you in the aura have advantage on saving throws against spells and other magical effects. If you have 17 or more levels in the paladin class, the radius of the aura increases to 30 feet.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "a paladin",
+    "weapon.magicalBonus": 3,
+    "weapon.baseItem": "shortsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-18",
+   "lang": "en",
+   "source": "dnd5e.items/Hide Armor of Resistance",
+   "name": "Hide Armor of Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>You have resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly from the @UUID[Compendium.dnd5e.tables.RollTable.VRqG3F72ebgNHyVR]{Armor of Resistance} table.\n</p><p> </p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-19",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Thunder Resistance",
+   "name": "Potion of Thunder Resistance",
+   "itemType": "consumable",
+   "html": "<p><em>The potion is a plain indescriminate color and smells slightly foul.</em></p><p>When you drink this potion, you gain resistance to thunder damage for [[lookup @labels.duration activity=sphH4mVrVY0W7Plg]].</p><section id=\"secret-Y18F2aGMVSA64GXJ\" class=\"secret\"><p><strong>Foundry Note</strong></p><p>For other potions of resistance, roll on the @UUID[Compendium.dnd5e.tables.RollTable.JzLOE4IxcmxjLLuz]{Potion of Resistance} table.</p></section>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-20",
+   "lang": "en",
+   "source": "dnd5e.items/Amulet of Health",
+   "name": "Amulet of Health",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item (requires attunement)</em></p>\n<p>Your Constitution score is 19 while you wear this amulet. It has no effect on you if your Constitution is already 19 or higher without it.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [
+    {
+     "kind": "abilityScore",
+     "scope": "con",
+     "value": 19
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o2-21",
+   "lang": "en",
+   "source": "dnd5e.items/Giant Slayer Rapier",
+   "name": "Giant Slayer Rapier",
+   "itemType": "weapon",
+   "html": "<p>You gain a +1 bonus to attack and damage rolls made with this magic weapon.</p>\n<p>When you hit a giant with it, the giant takes an extra 2d6 damage of the weapon's type and must succeed on a DC 15 Strength saving throw or fall prone. For the purpose of this weapon, \"giant\" refers to any creature with the giant type, including ettins and trolls.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "rapier"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-22",
+   "lang": "en",
+   "source": "dnd5e.items/Ring of Regeneration",
+   "name": "Ring of Regeneration",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p><p>While wearing this ring, you regain 1d6 hit points every 10 minutes, provided that you have at least 1 hit point. If you lose a body part, the ring causes the missing part to regrow and return to full functionality after [[/r 1d6 + 1]] days if you have at least 1 hit point the whole time.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-23",
+   "lang": "en",
+   "source": "dnd5e.items/Gloves of Missile Snaring",
+   "name": "Gloves of Missile Snaring",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>These gloves seem to almost meld into your hands when you don them. When a ranged weapon attack hits you while you're wearing them, you can use your reaction to reduce the damage by 1d10 + your Dexterity modifier, provided that you have a free hand. If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in that hand.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-24",
+   "lang": "en",
+   "source": "dnd5e.items/Flame Tongue Rapier",
+   "name": "Flame Tongue Rapier",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>You can use a bonus action to speak this magic sword's command word, causing flames to erupt from the blade. These flames shed bright light in a 40-foot radius and dim light for an additional 40 feet. While the sword is ablaze, it deals an extra 2d6 fire damage to any target it hits. The flames last until you use a bonus action to speak the command word again or until you drop or sheathe the sword.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.baseItem": "rapier"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-25",
+   "lang": "en",
+   "source": "dnd5e.items/Mithral Scale Mail",
+   "name": "Mithral Scale Mail",
+   "itemType": "equipment",
+   "html": "<p>Mithral is a light, flexible metal. A mithral chain shirt or breastplate can be worn under normal clothes. If the armor normally imposes disadvantage on Dexterity (Stealth) checks or has a Strength requirement, the mithral version of the armor doesn't.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-26",
+   "lang": "en",
+   "source": "dnd5e.items/Half Plate Armor of Resistance",
+   "name": "Half Plate Armor of Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>You have resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly from the @UUID[Compendium.dnd5e.tables.RollTable.VRqG3F72ebgNHyVR]{Armor of Resistance} table.\n</p><p> </p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-27",
+   "lang": "en",
+   "source": "dnd5e.items/Winged Boots",
+   "name": "Winged Boots",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While you wear these boots, you have a flying speed equal to your walking speed. You can use the boots to fly for up to 4 hours, all at once or in several shorter flights, each one using a minimum of 1 minute from the duration. If you are flying when the duration expires, you descend at a rate of 30 feet per round until you land.</p>\n<p>The boots regain 2 hours of flying capability for every 12 hours they aren't in use.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-28",
+   "lang": "en",
+   "source": "dnd5e.items/Staff of Withering",
+   "name": "Staff of Withering",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p><p>This staff has 3 charges and regains 1d3 expended charges daily at dawn.</p><p>The staff can be wielded as a magic quarterstaff. On a hit, it deals damage as a normal quarterstaff, and you can expend 1 charge to deal an extra [[/damage 2d10 necrotic]] damage to the target. In addition, the target must succeed on a DC 15 Constitution saving throw or have disadvantage for 1 hour on any ability check or saving throw that uses Strength or Constitution.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o2-29",
+   "lang": "en",
+   "source": "dnd5e.items/Rapier of Life Stealing",
+   "name": "Rapier of Life Stealing",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>When you attack a creature with this magic weapon and roll a 20 on the attack roll, that target takes an extra 3d6 necrotic damage, provided that the target isn't a construct or an undead. You gain temporary hit points equal to the extra damage dealt.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.baseItem": "rapier"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-30",
+   "lang": "en",
+   "source": "dnd5e.items/Breastplate +2",
+   "name": "Breastplate +2",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-31",
+   "lang": "en",
+   "source": "dnd5e.items/Hide Armor +2",
+   "name": "Hide Armor +2",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-32",
+   "lang": "en",
+   "source": "dnd5e.items/Holy Avenger Greatsword",
+   "name": "Holy Avenger Greatsword",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement by a paladin)</em></p>\n<p>You gain a +3 bonus to attack and damage rolls made with this magic weapon. When you hit a fiend or an undead with it, that creature takes an extra 2d10 radiant damage.</p>\n<p>While you hold the drawn sword, it creates an aura in a 10-foot radius around you. You and all creatures friendly to you in the aura have advantage on saving throws against spells and other magical effects. If you have 17 or more levels in the paladin class, the radius of the aura increases to 30 feet.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "a paladin",
+    "weapon.magicalBonus": 3,
+    "weapon.baseItem": "greatsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-33",
+   "lang": "en",
+   "source": "dnd5e.items/Belt of Storm Giant Strength",
+   "name": "Belt of Storm Giant Strength",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item (requires attunement)</em></p><p>While wearing this belt, your Strength score changes to 29. If your Strength is already equal to or greater than the belt's score, the item has no effect on you.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [
+    {
+     "kind": "abilityScore",
+     "scope": "str",
+     "value": 29
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o2-34",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Lightning Resistance",
+   "name": "Potion of Lightning Resistance",
+   "itemType": "consumable",
+   "html": "<p><em>The potion is a plain indescriminate color and smells slightly foul.</em></p><p>When you drink this potion, you gain resistance to lightning damage for [[lookup @labels.duration activity=pKltvikkvHLlLjXo]].</p><section id=\"secret-hGgZvWraAwH7ge8U\" class=\"secret\"><p><strong>Foundry Note</strong></p><p>For other potions of resistance, roll on the @UUID[Compendium.dnd5e.tables.RollTable.JzLOE4IxcmxjLLuz]{Potion of Resistance} table.</p></section>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-35",
+   "lang": "en",
+   "source": "dnd5e.items/Shield of Missile Attraction",
+   "name": "Shield of Missile Attraction",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>While holding this shield, you have resistance to damage from ranged weapon attacks.</p>\n<p><strong>Curse</strong>. This shield is cursed. Attuning to it curses you until you are targeted by the @UUID[Compendium.dnd5e.spells.Item.XZhdgVK3cLoxNCQl]{Remove Curse} spell or similar magic. Removing the shield fails to end the curse on you. Whenever a ranged weapon attack is made against a target within 10 feet of you, the curse causes you to become the target instead.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-36",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Flying",
+   "name": "Potion of Flying",
+   "itemType": "consumable",
+   "html": "<p><em>This potion's clear liquid floats at the top of its container and has cloudy white impurities drifting in it.</em></p><p>When you drink this potion, you gain a flying speed equal to your walking speed for [[lookup @labels.duration activity=dQ5KoAo9EfRNjkIg]] and can hover. If you're in the air when the potion wears off, you fall unless you have some other means of staying aloft.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-37",
+   "lang": "en",
+   "source": "dnd5e.items/Breastplate +1",
+   "name": "Breastplate +1",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-38",
+   "lang": "en",
+   "source": "dnd5e.items/Scale Mail +3",
+   "name": "Scale Mail +3",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 3
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o2-39",
+   "lang": "en",
+   "source": "dnd5e.items/Ring of Evasion",
+   "name": "Ring of Evasion",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>This ring has 3 charges, and it regains 1d3 expended charges daily at dawn. When you fail a Dexterity saving throw while wearing it, you can use your reaction to expend 1 of its charges to succeed on that saving throw instead.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o2-40",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Eyes of the Eagle",
+   "name": "Eyes of the Eagle",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Uncommon</em></p></div><p>These crystal lenses fit over the eyes. While wearing them, you have Advantage on Wisdom (Perception) checks that rely on sight. In conditions of clear visibility, you can make out details of even extremely distant creatures and objects as small as 2 feet across.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [
+    {
+     "kind": "advantage",
+     "scope": "prc",
+     "value": null
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o2-41",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Scimitar of Speed",
+   "name": "Scimitar of Speed",
+   "itemType": "weapon",
+   "html": "<p><em>Weapon (@UUID[Compendium.dnd5e.equipment24.Item.phbwepScimitar00]{Scimitar}), Very Rare (Requires Attunement)</em></p><p>You gain a +2 bonus to attack rolls and damage rolls made with this magic weapon. In addition, you can make one attack with it as a Bonus Action on each of your turns.</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "attunement": "required",
+    "weapon.baseItem": "scimitar",
+    "weapon.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-42",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ring of Free Action",
+   "name": "Ring of Free Action",
+   "itemType": "equipment",
+   "html": "<p><em>Ring, Rare (Requires Attunement)</em></p><p>While you wear this ring, &amp;Reference[Difficult Terrain] doesn't cost you extra movement. In addition, magic can neither reduce any of your Speeds nor cause you to have the &amp;Reference[Paralyzed apply=false] or &amp;Reference[Restrained apply=false] condition.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-43",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Belt of Giant Strength (storm)",
+   "name": "Belt of Giant Strength (storm)",
+   "itemType": "equipment",
+   "html": "<div><p><em>See: @UUID[Compendium.dnd5e.equipment24.Item.dmgBeltOfGiantSt]</em></p><p>While wearing this belt, your Strength changes to 29. The type of giant determines the score. The item has no effect on you if your Strength without the belt is equal to or greater than 29.</p></div>",
+   "expected": {},
+   "effects": [
+    {
+     "kind": "abilityScore",
+     "scope": "str",
+     "value": 29
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o2-44",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Giant Strength (Storm)",
+   "name": "Potion of Giant Strength (Storm)",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Legendary</em></p><p>When you drink this potion, your Strength score changes for 1 hour to 29. The type of giant determines the score. The potion has no effect on you if your Strength is equal to or greater than that score.</p><p>This potion's transparent liquid has floating in it a sliver of light resembling a giant's fingernail.</p>",
+   "expected": {
+    "rarity": "legendary",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-45",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Speed",
+   "name": "Potion of Speed",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Very Rare</em></p><p>When you drink this potion, you gain the effect of the @UUID[Compendium.dnd5e.spells24.Item.phbsplHaste00000]{Haste} spell for 1 minute (no Concentration required) without suffering the wave of lethargy that typically occurs when the effect ends.</p><p>This potion's yellow fluid is streaked with black and swirls on its own.</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-46",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Staff of Healing",
+   "name": "Staff of Healing",
+   "itemType": "weapon",
+   "html": "<p><em>@UUID[Compendium.dnd5e.equipment24.Item.phbafcStaffalsoa]{Staff}, Rare (Requires Attunement by a Bard, Cleric, or Druid)</em></p><p>This staff has 10 charges. While holding the staff, you can cast one of the spells on the following table from it, using your spellcasting ability modifier. The table indicates how many charges you must expend to cast the spell.</p><table><thead><tr><th><p>Spell</p></th><th><p>Charge Cost</p></th><th></th></tr></thead><tbody><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplCureWounds]{Cure Wounds}</p></td><td><p>1 charge per spell level (maximum 4 for a <span>level 4</span> spell)</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplLesserRest]{Lesser Restoration}</p></td><td><p>2</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplMassCureWo]{Mass Cure Wounds}</p></td><td><p>5</p></td><td></td></tr></tbody></table><p><em><strong>Regaining Charges.</strong></em> The staff regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll [[/r 1d20]]. On a 1, the staff vanishes in a flash of light, lost forever.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required",
+    "attunementCondition": "a bard, cleric, or druid"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o2-47",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Staff of Charming",
+   "name": "Staff of Charming",
+   "itemType": "weapon",
+   "html": "<p><em>@UUID[Compendium.dnd5e.equipment24.Item.phbafcStaffalsoa]{Staff}, Rare (Requires Attunement by a Bard, Cleric, Druid, Sorcerer, Warlock, or Wizard)</em></p><p>This staff has 10 charges. While holding the staff, you can use any of its properties:</p><p><strong>Cast Spell.</strong> You can expend 1 of the staff's charges to cast @UUID[Compendium.dnd5e.spells24.Item.phbsplCharmPerso]{Charm Person}, @UUID[Compendium.dnd5e.spells24.Item.phbsplCommand000]{Command}, or @UUID[Compendium.dnd5e.spells24.Item.phbsplComprehend]{Comprehend Languages} from it using your spell save DC.</p><p><strong>Reflect Enchantment.</strong> If you succeed on a saving throw against an Enchantment spell that targets only you, you can take a Reaction to expend 1 charge from the staff and turn the spell back on its caster as if you had cast the spell.</p><p><strong>Resist Enchantment.</strong> If you fail a saving throw against an Enchantment spell that targets only you, you can turn your failed save into a successful one. You can't use this property of the staff again until the next dawn.</p><p><em><strong>Regaining Charges.</strong></em> The staff regains 1d8 + 2 expended charges daily at dawn. If you expend the last charge, roll 1d20. On a 1, the staff crumbles to dust and is destroyed.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required",
+    "attunementCondition": "a bard, cleric, druid, sorcerer, warlock, or wizard"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o2-48",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Staff of the Magi",
+   "name": "Staff of the Magi",
+   "itemType": "weapon",
+   "html": "<p><em>@UUID[Compendium.dnd5e.equipment24.Item.phbafcStaffalsoa]{Staff}, Legendary (Requires Attunement by a Sorcerer, Warlock, or Wizard)</em></p><p>This staff has 50 charges and can be wielded as a magic Quarterstaff that grants a +2 bonus to attack rolls and damage rolls made with it. While you hold it, you gain a +2 bonus to spell attack rolls.</p><p><em><strong>Spell Absorption.</strong></em> While holding the staff, you have Advantage on saving throws against spells. In addition, you can take a Reaction when another creature casts a spell that targets only you. If you do, the staff absorbs the magic of the spell, canceling its effect and gaining a number of charges equal to the absorbed spell's level. However, if doing so brings the staff's total number of charges above 50, the staff explodes as if you activated its Retributive Strike (see below).</p><p><em><strong>Spells.</strong></em> While holding the staff, you can cast one of the spells on the following table from it, using your spell save DC. The table indicates how many charges you must expend to cast the spell.</p><details><summary>Spell Cost Table</summary><table><thead><tr><th><p>Spell</p></th><th><p>Charge Cost</p></th><th></th></tr></thead><tbody><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplArcaneLock]{Arcane Lock}</p></td><td><p>0</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplConjureEle]{Conjure Elemental}</p></td><td><p>7</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplDetectMagi]{Detect Magic}</p></td><td><p>0</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplDispelMagi]{Dispel Magic}</p></td><td><p>3</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplEnlargeRed]{Enlarge/Reduce}</p></td><td><p>0</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplFireball00]{Fireball} (level 7 version)</p></td><td><p>7</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplFlamingSph]{Flaming Sphere}</p></td><td><p>2</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplIceStorm00]{Ice Storm}</p></td><td><p>4</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplInvisibili]{Invisibility}</p></td><td><p>2</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplKnock00000]{Knock}</p></td><td><p>2</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplLight00000]{Light}</p></td><td><p>0</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplLightningB]{Lightning Bolt} (level 7 version)</p></td><td><p>7</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplMageHand00]{Mage Hand}</p></td><td><p>0</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplPasswall00]{Passwall}</p></td><td><p>5</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplPlaneShift]{Plane Shift}</p></td><td><p>7</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbEvilAndGoodPr]{Protection from Evil and Good}</p></td><td><p>0</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplTelekinesi]{Telekinesis}</p></td><td><p>5</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplWallofFire]{Wall of Fire}</p></td><td><p>4</p></td><td></td></tr><tr><td><p>@UUID[Compendium.dnd5e.spells24.Item.phbsplWeb0000000]{Web}</p></td><td><p>2</p></td><td></td></tr></tbody></table></details><p><em><strong>Regaining Charges.</strong></em> The staff regains 4d6 + 2 expended charges daily at dawn. If you expend the last charge, roll [[/r 1d20]]. On a 20, the staff regains [[/r 1d12 + 1]] charges.</p><p><em><strong>Retributive Strike.</strong></em> You can take a Magic action to break the staff over your knee or against a solid surface. The staff is destroyed and releases its magic in an explosion that fills a 30-foot Emanation originating from itself. You have a 50 percent chance to instantly travel to a random plane of existence, avoiding the explosion ([[/r 1d2]], teleported on a 1). If you fail to avoid the effect, you take Force damage equal to 16 times the number of charges in the staff. Each other creature in the area makes a DC 17 Dexterity saving throw. On a failed save, a creature takes Force damage equal to 6 times the number of charges in the staff. On a successful save, a creature takes half as much damage.</p><section class=\"secret\" id=\"secret-aWlDNImPrAgu7dbv\"><p><strong>Foundry Note</strong></p><p>The <strong>Spell Absorption</strong> activity allows you to select the level of the cast spell and restores that number of charges.</p></section>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required",
+    "attunementCondition": "a sorcerer, warlock, or wizard"
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o2-49",
+   "lang": "en",
+   "source": "dnd5e.items/Staff of the Woodlands",
+   "name": "Staff of the Woodlands",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement by a druid)</em></p><p>This staff can be wielded as a magic quarterstaff that grants a +2 bonus to attack and damage rolls made with it. While holding it, you have a +2 bonus to spell attack rolls.</p><p>The staff has 10 charges for the following properties. It regains 1d6 + 4 expended charges daily at dawn. If you expend the last charge, roll a d20. On a 1, the staff loses its properties and becomes a nonmagical quarterstaff.</p><p><strong>Spells</strong>. You can use an action to expend 1 or more of the staff's charges to cast one of the following spells from it, using your spell save DC: @UUID[Compendium.dnd5e.spells.Item.hDOENzjuj5WpLq7B]{Animal Friendship} (1 charge), @UUID[Compendium.dnd5e.spells.Item.MCEpGpvovcXagwQS]{Awaken} (5 charges), @UUID[Compendium.dnd5e.spells.Item.JPwIEfgUPVebr5AH]{Barkskin} (2 charges), @UUID[Compendium.dnd5e.spells.Item.Iv2qqSAT7OkXKPFx]{Locate Animals or Plants} (2 charges), @UUID[Compendium.dnd5e.spells.Item.aL1F8fvYLtNzUbKu]{Speak with Animals} (1 charge), @UUID[Compendium.dnd5e.spells.Item.2VXGS206tuChoeXy]{Speak with Plants} (3 charges), or @UUID[Compendium.dnd5e.spells.Item.AQsBc94ES7W7s7iG]{Wall of Thorns} (6 charges).</p><p>You can also use an action to cast the @UUID[Compendium.dnd5e.spells.Item.pRMvmknwLf2tdMTj]{Pass without Trace} spell from the staff without using any charges.</p><p><strong>Tree Form</strong>. You can use an action to plant one end of the staff in fertile earth and expend 1 charge to transform the staff into a healthy tree. The tree is 60 feet tall and has a 5-foot-diameter trunk, and its branches at the top spread out in a 20-foot radius. The tree appears ordinary but radiates a faint aura of transmutation magic if targeted by @UUID[Compendium.dnd5e.spells.Item.ghXTfe7sgCbgf1Q8]{Detect Magic}. While touching the tree and using another action to speak its command word, you return the staff to its normal form. Any creature in the tree falls when it reverts to a staff.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "a druid",
+    "weapon.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": [
+    "effect",
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o2-50",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Plate Armor of Etherealness",
+   "name": "Plate Armor of Etherealness",
+   "itemType": "equipment",
+   "html": "<p><em>Armor (@UUID[Compendium.dnd5e.equipment24.Item.phbarmHalfPlateA]{Half Plate Armor} or @UUID[Compendium.dnd5e.equipment24.Item.phbarmPlateArmor]{Plate Armor}), Legendary (Requires Attunement)</em></p><p>While you're wearing this armor, you can take a Magic action and use a command word to gain the effect of the <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplEtherealne]{Etherealness}</em> spell. The spell ends immediately if you remove the armor or take a Magic action to repeat the command word. This property of the armor can't be used again until the next dawn.</p><p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o2-51",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Periapt of Wound Closure",
+   "name": "Periapt of Wound Closure",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>While wearing this pendant, you gain the following benefits.</p><p><em><strong>Life Preservation.</strong></em> Whenever you make a Death Saving Throw, you can change a roll of 9 or lower to a 10, turning a failed save into a successful one.</p><p><em><strong>Natural Healing Boost.</strong></em> Whenever you roll a Hit Point Die to regain Hit Points, double the number of Hit Points it restores.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  }
+ ]
+}

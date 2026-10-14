@@ -1,0 +1,870 @@
+{
+ "description": "Control set: French translations of control abilities.",
+ "cases": [
+  {
+   "id": "d-fr-1",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Winter Wolf/Cold Breath",
+   "name": "Souffle glacial",
+   "html": "<p>Le loup arctique expire un souffle de vent glacial dans un cône de 4,50 m. Chaque créature dans cette zone doit faire un jet de sauvegarde de Dextérité DD 12, subissant 18 (4d8) dégâts de froid en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>",
+   "expected": {
+    "save": [
+     "dex 12 half"
+    ],
+    "saveDamage": [
+     "4d8 cold"
+    ],
+    "template": [
+     "cone 15"
+    ]
+   },
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-2",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Ogre/Greatclub",
+   "name": "Massue",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +6 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 13 (2d8 + 4) dégâts contondants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +6"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d8+4 bludgeoning"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-3",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Giant Badger/Bite",
+   "name": "Morsure",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +3 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 4 (1d6 + 1) dégâts perforants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +3"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "1d6+1 piercing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-4",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Young Brass Dragon/Claw",
+   "name": "Griffe",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +7 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 11 (2d6 + 4) dégâts tranchants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +7"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d6+4 slashing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-5",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Nightmare/Hooves",
+   "name": "Sabots",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +6 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 13 (2d8 + 4) dégâts contondants plus 7 (2d6) dégâts de feu.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +6"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d8+4 bludgeoning",
+     "2d6 fire"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 5
+  },
+  {
+   "id": "d-fr-6",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Triceratops/Gore",
+   "name": "Coup de corne",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +9 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 24 (4d8 + 6) dégâts perforants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +9"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "4d8+6 piercing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-7",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Kraken/Tentacle",
+   "name": "Tentacule",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +17 pour toucher, allonge 9 m, une créature. <em>Touché :</em> 20 (3d6 + 10) dégâts contondants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +17"
+    ],
+    "range": [
+     "reach 30"
+    ],
+    "target": [
+     "1 creature"
+    ],
+    "damage": [
+     "3d6+10 bludgeoning"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-8",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Wererat/Bite (Rat or Hybrid Form Only)",
+   "name": "Morsure (forme de rat ou hybride uniquement)",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 4 (1d4 + 2) dégâts perforants. Si la cible est un humanoïde, elle doit réussir un jet de sauvegarde de Constitution DD 11 sous peine d'être maudite et de contracter la lycanthropie du rat-garou.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +4"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "1d4+2 piercing"
+    ],
+    "save": [
+     "con 11 none"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 5
+  },
+  {
+   "id": "d-fr-9",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Balor/Longsword",
+   "name": "Épée longue",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +14 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 21 (3d8 + 8) dégâts tranchants plus 13 (3d8) dégâts de foudre.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +14"
+    ],
+    "range": [
+     "reach 10"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "3d8+8 slashing",
+     "3d8 lightning"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 5
+  },
+  {
+   "id": "d-fr-10",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Barbed Devil/Hurl Flame",
+   "name": "Projection de flammes",
+   "html": "<p><em>Attaque de sort à distance :</em> +5 pour toucher, portée 45 m, une cible. <em>Touché :</em> 10 (3d6) dégâts de feu. Si la cible est un objet inflammable qui n'est ni porté ni tenu, il prend feu.</p>",
+   "expected": {
+    "attack": [
+     "ranged/spell +5"
+    ],
+    "range": [
+     "range 150"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "3d6 fire"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-11",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Black Dragon Wyrmling/Acid Breath",
+   "name": "Souffle d'acide",
+   "html": "<p>Le jeune dragon noir expire de l'acide en une ligne de 4,50 m de long et 1,50 m de large. Chaque créature dans cette ligne doit faire un jet de sauvegarde de Dextérité DD 11, subissant 22 (5d8) dégâts d'acide en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>",
+   "expected": {
+    "save": [
+     "dex 11 half"
+    ],
+    "saveDamage": [
+     "5d8 acid"
+    ],
+    "template": [
+     "line 15x5"
+    ]
+   },
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-12",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Air Elemental/Slam",
+   "name": "Coup",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +8 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 14 (2d8 + 5) dégâts contondants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +8"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d8+5 bludgeoning"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-13",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Adult Green Dragon/Bite",
+   "name": "Morsure",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +11 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 17 (2d10 + 6) dégâts perforants plus 7 (2d6) dégâts de poison.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +11"
+    ],
+    "range": [
+     "reach 10"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d10+6 piercing",
+     "2d6 poison"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 5
+  },
+  {
+   "id": "d-fr-14",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Triceratops/Gore",
+   "name": "Coup de corne",
+   "html": "<p><em>Jet d'attaque au corps à corps :</em> +9, allonge 1,50 m. <em>Touché :</em> 19 (2d12 + 6) dégâts perforants.</p>",
+   "expected": {
+    "attack": [
+     "melee/- +9"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "damage": [
+     "2d12+6 piercing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-15",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Hobgoblin Warrior/Longbow",
+   "name": "Arc long",
+   "html": "<p><em>Jet d'attaque à distance :</em> +3, portée 45/180 m. <em>Touché :</em> 5 (1d8 + 1) dégâts perforants plus 7 (3d4) dégâts de poison.</p>",
+   "expected": {
+    "attack": [
+     "ranged/- +3"
+    ],
+    "range": [
+     "range 150/600"
+    ],
+    "damage": [
+     "1d8+1 piercing",
+     "3d4 poison"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-16",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Spy/Hand Crossbow",
+   "name": "Arbalète de poing",
+   "html": "<p><em>Jet d'attaque à distance :</em> +4, portée 9/36 m. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants plus 7 (2d6) dégâts de poison.</p>",
+   "expected": {
+    "attack": [
+     "ranged/- +4"
+    ],
+    "range": [
+     "range 30/120"
+    ],
+    "damage": [
+     "1d6+2 piercing",
+     "2d6 poison"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-17",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Ancient Black Dragon/Rend",
+   "name": "Déchirure",
+   "html": "<p><em>Jet d'attaque au corps à corps :</em> +15, allonge 1,50 m. <em>Touché :</em> 17 (2d8 + 8) dégâts tranchants plus 9 (2d8) dégâts d'acide.</p>",
+   "expected": {
+    "attack": [
+     "melee/- +15"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "damage": [
+     "2d8+8 slashing",
+     "2d8 acid"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-18",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Ancient Blue Dragon/Lightning Breath",
+   "name": "Souffle de foudre",
+   "html": "<p><em>Jet de sauvegarde de Dextérité :</em> DD 23, chaque créature dans une ligne de 36 m de long et 3 m de large. <em>Échec :</em> 88 (16d10) dégâts de foudre. <em>Réussite :</em> demi-dégâts.</p>",
+   "expected": {
+    "save": [
+     "dex 23 half"
+    ],
+    "saveDamage": [
+     "16d10 lightning"
+    ],
+    "template": [
+     "line 120x10"
+    ]
+   },
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-19",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Unicorn/Radiant Horn",
+   "name": "Corne radieuse",
+   "html": "<p><em>Jet d'attaque au corps à corps :</em> +7, allonge 1,50 m. <em>Touché :</em> 9 (1d10 + 4) dégâts radiants.</p>",
+   "expected": {
+    "attack": [
+     "melee/- +7"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "damage": [
+     "1d10+4 radiant"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-20",
+   "lang": "fr",
+   "source": "translation of dnd5e.actors24/Giant Constrictor Snake/Constrict",
+   "name": "Constriction",
+   "html": "<p><em>Jet de sauvegarde de Force :</em> DD 14, une créature de taille G ou inférieure que le serpent peut voir à moins de 3 m. <em>Échec :</em> 13 (2d8 + 4) dégâts contondants, et la cible est agrippée (DD d'évasion 14).</p>",
+   "expected": {
+    "save": [
+     "str 14 none"
+    ],
+    "saveDamage": [
+     "2d8+4 bludgeoning"
+    ]
+   },
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 2
+  },
+  {
+   "id": "d-fr-21",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Ancient Green Dragon/Claw",
+   "name": "Griffe",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +15 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 22 (4d6 + 8) dégâts tranchants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +15"
+    ],
+    "range": [
+     "reach 10"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "4d6+8 slashing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-22",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Ancient Blue Dragon/Bite",
+   "name": "Morsure",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +16 pour toucher, allonge 4,50 m, une cible. <em>Touché :</em> 20 (2d10 + 9) dégâts perforants plus 11 (2d10) dégâts de foudre.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +16"
+    ],
+    "range": [
+     "reach 15"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d10+9 piercing",
+     "2d10 lightning"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 5
+  },
+  {
+   "id": "d-fr-23",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Blue Dragon Wyrmling/Lightning Breath",
+   "name": "Souffle de foudre",
+   "html": "<p>Le dragon expire de la foudre en une ligne de 9 m de long et 1,50 m de large. Chaque créature dans cette ligne doit faire un jet de sauvegarde de Dextérité DD 12, subissant 22 (4d10) dégâts de foudre en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>",
+   "expected": {
+    "save": [
+     "dex 12 half"
+    ],
+    "saveDamage": [
+     "4d10 lightning"
+    ],
+    "template": [
+     "line 30x5"
+    ]
+   },
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-24",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Thug/Heavy Crossbow",
+   "name": "Arbalète lourde",
+   "html": "<p><em>Attaque d'arme à distance :</em> +2 pour toucher, portée 30/120 m, une cible. <em>Touché :</em> 5 (1d10) dégâts perforants.</p>",
+   "expected": {
+    "attack": [
+     "ranged/weapon +2"
+    ],
+    "range": [
+     "range 100/400"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "1d10 piercing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-25",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Skeleton/Shortbow",
+   "name": "Arc court",
+   "html": "<p><em>Attaque d'arme à distance :</em> +4 pour toucher, portée 24/96 m, une cible. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants.</p>",
+   "expected": {
+    "attack": [
+     "ranged/weapon +4"
+    ],
+    "range": [
+     "range 80/320"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "1d6+2 piercing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-26",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Giant Crocodile/Tail",
+   "name": "Queue",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +8 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 14 (2d8 + 5) dégâts contondants. Si la cible est une créature, elle doit réussir un jet de sauvegarde de Force DD 16 ou être jetée à terre.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +8"
+    ],
+    "range": [
+     "reach 10"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d8+5 bludgeoning"
+    ],
+    "save": [
+     "str 16 none"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 5
+  },
+  {
+   "id": "d-fr-27",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Ancient Gold Dragon/Bite",
+   "name": "Morsure",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +17 pour toucher, allonge 4,50 m, une cible. <em>Touché :</em> 21 (2d10 + 10) dégâts perforants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +17"
+    ],
+    "range": [
+     "reach 15"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d10+10 piercing"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  },
+  {
+   "id": "d-fr-28",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Iron Golem/Poison Breath",
+   "name": "Souffle empoisonné",
+   "html": "<p>Le golem de fer expire un gaz empoisonné dans un cône de 4,50 m. Chaque créature dans cette zone doit faire un jet de sauvegarde de Constitution DD 19, subissant 45 (10d8) dégâts de poison en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>",
+   "expected": {
+    "save": [
+     "con 19 half"
+    ],
+    "saveDamage": [
+     "10d8 poison"
+    ],
+    "template": [
+     "cone 15"
+    ]
+   },
+   "ignore": [
+    "range",
+    "target",
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 3
+  },
+  {
+   "id": "d-fr-29",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Wyvern/Stinger",
+   "name": "Dard",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +7 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 11 (2d6 + 4) dégâts perforants. La cible doit faire un jet de sauvegarde de Constitution DD 15, subissant 24 (7d6) dégâts de poison en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +7"
+    ],
+    "range": [
+     "reach 10"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "2d6+4 piercing"
+    ],
+    "save": [
+     "con 15 half"
+    ],
+    "saveDamage": [
+     "7d6 poison"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 6
+  },
+  {
+   "id": "d-fr-30",
+   "lang": "fr",
+   "source": "translation of dnd5e.monsters/Lemure/Fist",
+   "name": "Poing",
+   "html": "<p><em>Attaque d'arme au corps à corps :</em> +2 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 2 (1d4) dégâts contondants.</p>",
+   "expected": {
+    "attack": [
+     "melee/weapon +2"
+    ],
+    "range": [
+     "reach 5"
+    ],
+    "target": [
+     "1 target"
+    ],
+    "damage": [
+     "1d4 bludgeoning"
+    ]
+   },
+   "ignore": [
+    "activation",
+    "uses",
+    "recharge",
+    "legendaryResistance",
+    "skip"
+   ],
+   "facts": 4
+  }
+ ]
+}
