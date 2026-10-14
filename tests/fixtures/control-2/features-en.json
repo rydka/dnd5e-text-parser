@@ -1524,6 +1524,9 @@
     ],
     "save": [
      "con 14 none"
+    ],
+    "saveDamage": [
+     "1d12 acid"
     ]
    },
    "ignore": [
@@ -2480,7 +2483,7 @@
     ],
     "damage": [
      "2d6+5 slashing",
-     "1d6 lightning"
+     "1d6 -"
     ]
    },
    "ignore": [
@@ -4727,6 +4730,9 @@
    "expected": {
     "target": [
      "1 creature"
+    ],
+    "damage": [
+     "4d8 force"
     ]
    },
    "ignore": [
@@ -5022,7 +5028,7 @@
      "1 target"
     ],
     "damage": [
-     "1d8+2 bludgeoning"
+     "1d8+2 -"
     ]
    },
    "ignore": [
@@ -5703,7 +5709,6 @@
     ],
     "damage": [
      "2d6+4 bludgeoning",
-     "2d4 radiant",
      "2d4 radiant"
     ]
    },
@@ -8138,7 +8143,7 @@
    ],
    "expected": {
     "save": [
-     "dex 12 none"
+     "dex 12 half"
     ],
     "saveDamage": [
      "3d6 acid"
@@ -8205,7 +8210,8 @@
     "uses",
     "recharge",
     "legendaryResistance",
-    "skip"
+    "skip",
+    "damage"
    ],
    "facts": 0
   },
@@ -8292,7 +8298,7 @@
      "6d6 poison"
     ],
     "save": [
-     "undefined 21 none"
+     "con 21 none"
     ]
    },
    "ignore": [
@@ -8420,7 +8426,8 @@
      "range 80/320"
     ],
     "damage": [
-     "1d6+2 piercing"
+     "1d6+2 piercing",
+     "1d4 piercing"
     ]
    },
    "ignore": [
@@ -8692,7 +8699,7 @@
    "expected": {
     "damage": [
      "1d8 force",
-     "1d8 force"
+     "2d8 force"
     ]
    },
    "ignore": [
@@ -9845,7 +9852,8 @@
     "uses",
     "recharge",
     "legendaryResistance",
-    "skip"
+    "skip",
+    "damage"
    ],
    "facts": 1
   },
@@ -11702,7 +11710,8 @@
      "reach 5"
     ],
     "damage": [
-     "1d6+2 slashing"
+     "1d6+2 slashing",
+     "1d4 slashing"
     ]
    },
    "ignore": [

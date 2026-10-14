@@ -731,7 +731,8 @@
    "expected": {
     "rarity": "legendary",
     "attunement": "required",
-    "attunementCondition": "a sorcerer, warlock, or wizard"
+    "attunementCondition": "a sorcerer, warlock, or wizard",
+    "weapon.magicalBonus": 2
    },
    "effects": [],
    "ignore": [
