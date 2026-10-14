@@ -102,9 +102,10 @@ export function parseFeature(name, html, opts = {}) {
   const after = chains.filter(chain => chain.start >= saveStart);
   let hit = null;
   let onSave;
-  // C4: damage that depends on an ambiguous attack (several bonuses) or an ambiguous save (several saving throws)
-  // is withheld with it: no damage activity is invented for an ability whose damage belongs to the unresolved fact
-  const withheld = (!plan.attack && attack.ambiguous?.length) || (!plan.save && saveArea.ambiguous?.length);
+  // C4: damage that depends on an ambiguous save (several different saving throws, "Wall of Ice") is withheld with
+  // it: no damage activity is invented for an ability whose damage belongs to the unresolved save. An ambiguous
+  // attack (several bonuses) keeps its written damage: only the bonus is left out (L3, nothing invented).
+  const withheld = !plan.save && saveArea.ambiguous?.length;
   if ( withheld ) {
     if ( chains.length ) {
       plan.ambiguous.push({ key: "dnd5e-text-parser.Note.DamageWithheld", data: { raw: chains.flatMap(chain => chain.parts.map(part => part.raw)) } });
