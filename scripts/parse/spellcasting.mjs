@@ -1,5 +1,5 @@
 import { htmlToText } from "./text.mjs";
-import { fold, abilityKey, ABILITY_RE } from "./recognizers/actor-words.mjs";
+import { fold, abilityKey, ABILITY_RE } from "./lexicon/index.mjs";
 
 /** Trait names that introduce a spell list (EN/FR). */
 const NAME_RE = /^(?:innate\s+)?spellcasting\b|^incantation\b/;

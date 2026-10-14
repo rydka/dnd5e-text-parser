@@ -1,4 +1,4 @@
-import { fold, damageKey, conditionKey } from "./actor-words.mjs";
+import { fold, damageKey, conditionKey } from "../lexicon/index.mjs";
 
 /** Order in which bypasses are listed. */
 const BYPASS_ORDER = ["mgc", "ada", "sil"];

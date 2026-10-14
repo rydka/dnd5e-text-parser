@@ -63,3 +63,59 @@ export function tableWords(table, languages = ["en", "fr"]) {
   for ( const lang of languages ) Object.keys(sources[lang]?.[table] ?? {}).forEach(word => words.add(word));
   return [...words].sort((a, b) => b.length - a.length);
 }
+
+/**
+ * Lowercase, strip accents and normalize apostrophes. Length-preserving for precomposed characters,
+ * so match indexes on the folded text are valid on the original text.
+ * @param {string} text
+ * @returns {string}
+ */
+export function fold(text) {
+  return Array.from(String(text ?? ""), char => char.normalize("NFD")[0])
+    .join("").toLowerCase().replace(/[‘’ʼ]/g, "'");
+}
+
+/**
+ * Damage type key for a word such as "fire", "fire damage" or "dégâts de feu".
+ * @param {string} word
+ * @returns {string|null}
+ */
+export function damageKey(word) {
+  const cleaned = fold(word).trim().replace(/\s+damage$/, "").replace(/^degats\s+(?:de\s+|d')?/, "");
+  return lookup("damage", cleaned);
+}
+
+/**
+ * Condition key for a word such as "charmed" or "à terre".
+ * @param {string} word
+ * @returns {string|null}
+ */
+export function conditionKey(word) {
+  return lookup("conditions", word);
+}
+
+/**
+ * Ability key for a word such as "Wisdom" or "Sagesse".
+ * @param {string} word
+ * @returns {string|null}
+ */
+export function abilityKey(word) {
+  return lookup("abilities", word);
+}
+
+/**
+ * Read a digit string or a number word (EN/FR, one to ten).
+ * @param {string} word
+ * @returns {number|null}
+ */
+export function toNumber(word) {
+  const w = fold(word ?? "").trim();
+  if ( /^\d+$/.test(w) ) return Number(w);
+  return lookup("numbers", w);
+}
+
+/** Number alternation for regex sources (accent-folded text). */
+export const NUMBER_RE = String.raw`\d+|one|two|three|four|five|six|seven|eight|nine|ten|une?|deux|trois|quatre|cinq|sept|huit|neuf|dix`;
+
+/** Ability names alternation for regex sources (accent-folded text). */
+export const ABILITY_RE = "strength|dexterity|constitution|intelligence|wisdom|charisma|force|dexterite|sagesse|charisme";

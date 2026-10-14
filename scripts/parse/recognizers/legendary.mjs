@@ -1,4 +1,4 @@
-import { fold, toNumber, NUMBER_RE } from "./actor-words.mjs";
+import { fold, toNumber, NUMBER_RE } from "../lexicon/index.mjs";
 
 const LEGACT_RE = new RegExp(
   `(?:(?:can|may) (?:take|use)|peut (?:effectuer|accomplir|realiser|entreprendre|utiliser|faire))`
