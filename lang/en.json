@@ -45,6 +45,7 @@
       "UnknownDamageType": "Unknown damage type \"{word}\": left empty.",
       "RangeNotCarried": "Both reach ({reach} ft.) and range ({value} ft.) were found: the range could not be carried over.",
       "ExtraDamageIgnored": "Additional damage not attached to the attack or the save was ignored: {raw}",
+      "DamageTypeFromWeapon": "Damage of the weapon's own type left out (no fixed type): {raw}",
       "UsesConflict": "Several different numbers of uses found ({raw}): the first one was kept.",
       "RechargeConflict": "Several different recharge values found ({raw}): the first one was kept.",
       "EffectUnknown": "Effect not interpreted ({kind}): {text}",

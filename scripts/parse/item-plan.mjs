@@ -147,6 +147,7 @@ export function parseItem(name, html, opts = {}) {
   for ( const segment of segments ) {
     const cutSegment = cutSpans(text, [...itemSpans, ...activitySpans], segment.start, segment.end);
     const feature = parseFeature("", cutSegment, parseOpts);
+    notes.push(...feature.notes.filter(note => note.key.endsWith("DamageTypeFromWeapon")));
     const extra = [];
     const damage = [];
     for ( const part of feature.damage ) {
@@ -210,7 +211,8 @@ export function parseItem(name, html, opts = {}) {
     ...feature, name: title, itemKind: fact.kind, details,
     effects: effects.map(effect => Object.fromEntries(Object.entries(effect).filter(([key]) => key !== "sentence"))), activities
   };
-  plan.notes = [...feature.notes, ...notes, ...meta.notes, ...weapon.notes, ...armor.notes, ...consumable.notes];
+  plan.notes = [...feature.notes, ...notes, ...meta.notes, ...weapon.notes, ...armor.notes, ...consumable.notes]
+    .filter((note, index, all) => all.findIndex(other => JSON.stringify(other) === JSON.stringify(note)) === index);
   plan.ambiguous = [...feature.ambiguous, ...magic.ambiguous, ...meta.ambiguous, ...weapon.ambiguous,
     ...armor.ambiguous, ...consumable.ambiguous];
   return plan;

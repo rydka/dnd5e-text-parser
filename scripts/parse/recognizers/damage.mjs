@@ -38,6 +38,9 @@ const IGNORE_BEFORE = /(?:increases?\s+to|instead|if\s+(?:used|wielded)\s+with\s
 const IGNORE_AFTER = /^\s*(?:,\s*)?(?:if\s+(?:used|wielded)\s+with\s+two\s+hands|s'il\s+est\s+mani[ée]\s+[àa]\s+deux\s+mains|lorsqu'(?:il|elle)\s+est\s+utilis[ée]e?\s+[àa]\s+deux\s+mains)/iu;
 const CHAIN_SEP = /^\s*(?:[,;]\s*)?(?:(?:plus|and|et|\+)\s+)?(?:(?:an\s+additional|additional|un\s+suppl[ée]ment\s+de)\s+)?$/iu;
 
+// "of the weapon's type", "of the same type", "du type de l'arme", "du même type"
+const WEAPON_TYPE = /^\s*(?:suppl[ée]mentaires?\s+|en\s+plus\s+)?(?:of\s+(?:the\s+)?(?:weapon'?s?|same|that|its|this)\s+type|(?:du|de\s+m[êe]me)\s+(?:m[êe]me\s+)?type|du\s+type\s+de\s+l'(?:arme|attaque)|de\s+m[êe]me\s+type)/iu;
+
 const fold = word => String(word).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /** Dice formula to `{ number, denomination, bonus }` ("2d10 + 5", "1d8 + 1d6 + 3"). */
@@ -134,6 +137,7 @@ export function recognizeDamage(text, ctx = {}) {
   const found = [];
   const notes = [];
   const ambiguous = [];
+  const weaponTyped = new Set();
 
   const patterns = [];
   if ( languages.includes("en") ) patterns.push(...EN_PATTERNS.map(entry => [...entry, "en"]));
@@ -151,6 +155,14 @@ export function recognizeDamage(text, ctx = {}) {
         // keep the text up to the end of the type phrase
       }
       if ( BARE.has(regex) && typeInfo.status !== "ok" ) continue;
+      // "extra 1d6 damage of the weapon's type": the type is the weapon's, not a damage part without a type
+      if ( typeInfo.status !== "ok" && WEAPON_TYPE.test(source.slice(match.index + match[0].length, match.index + match[0].length + 60)) ) {
+        if ( !weaponTyped.has(match.index) ) {
+          weaponTyped.add(match.index);
+          notes.push({ key: "dnd5e-text-parser.Note.DamageTypeFromWeapon", data: { raw: match[0] } });
+        }
+        continue;
+      }
       if ( kind === "fixed" && typeInfo.status !== "ok" && typeInfo.status !== "ambiguous" ) continue;
       const formula = match[1];
       const part = kind === "dice"
