@@ -1,5 +1,5 @@
 import { hasLang, languagesOf, isNegated, isNotWearer, ORIGIN } from "./common.mjs";
-import { lookup, fold, damageKey, conditionKey, abilityKey } from "../lexicon/index.mjs";
+import { lookup, fold, damageKey, conditionKey, abilityKey, ABILITY_RE } from "../lexicon/index.mjs";
 import { splitSentences, parseNumber, toFeet } from "../text.mjs";
 
 /**
@@ -46,6 +46,15 @@ const MOVEMENT = { fly: "fly", vol: "fly", swim: "swim", nage: "swim", climb: "c
 const MOVEMENT_EN = /\b(fly|flying|swim|swimming|climb|climbing|burrow|burrowing)\s+speed\s+(?:of|equal\s+to)\s+(\d+)\s*(?:feet|ft\.?)/giu;
 const MOVEMENT_FR = /\bvitesse\s+de\s+(vol|nage|escalade|creusement)\s+(?:de|[ée]gale?\s+[àa])\s+(\d+(?:[.,]\d+)?)\s*(m(?![\p{L}])|m[eè]tres?|pieds?)/giu;
 const NOTE_UNKNOWN = "dnd5e-text-parser.Note.EffectUnknown";
+// Fixed score written "Strength: 23", "Force : 21", or as variants "Hill Giant Strength: 21. Storm Giant Strength: 29."
+// (on the accent-folded text; "Strength: DC 14" and "Strength: +2" are not scores)
+const SCORE_COLON = new RegExp(String.raw`(?<![\p{L}])((?:[\p{L}/'-]+\s+){1,3}?)?(${ABILITY_RE})\s*:\s*(\d{1,2})(?![\d+])`, "giu");
+// "your Strength score changes to a score granted by the belt" names the ability of variants written "<Name>: N"
+const SCORE_CONTEXT_EN = /\byour\s+(\p{L}+)(?:\s+score)?\s+(?:changes|is\s+set|becomes)\s+to\s+(?:a|the)\s+(?:score|value)/iu;
+const SCORE_CONTEXT_FR = /\bvotre\s+(?:(?:valeur|score)\s+(?:de\s+|d'))?(\p{L}+)\s+(?:passe|devient|est\s+port[ée]e?)\s+[àa]\s+(?:la|une)\s+valeur/iu;
+const SCORE_NAMED = /(?<![\p{L}])([\p{L}][\p{L} '/-]{1,40}?)\s*:\s*(\d{1,2})(?!\d)(?=\s*(?:[.;,\n]|$))/gu;
+const VARIANT_NOISE = new Set(["giant", "geant", "geants", "de", "des", "du", "of", "the", "and", "or", "ou", "et", "a", "an", "un", "une", "le", "la", "les"]);
+const NOTE_SCORE_CHOICES = "dnd5e-text-parser.Note.AbilityScoreChoices";
 
 /**
  * Attack / damage scope of a bonus phrase: null (all), "weapon", "spell" or a roll type.
@@ -69,6 +78,20 @@ function abilityIn(phrase) {
   return null;
 }
 
+/** Skill named in a check phrase ("Wisdom (Survival) checks", "tests de Dextérité (Discrétion)", "Stealth checks"). */
+function skillIn(phrase, langs) {
+  const paren = phrase.match(/\(([^)]+)\)/u);
+  if ( paren ) {
+    const key = lookup("skills", paren[1], langs);
+    if ( key ) return key;
+  }
+  for ( const word of phrase.match(/[\p{L}'-]+/gu) ?? [] ) {
+    const key = lookup("skills", word, langs);
+    if ( key ) return key;
+  }
+  return null;
+}
+
 function bonusEffects(object, value, raw, langs) {
   const folded = fold(object);
   if ( /spell save dc|dd de sauvegarde des sorts|dd des sorts/.test(folded) ) return [];
@@ -77,7 +100,9 @@ function bonusEffects(object, value, raw, langs) {
   if ( /\b(?:ac|ca)\b|armor class|classe d'armure/.test(folded) ) result.push(make("ac", null));
   if ( /saving throw|sauvegarde/.test(folded) ) result.push(make("save", abilityIn(object)));
   if ( /ability check|\bchecks?\b|\btests?\b|jets? de caracteristique/.test(folded) && !/saving throw|sauvegarde/.test(folded) ) {
-    result.push(make("check", abilityIn(object)));
+    // A bonus limited to a skill ("Wisdom (Survival) checks") is a skill bonus, never a bonus to the whole ability
+    const skill = skillIn(object, langs);
+    result.push(skill ? { ...make("check", skill), on: "skill" } : make("check", abilityIn(object)));
   }
   const attack = /attack|attaque/.test(folded);
   const damage = /damage|degats/.test(folded);
@@ -108,8 +133,55 @@ function traitEffects(kind, object, raw, langs, lang) {
 }
 
 /**
+ * Fixed ability scores written with a colon: "Strength: 23", "Force : 21", or variants "Hill Giant Strength: 21.
+ * Storm Giant Strength: 29." / "Géant des collines : 21" (the ability then comes from "your Strength score changes
+ * to a score granted by the belt"). A variant named in the item name is chosen; otherwise the choices are reported.
+ * @param {string} source
+ * @param {object} ctx  `{ name, languages }`.
+ * @returns {{ effects: object[], ambiguous: object[], spans: object[] }}
+ */
+function scoreVariants(source, ctx) {
+  const folded = fold(source);
+  const variants = [];
+  const capitalized = (start, end) => source.slice(start, end).split(/\s+/).filter(word => /^\p{Lu}/u.test(word));
+  for ( const match of folded.matchAll(SCORE_COLON) ) {
+    const ability = abilityKey(match[2]);
+    if ( !ability ) continue;
+    const nameEnd = match.index + (match[1]?.length ?? 0);
+    // "your Intelligence: 19": only capitalized words make a variant name ("Hill Giant")
+    const name = match[1] ? capitalized(match.index, nameEnd).join(" ") : "";
+    variants.push({ ability, name, value: Number(match[3]), start: match.index, end: match.index + match[0].length });
+  }
+  const context = [hasLang(ctx, "en") && SCORE_CONTEXT_EN, hasLang(ctx, "fr") && SCORE_CONTEXT_FR]
+    .filter(Boolean).map(re => source.match(re)).find(Boolean);
+  const contextAbility = context ? abilityKey(context[1]) : null;
+  if ( contextAbility ) {
+    for ( const match of source.matchAll(SCORE_NAMED) ) {
+      if ( variants.some(variant => match.index < variant.end && match.index + match[0].length > variant.start) ) continue;
+      if ( abilityKey(match[1].trim().split(/\s+/).at(-1)) ) continue;
+      variants.push({ ability: contextAbility, name: match[1].trim(), value: Number(match[2]), start: match.index, end: match.index + match[0].length });
+    }
+  }
+  const effects = [];
+  const ambiguous = [];
+  const spans = variants.map(variant => ({ kind: "effect", start: variant.start, end: variant.end, text: source.slice(variant.start, variant.end) }));
+  const itemName = fold(ctx.name ?? "");
+  for ( const ability of new Set(variants.map(variant => variant.ability)) ) {
+    const group = variants.filter(variant => variant.ability === ability);
+    const values = [...new Set(group.map(variant => variant.value))];
+    const named = group.filter(variant => fold(variant.name).split(/[\s/]+/)
+      .some(word => word.length >= 3 && !VARIANT_NOISE.has(word) && itemName.includes(word)));
+    const chosen = values.length === 1 ? values : [...new Set(named.map(variant => variant.value))];
+    const raw = group.map(variant => source.slice(variant.start, variant.end));
+    if ( chosen.length === 1 ) effects.push({ kind: "abilityScore", value: chosen[0], scope: ability, raw: raw.join(" ") });
+    else ambiguous.push({ key: NOTE_SCORE_CHOICES, data: { ability, choices: group.map(({ name, value }) => ({ name, value })), raw } });
+  }
+  return { effects, ambiguous, spans };
+}
+
+/**
  * @param {string} text  Plain text.
- * @param {object} [ctx]  `{ languages }`.
+ * @param {object} [ctx]  `{ languages, name }`.
  * @returns {{ fact: object[], spans: object[], ambiguous: object[], notes: object[] }}
  */
 export function recognizeMagicEffects(text, ctx = {}) {
@@ -245,5 +317,19 @@ export function recognizeMagicEffects(text, ctx = {}) {
       spans.push({ kind: "effect", start: sentence.index, end: sentence.index + s.length, text: s });
     }
   }
+
+  // "Strength: 23" and variant tables, on the whole text
+  const scores = scoreVariants(source, ctx);
+  const sentences = splitSentences(source);
+  for ( const effect of scores.effects ) {
+    const at = source.indexOf(effect.raw.split(" ")[0]);
+    const sentence = sentences.find(entry => at >= entry.index && at < entry.index + entry.text.length) ?? sentences[0];
+    effects.push({
+      ...effect, origin: ORIGIN, when: "passive", duration: null, activity: null,
+      sentence: sentence ? { start: sentence.index, end: sentence.index + sentence.text.length } : { start: 0, end: 0 }
+    });
+  }
+  ambiguous.push(...scores.ambiguous);
+  spans.push(...scores.spans);
   return { fact: effects, spans, ambiguous, notes: [] };
 }

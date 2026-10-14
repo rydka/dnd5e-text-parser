@@ -52,6 +52,7 @@
       "UsesConflict": "Plusieurs nombres d'utilisations différents trouvés ({raw}) : le premier a été conservé.",
       "RechargeConflict": "Plusieurs valeurs de recharge différentes trouvées ({raw}) : la première a été conservée.",
       "EffectUnknown": "Effet non interprété ({kind}) : {text}",
+      "AbilityScoreChoices": "Plusieurs valeurs de {ability} sont listées ({raw}) : aucune n'a été choisie.",
       "EffectSkipped": "L'effet {kind} {scope} n'a pas pu être écrit : clé inconnue ou non prise en charge.",
       "SpellNotFound": "Sort « {name} » introuvable : aucune activité de lancement n'a été créée.",
       "FallbackRejected": "Proposition de l'assistant rejetée ({field}, {reason}) : {raw}"

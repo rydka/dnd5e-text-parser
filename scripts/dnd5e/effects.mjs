@@ -39,6 +39,10 @@ function changesOf(effect, keys, notes) {
         : rollTypes(scope, ALL_ROLL_TYPES).map(roll => change(`system.rolls.damage.${roll}.bonus`, "add", value));
     case "save":
     case "check": {
+      // A bonus limited to a skill ("+5 bonus to Wisdom (Survival) checks") goes to that skill only
+      if ( kind === "check" && effect.on === "skill" ) {
+        return scope && isValidKey(keys, "skills", scope) ? [change(`system.skills.${scope}.roll.bonus`, "add", value)] : skip();
+      }
       if ( scope && !isValidKey(keys, "abilities", scope) ) return skip();
       const key = scope ? `system.abilities.${scope}.${kind}.roll.bonus` : `system.rolls.ability.${kind}.bonus`;
       return [change(key, "add", value)];
