@@ -13,13 +13,15 @@ export const API_VERSION = "1.0.0";
 /** Version of the intermediate structure; written in each plan as `plan.schema`. */
 export const SCHEMA_VERSION = 1;
 
-export { parseFeature, parseActor, nameKey } from "./parse/plan.mjs";
+export { parseFeature, parseItem, parseActor, nameKey } from "./parse/plan.mjs";
 export { parseSpellcasting } from "./parse/spellcasting.mjs";
+export { parseFeatureAsync, parseItemAsync, validateFallbackFacts } from "./parse/fallback.mjs";
 export { htmlToText, splitSentences, splitLines, toFeet, toPounds } from "./parse/text.mjs";
 export { toActivities, toDamagePart } from "./dnd5e/activities.mjs";
+export { toEffects } from "./dnd5e/effects.mjs";
 export { toItemPatch } from "./dnd5e/item.mjs";
 export { toActorPatch, toSpellStubs } from "./dnd5e/actor.mjs";
 export { isEmpty, isEmptyUtility, mergeMissing } from "./dnd5e/merge.mjs";
-export { keysFromConfig } from "./dnd5e/keys.mjs";
+export { keysFromConfig, keysSnapshot } from "./dnd5e/keys.mjs";
 export { describe } from "./dnd5e/describe.mjs";
 export { registerFallback, getFallback } from "./registry.mjs";

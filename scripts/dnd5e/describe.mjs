@@ -1,17 +1,26 @@
+import { effectGroupKey } from "./effects.mjs";
+
 /**
- * Neutral descriptors `{ key, data }` of a plan or of a list of changes, for summaries and previews.
- * `key` is a localization key of this module (`lang/*.json`); the consumer localizes it with `data`.
+ * Neutral descriptors `{ key, data, group, raw, origin, paths }` of a plan or of a list of changes, for summaries
+ * and previews. `key` is a localization key of this module (`lang/*.json`); the consumer localizes it with `data`.
+ * - `group`: `"details"` | `"activities"` | `"effects"`, or `null` for notes and unrecognized sentences.
+ * - `raw`: the source passage of the fact (the sentence or phrase it was read from; `""` when unknown).
+ * - `origin`: `"rules"` | `"fallback"`.
+ * - `paths`: what the fact produces: `system.*` paths for details, `activities.<n>` (index in the array returned
+ *   by `toActivities(plan)`, assuming every spell is resolved) and `effects.<n>` (index in the array returned by
+ *   `toEffects(plan)`).
  * Pure: no Foundry global.
  */
 
 const PREFIX = "dnd5e-text-parser.";
 
-/** Every key `describe` can emit (all exist in `lang/en.json` and `lang/fr.json`). */
+/** Every key `describe` can emit itself (all exist in `lang/en.json` and `lang/fr.json`). */
 export const DESCRIBE_KEYS = Object.freeze([
   "Describe.Attack", "Describe.Range", "Describe.Target", "Describe.Damage", "Describe.Save", "Describe.Template",
   "Describe.Uses", "Describe.Recharge", "Describe.LegendaryResistance", "Describe.Activation", "Describe.Skipped",
   "Describe.Weapon", "Describe.Armor", "Describe.Consumable", "Describe.Rarity", "Describe.Attunement",
   "Describe.Weight", "Describe.Price", "Describe.Effect", "Describe.Field", "Describe.Fallback",
+  "Describe.Activity", "Describe.Heal", "Describe.Cast", "Describe.Consume", "Describe.ExtraDamage",
   "Note.Unrecognized"
 ].map(key => PREFIX + key));
 
@@ -19,13 +28,23 @@ export const DESCRIBE_KEYS = Object.freeze([
  * Build a descriptor; a fact proposed by the fallback resolver is flagged with `data.origin = "fallback"`.
  * @param {string} name
  * @param {object} data
- * @param {object} [fact]
- * @returns {{key: string, data: object}}
+ * @param {object|null} fact
+ * @param {{group?: string|null, paths?: string[], raw?: string}} [options]
+ * @returns {object}
  */
-function entry(name, data, fact) {
-  const descriptor = { key: `${PREFIX}Describe.${name}`, data };
-  if ( fact?.origin === "fallback" ) descriptor.data = { ...data, origin: "fallback" };
-  return descriptor;
+function entry(name, data, fact, { group = null, paths = [], raw } = {}) {
+  const origin = fact?.origin === "fallback" ? "fallback" : "rules";
+  return {
+    key: `${PREFIX}Describe.${name}`,
+    data: origin === "fallback" ? { ...data, origin } : data,
+    group, raw: raw ?? fact?.raw ?? "", origin, paths: [...paths]
+  };
+}
+
+/** A note or ambiguity of the plan, as a descriptor without group. */
+function note(descriptor) {
+  const raw = Array.isArray(descriptor.data?.raw) ? descriptor.data.raw.join(" ") : (descriptor.data?.raw ?? descriptor.data?.text ?? "");
+  return { ...descriptor, group: null, raw: String(raw), origin: descriptor.origin ?? "rules", paths: [] };
 }
 
 /**
@@ -41,71 +60,182 @@ export function formulaOf(part) {
   return /^[+-]/.test(bonus) ? `${dice} ${bonus[0]} ${bonus.slice(1).trim()}` : `${dice} + ${bonus}`;
 }
 
-const damageEntry = (part, save) => entry("Damage", {
+const damageEntry = (part, save, options, name = "Damage") => entry(name, {
   formula: formulaOf(part), type: part.type ?? "", raw: part.raw ?? "", save
-}, part);
+}, part, options);
+
+/** Number of activities `toActivities` makes for an ActivityPlan. */
+function activityCount(activity) {
+  if ( activity.cast || activity.heal ) return 1;
+  const count = (activity.attack && (activity.attack.type || activity.attack.classification) ? 1 : 0)
+    + (activity.save?.ability ? 1 : 0);
+  return count || 1;
+}
+
+const range = (from, count) => Array.from({ length: count }, (_, i) => `activities.${from + i}`);
+
+/** Facts of a feature-like plan (FeaturePlan or ActivityPlan) as activity descriptors. */
+function featureFacts(plan, paths, out, { rawOf = fact => fact?.raw } = {}) {
+  const options = fact => ({ group: "activities", paths: paths.all, raw: rawOf(fact) });
+  if ( plan.activation ) {
+    out.push(entry("Activation", { type: plan.activation.type, cost: plan.activation.cost }, plan.activation, options(plan.activation)));
+  }
+  if ( plan.attack ) {
+    out.push(entry("Attack", {
+      type: plan.attack.type, classification: plan.attack.classification, bonus: plan.attack.bonus
+    }, plan.attack, { ...options(plan.attack), paths: paths.attack }));
+  }
+  if ( plan.range ) out.push(entry("Range", { ...plan.range }, plan.range, { ...options(plan.range), paths: paths.first }));
+  if ( plan.target ) {
+    out.push(entry("Target", { count: plan.target.count, type: plan.target.type }, plan.target, { ...options(plan.target), paths: paths.first }));
+  }
+  for ( const part of plan.damage ?? [] ) out.push(damageEntry(part, false, { ...options(part), paths: paths.attack.length ? paths.attack : paths.damage }));
+  if ( plan.extraDamage ) {
+    out.push(damageEntry(plan.extraDamage, false, { ...options(plan.extraDamage), paths: paths.attack.length ? paths.attack : paths.damage }, "ExtraDamage"));
+  }
+  if ( plan.save ) {
+    out.push(entry("Save", { ability: plan.save.ability, dc: plan.save.dc, onSave: plan.save.onSave }, plan.save, { ...options(plan.save), paths: paths.save }));
+    for ( const part of plan.save.damage ?? [] ) out.push(damageEntry(part, true, { ...options(part), paths: paths.save }));
+  }
+  if ( plan.template ) {
+    out.push(entry("Template", { ...plan.template }, plan.template, { ...options(plan.template), paths: paths.save.length ? paths.save : paths.first }));
+  }
+}
+
+/** Paths of the activities of a flat FeaturePlan (same layout as `toActivities`). */
+function flatPaths(plan) {
+  const attack = plan.attack && (plan.attack.type || plan.attack.classification);
+  const save = plan.save?.ability;
+  const damage = !attack && !save && plan.damage?.length;
+  let next = 0;
+  const attackAt = attack ? next++ : -1;
+  const saveAt = save ? next++ : -1;
+  const damageAt = damage ? next++ : -1;
+  const legresAt = plan.legendaryResistance ? next++ : -1;
+  const at = index => (index >= 0 ? [`activities.${index}`] : []);
+  return {
+    all: Array.from({ length: next }, (_, i) => `activities.${i}`).filter((_, i) => i !== legresAt),
+    first: at([attackAt, saveAt, damageAt].some(i => i >= 0) ? 0 : -1),
+    attack: at(attackAt), save: at(saveAt), damage: at(damageAt), legres: at(legresAt)
+  };
+}
 
 /**
  * Describe a plan (FeaturePlan / ItemPlan) or a list of changes (`mergeMissing` result).
- * Notes and ambiguities of the plan are passed through as they are; unrecognized sentences become
- * `dnd5e-text-parser.Note.Unrecognized`.
+ * Notes and ambiguities of the plan are passed through as they are (with `group: null`); unrecognized sentences
+ * become `dnd5e-text-parser.Note.Unrecognized`.
  * @param {object|{path: string, value: *}[]} planOrChanges
- * @returns {{key: string, data: object}[]}
+ * @returns {{key: string, data: object, group: string|null, raw: string, origin: string, paths: string[]}[]}
  */
 export function describe(planOrChanges) {
   if ( Array.isArray(planOrChanges) ) {
-    return planOrChanges.map(({ path, value }) => entry("Field", { path, value }));
+    return planOrChanges.map(({ path, value }) => entry("Field", { path, value }, null, { group: "details", paths: [path] }));
   }
   const plan = planOrChanges;
   const result = [];
   if ( !plan ) return result;
-  if ( plan.skip ) result.push(entry("Skipped", { reason: plan.skip }));
-  if ( plan.activation ) {
-    result.push(entry("Activation", { type: plan.activation.type, cost: plan.activation.cost }, plan.activation));
+  if ( plan.skip ) result.push(entry("Skipped", { reason: plan.skip }, null, { raw: plan.skip }));
+
+  if ( plan.activities?.length ) {
+    let offset = 0;
+    for ( const activity of plan.activities ) {
+      const count = activityCount(activity);
+      const all = range(offset, count);
+      const hasAttack = activity.attack && (activity.attack.type || activity.attack.classification);
+      const paths = {
+        all, first: all.slice(0, 1), attack: hasAttack ? all.slice(0, 1) : [],
+        save: activity.save?.ability ? all.slice(hasAttack ? 1 : 0, (hasAttack ? 1 : 0) + 1) : [], damage: all.slice(0, 1)
+      };
+      offset += count;
+      result.push(entry("Activity", { kind: activity.kind, name: activity.name ?? "" }, activity, {
+        group: "activities", paths: all, raw: activity.raw
+      }));
+      featureFacts(activity, paths, result);
+      const options = fact => ({ group: "activities", paths: all, raw: fact?.raw });
+      if ( activity.heal ) result.push(damageEntry(activity.heal, false, options(activity.heal), "Heal"));
+      if ( activity.cast ) {
+        const { name, level, dc, attack, charges } = activity.cast;
+        result.push(entry("Cast", { name, level, dc, attack, charges }, activity.cast, options(activity.cast)));
+      }
+      if ( activity.consume ) {
+        result.push(entry("Consume", { amount: activity.consume.amount }, activity.consume, options(activity.consume)));
+      }
+    }
+  } else {
+    featureFacts(plan, flatPaths(plan), result);
   }
-  if ( plan.attack ) {
-    result.push(entry("Attack", {
-      type: plan.attack.type, classification: plan.attack.classification, bonus: plan.attack.bonus
-    }, plan.attack));
+
+  // Item-level facts: uses, recharge and legendary resistance
+  const flat = flatPaths(plan.activities?.length ? {} : plan);
+  if ( plan.uses ) {
+    result.push(entry("Uses", { max: plan.uses.max, period: plan.uses.period }, plan.uses, { group: "details", paths: ["system.uses"] }));
   }
-  if ( plan.range ) result.push(entry("Range", { ...plan.range }, plan.range));
-  if ( plan.target ) result.push(entry("Target", { count: plan.target.count, type: plan.target.type }, plan.target));
-  for ( const part of plan.damage ?? [] ) result.push(damageEntry(part, false));
-  if ( plan.save ) {
-    result.push(entry("Save", { ability: plan.save.ability, dc: plan.save.dc, onSave: plan.save.onSave }, plan.save));
-    for ( const part of plan.save.damage ?? [] ) result.push(damageEntry(part, true));
+  if ( plan.recharge ) {
+    result.push(entry("Recharge", { min: plan.recharge.min }, plan.recharge, { group: "details", paths: ["system.uses"] }));
   }
-  if ( plan.template ) result.push(entry("Template", { ...plan.template }, plan.template));
-  if ( plan.uses ) result.push(entry("Uses", { max: plan.uses.max, period: plan.uses.period }, plan.uses));
-  if ( plan.recharge ) result.push(entry("Recharge", { min: plan.recharge.min }, plan.recharge));
-  if ( plan.legendaryResistance ) result.push(entry("LegendaryResistance", { count: plan.legendaryResistance }));
+  if ( plan.legendaryResistance ) {
+    result.push(entry("LegendaryResistance", { count: plan.legendaryResistance }, null, {
+      group: "activities", paths: ["system.identifier", ...flat.legres], raw: ""
+    }));
+  }
+
   const details = plan.details ?? {};
+  const detail = (name, data, fact, paths) => result.push(entry(name, data, fact, { group: "details", paths }));
   if ( details.weapon ) {
     const w = details.weapon;
-    result.push(entry("Weapon", {
+    const paths = [];
+    if ( w.category || w.baseItem ) paths.push("system.type");
+    if ( w.base || w.versatile ) paths.push("system.damage");
+    if ( w.properties?.length ) paths.push("system.properties");
+    if ( w.magicalBonus ) paths.push("system.magicalBonus");
+    if ( w.mastery ) paths.push("system.mastery");
+    if ( plan.range ) paths.push("system.range");
+    detail("Weapon", {
       category: w.category, baseItem: w.baseItem, properties: [...(w.properties ?? [])],
       base: w.base ? formulaOf(w.base) : "", versatile: w.versatile ? formulaOf(w.versatile) : "",
       magicalBonus: w.magicalBonus, mastery: w.mastery
-    }, w));
+    }, w, paths);
   }
-  if ( details.armor ) result.push(entry("Armor", { ...details.armor }, details.armor));
+  if ( details.armor ) {
+    const a = details.armor;
+    const paths = [];
+    if ( a.type ) paths.push("system.type");
+    if ( a.ac !== null || a.dexCap !== null || a.magicalBonus ) paths.push("system.armor");
+    if ( a.strength !== null ) paths.push("system.strength");
+    if ( a.stealthDisadvantage ) paths.push("system.properties");
+    detail("Armor", { type: a.type, ac: a.ac, dexCap: a.dexCap, strength: a.strength,
+      stealthDisadvantage: a.stealthDisadvantage, magicalBonus: a.magicalBonus }, a, paths);
+  }
   if ( details.consumable ) {
-    result.push(entry("Consumable", {
-      type: details.consumable.type, charges: details.consumable.charges?.max ?? null
-    }, details.consumable));
+    const c = details.consumable;
+    const paths = [];
+    if ( c.type ) paths.push("system.type");
+    if ( c.charges || c.destroyOnEmpty ) paths.push("system.uses");
+    detail("Consumable", { type: c.type, charges: c.charges?.max ?? null }, c, paths);
   }
-  if ( details.rarity ) result.push(entry("Rarity", { rarity: details.rarity }));
+  if ( details.rarity ) detail("Rarity", { rarity: details.rarity }, null, ["system.rarities"]);
   if ( details.attunement ) {
-    result.push(entry("Attunement", { attunement: details.attunement, condition: details.attunementCondition ?? "" }));
+    detail("Attunement", { attunement: details.attunement, condition: details.attunementCondition ?? "" }, null, ["system.attunement"]);
   }
-  if ( details.weight ) result.push(entry("Weight", { ...details.weight }));
-  if ( details.price ) result.push(entry("Price", { ...details.price }));
+  if ( details.weight ) detail("Weight", { value: details.weight.value, units: details.weight.units }, details.weight, ["system.weight"]);
+  if ( details.price ) detail("Price", { value: details.price.value, denomination: details.price.denomination }, details.price, ["system.price"]);
+
+  // Effects: index of the ActiveEffect `toEffects` makes for each effect
+  const groups = new Map();
   for ( const effect of plan.effects ?? [] ) {
-    result.push(entry("Effect", { kind: effect.kind, value: effect.value, scope: effect.scope }, effect));
+    const groupKey = effectGroupKey(effect);
+    if ( !groups.has(groupKey) ) groups.set(groupKey, groups.size);
+    result.push(entry("Effect", { kind: effect.kind, value: effect.value, scope: effect.scope }, effect, {
+      group: "effects", paths: [`effects.${groups.get(groupKey)}`], raw: effect.raw
+    }));
   }
-  result.push(...(plan.notes ?? []), ...(plan.ambiguous ?? []));
+
+  result.push(...(plan.notes ?? []).map(note), ...(plan.ambiguous ?? []).map(note));
   for ( const sentence of plan.unrecognized ?? [] ) {
-    result.push({ key: `${PREFIX}Note.Unrecognized`, data: { text: sentence.text } });
+    result.push({
+      key: `${PREFIX}Note.Unrecognized`, data: { text: sentence.text }, group: null, raw: sentence.text,
+      origin: "rules", paths: []
+    });
   }
   return result;
 }

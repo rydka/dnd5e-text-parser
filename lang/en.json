@@ -21,7 +21,12 @@
       "Price": "Price: {value} {denomination}",
       "Effect": "Effect: {kind} {value} {scope}",
       "Field": "Filled: {path}",
-      "Fallback": "proposed by the assistant"
+      "Fallback": "proposed by the assistant",
+      "Activity": "Activity: {name} ({kind})",
+      "Heal": "Healing: {formula}",
+      "Cast": "Casts the spell {name}",
+      "Consume": "Consumes {amount} use(s) of the item",
+      "ExtraDamage": "Extra damage: {formula} {type}"
     },
     "Note": {
       "Unrecognized": "Sentence not recognized: {text}",
@@ -39,7 +44,11 @@
       "RangeNotCarried": "Both reach ({reach} ft.) and range ({value} ft.) were found: the range could not be carried over.",
       "ExtraDamageIgnored": "Additional damage not attached to the attack or the save was ignored: {raw}",
       "UsesConflict": "Several different numbers of uses found ({raw}): the first one was kept.",
-      "RechargeConflict": "Several different recharge values found ({raw}): the first one was kept."
+      "RechargeConflict": "Several different recharge values found ({raw}): the first one was kept.",
+      "EffectUnknown": "Effect not interpreted ({kind}): {text}",
+      "EffectSkipped": "The effect {kind} {scope} could not be written: unknown or unsupported key.",
+      "SpellNotFound": "Spell \"{name}\" not found: no spell-casting activity was created.",
+      "FallbackRejected": "Proposal of the assistant rejected ({field}, {reason}): {raw}"
     }
   }
 }
