@@ -23,6 +23,12 @@ function emptyPlan() {
   };
 }
 
+// "at the start of each of its turns", "au début de chacun de ses tours"
+const ONGOING_PHRASE = String.raw`(?:(?:at\s+the\s+)?(?:start|beginning|end)\s+of\s+(?:each\s+of\s+|every\s+|(?:its|their|the\s+target's)\s+)` +
+  String.raw`(?:its\s+|their\s+)?turns?|au\s+(?:d[ée]but|fin)\s+de\s+(?:chacun\s+de\s+(?:ses|leurs)|son|leur)\s+tours?|` +
+  String.raw`[àa]\s+la\s+fin\s+de\s+(?:chacun\s+de\s+(?:ses|leurs)|son|leur)\s+tours?)`;
+const ONGOING_AFTER = new RegExp(String.raw`^[^.]{0,40}?${ONGOING_PHRASE}`, "iu");
+const ONGOING_BEFORE = new RegExp(String.raw`${ONGOING_PHRASE}[^.]{0,40}$`, "iu");
 const overlaps = (span, other) => span.start < other.end && span.end > other.start;
 
 /**
@@ -89,7 +95,7 @@ export function parseFeature(name, html, opts = {}) {
   const chains = [];
   let cursor = 0;
   for ( const chain of damage.chains ) {
-    chains.push({ parts: chain, start: damage.spans[cursor].start });
+    chains.push({ parts: chain, start: damage.spans[cursor].start, end: damage.spans[cursor + chain.length - 1].end });
     cursor += chain.length;
   }
   const before = chains.filter(chain => chain.start < saveStart);
@@ -106,6 +112,12 @@ export function parseFeature(name, html, opts = {}) {
   if ( plan.save && onSave ) plan.save.damage = onSave.parts;
   for ( const chain of chains ) {
     if ( chain === hit || chain === onSave ) continue;
+    // Ongoing damage of a follow-up sentence ("takes 5 (1d10) fire damage at the start of each of its turns")
+    if ( hit && (ONGOING_AFTER.test(text.slice(chain.end, chain.end + 80))
+      || ONGOING_BEFORE.test(text.slice(Math.max(0, chain.start - 90), chain.start))) ) {
+      plan.damage.push(...chain.parts);
+      continue;
+    }
     plan.notes.push({ key: "dnd5e-text-parser.Note.ExtraDamageIgnored", data: { raw: chain.parts.map(part => part.raw) } });
   }
 
