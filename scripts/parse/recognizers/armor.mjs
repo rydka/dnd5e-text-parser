@@ -7,8 +7,18 @@ const EN_STRENGTH = /\bStrength\s+(\d+)\b/u;
 const FR_STRENGTH = /\bForce\s+(\d+)\b/u;
 const EN_STEALTH = /\bdisadvantage\s+on\s+(?:Dexterity\s*\(\s*)?Stealth(?:\s*\))?(?:\s+checks?)?/iu;
 const FR_STEALTH = /\bd[ée]savantage\s+aux\s+tests\s+de\s+(?:Dext[ée]rit[ée]\s*\(\s*)?Discr[ée]tion(?:\s*\))?/iu;
-const EN_BONUS = /\+(\d+)\s+bonus\s+to\s+(?:your\s+)?AC\b/iu;
-const FR_BONUS = /\bbonus\s+de\s+\+(\d+)\s+[àa]\s+la\s+CA\b/iu;
+// "a +2 bonus to Armor Class", "a bonus to AC of +2"; "bonus de +2 à la CA", "bonus à la CA de +2"
+const EN_BONUS = [
+  /\+(\d+)\s+bonus\s+to\s+(?:your\s+)?(?:AC|Armor\s+Class)\b/iu,
+  /\bbonus\s+to\s+(?:your\s+)?(?:AC|Armor\s+Class)\s+(?:of\s+)?\+(\d+)/iu
+];
+const FR_BONUS = [
+  /\bbonus\s+de\s+\+(\d+)\s+[àa]\s+(?:la\s+|votre\s+)?(?:CA|classe\s+d['’]armure)(?![\p{L}])/iu,
+  /\bbonus\s+(?:[àa]|de)\s+(?:la\s+|votre\s+)?(?:CA|classe\s+d['’]armure)\s+de\s+\+(\d+)/iu
+];
+const NAME_BONUS = /(?:^|[\s(,])\+(\d)(?![\d\p{L}])/u;
+const NAME_ARMOR = /\b(?:armou?r|shield|armure|bouclier)\b/iu;
+const NAME_SHIELD = /\b(?:shield|bouclier)\b/iu;
 
 const span = (kind, start, end, text) => ({ kind, start, end, text });
 
@@ -48,10 +58,15 @@ export function recognizeArmor(text, ctx = {}, meta = null) {
     if ( match[2] ) armor.dexCap = Number(match[2]);
     spans.push(span("armor", match.index, match.index + match[0].length, match[0]));
   }
-  const isArmor = meta?.kind === "armor" || acMatch;
+  // An equipment named "Leather Armor +3" / "Shield +2" is armor even when its text says nothing about it
+  const nameBonus = String(ctx.name ?? "").match(NAME_BONUS);
+  const fromName = Boolean(nameBonus) && NAME_ARMOR.test(ctx.name) && !meta?.kind
+    && (!ctx.itemType || ["equipment", "armor"].includes(ctx.itemType));
+  const isArmor = meta?.kind === "armor" || acMatch || fromName;
   if ( !isArmor ) return { fact: null, spans: [], ambiguous: [], notes: [] };
 
   if ( meta?.kindDetail ) armor.type = lookup("armor", meta.kindDetail, langs);
+  else if ( fromName && NAME_SHIELD.test(ctx.name) ) armor.type = "shield";
   if ( !armor.raw && acMatch ) armor.raw = acMatch[0];
 
   for ( const [re, lang] of [[EN_STRENGTH, "en"], [FR_STRENGTH, "fr"]] ) {
@@ -68,17 +83,17 @@ export function recognizeArmor(text, ctx = {}, meta = null) {
     armor.stealthDisadvantage = true;
     spans.push({ ...span("armor", match.index, match.index + match[0].length, match[0]), role: "stealth" });
   }
-  for ( const [re, lang] of [[EN_BONUS, "en"], [FR_BONUS, "fr"]] ) {
-    if ( !hasLang(ctx, lang) || armor.magicalBonus ) continue;
-    const match = source.match(re);
-    if ( !match ) continue;
-    armor.magicalBonus = Number(match[1]);
-    spans.push({ ...sentenceAt(source, match.index), role: "bonus" });
+  for ( const [list, lang] of [[EN_BONUS, "en"], [FR_BONUS, "fr"]] ) {
+    if ( !hasLang(ctx, lang) ) continue;
+    for ( const re of list ) {
+      if ( armor.magicalBonus ) break;
+      const match = source.match(re);
+      if ( !match ) continue;
+      armor.magicalBonus = Number(match[1]);
+      spans.push({ ...sentenceAt(source, match.index), role: "bonus" });
+    }
   }
-  if ( !armor.magicalBonus ) {
-    const fromName = String(ctx.name ?? "").match(/(?:^|\s)\+(\d)(?:\s|$)/);
-    if ( fromName ) armor.magicalBonus = Number(fromName[1]);
-  }
+  if ( !armor.magicalBonus && nameBonus ) armor.magicalBonus = Number(nameBonus[1]);
 
   spans.sort((a, b) => a.start - b.start);
   return { fact: armor, spans, ambiguous: [], notes: [] };
