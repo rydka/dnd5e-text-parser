@@ -24,7 +24,22 @@
       "Fallback": "proposed by the assistant"
     },
     "Note": {
-      "Unrecognized": "Sentence not recognized: {text}"
+      "Unrecognized": "Sentence not recognized: {text}",
+      "LegendaryConflict": "Conflicting values for {kind} ({values}): the first one was kept.",
+      "TraitQualifier": "Qualified {kind} ignored (not a plain damage type or condition): {text}",
+      "TraitBypassMixed": "Mixed {kind} entries with and without bypass conditions: not interpreted: {text}",
+      "TraitUnknown": "Unknown word in {kind}, kept as custom text: {text}",
+      "TraitKeyInvalid": "The {kind} value \"{value}\" is not a valid dnd5e key and was dropped.",
+      "TraitBypassSkipped": "Bypass conditions for {kind} ({bypasses}) were not written: they would apply to the wrong entries.",
+      "SpellcastingAbilityConflict": "Several spellcasting abilities found ({abilities}): none was chosen.",
+      "AttackBonuses": "Several different attack bonuses found ({values}): none was chosen.",
+      "SaveAbilities": "Several different saving throws found: none was chosen.",
+      "AmbiguousDamageType": "The damage type \"{word}\" is ambiguous and was left empty.",
+      "UnknownDamageType": "Unknown damage type \"{word}\": left empty.",
+      "RangeNotCarried": "Both reach ({reach} ft.) and range ({value} ft.) were found: the range could not be carried over.",
+      "ExtraDamageIgnored": "Additional damage not attached to the attack or the save was ignored: {raw}",
+      "UsesConflict": "Several different numbers of uses found ({raw}): the first one was kept.",
+      "RechargeConflict": "Several different recharge values found ({raw}): the first one was kept."
     }
   }
 }
