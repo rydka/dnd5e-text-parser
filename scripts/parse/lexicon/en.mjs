@@ -40,5 +40,19 @@ export const EN = {
   currency: { cp: "cp", sp: "sp", ep: "ep", gp: "gp", pp: "pp" },
   numbers: {
     one: 1, a: 1, an: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10
+  },
+  itemKinds: {
+    weapon: "weapon", armor: "armor", armour: "armor", potion: "potion", scroll: "scroll", wand: "wand", rod: "rod",
+    staff: "staff", ring: "ring", "wondrous item": "wondrous", ammunition: "ammo", poison: "poison", food: "food"
+  },
+  weaponIds: {
+    battleaxe: "battleaxe", blowgun: "blowgun", club: "club", dagger: "dagger", dart: "dart", flail: "flail",
+    glaive: "glaive", greataxe: "greataxe", greatclub: "greatclub", greatsword: "greatsword", halberd: "halberd",
+    handaxe: "handaxe", "hand crossbow": "handcrossbow", "heavy crossbow": "heavycrossbow", javelin: "javelin",
+    lance: "lance", "light crossbow": "lightcrossbow", "light hammer": "lighthammer", longbow: "longbow",
+    longsword: "longsword", mace: "mace", maul: "maul", morningstar: "morningstar", musket: "musket", pike: "pike",
+    pistol: "pistol", quarterstaff: "quarterstaff", rapier: "rapier", scimitar: "scimitar", shortsword: "shortsword",
+    sickle: "sickle", spear: "spear", shortbow: "shortbow", sling: "sling", trident: "trident", "war pick": "warpick",
+    warhammer: "warhammer", whip: "whip"
   }
 };

@@ -34,7 +34,7 @@ const CHAIN_SEP = /^\s*(?:[,;]\s*)?(?:(?:plus|and|et|\+)\s+)?(?:(?:an\s+addition
 const fold = word => String(word).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /** Dice formula to `{ number, denomination, bonus }` ("2d10 + 5", "1d8 + 1d6 + 3"). */
-function parseFormula(formula) {
+export function parseFormula(formula) {
   const dice = formula.match(/(\d+)\s*d\s*(\d+)/i);
   const rest = (formula.slice(0, dice.index) + " " + formula.slice(dice.index + dice[0].length)).trim();
   const terms = rest.match(/[+-]?\s*[^+-]+/g) ?? [];

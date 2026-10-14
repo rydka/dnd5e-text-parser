@@ -9,6 +9,7 @@ import { recognizeLegendary } from "./recognizers/legendary.mjs";
 
 export { nameKey } from "./text.mjs";
 export { parseActor } from "./actor-plan.mjs";
+export { parseItem } from "./item-plan.mjs";
 
 const SCHEMA_VERSION = 1;
 const MULTIATTACK = /^(?:multiattack|attaques? multiples?)(?![\p{L}])/u;

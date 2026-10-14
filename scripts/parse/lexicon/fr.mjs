@@ -42,5 +42,21 @@ export const FR = {
     artefact: "artifact"
   },
   currency: { pc: "cp", pa: "sp", pe: "ep", po: "gp", pp: "pp" },
-  numbers: { un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10 }
+  numbers: { un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10 },
+  itemKinds: {
+    arme: "weapon", armure: "armor", potion: "potion", parchemin: "scroll", baguette: "wand", sceptre: "rod",
+    "bâton": "staff", anneau: "ring", "objet merveilleux": "wondrous", munition: "ammo", poison: "poison",
+    nourriture: "food"
+  },
+  weaponIds: {
+    "hache d'armes": "battleaxe", sarbacane: "blowgun", massue: "club", dague: "dagger", "fléchette": "dart",
+    "fléau": "flail", coutille: "glaive", "hache à deux mains": "greataxe", "grande massue": "greatclub",
+    "épée à deux mains": "greatsword", hallebarde: "halberd", hachette: "handaxe",
+    "arbalète de poing": "handcrossbow", "arbalète lourde": "heavycrossbow", javelot: "javelin",
+    "lance d'arçon": "lance", "arbalète légère": "lightcrossbow", "marteau léger": "lighthammer",
+    "arc long": "longbow", "épée longue": "longsword", "masse d'armes": "mace", maillet: "maul",
+    morgenstern: "morningstar", pique: "pike", "bâton de combat": "quarterstaff", "rapière": "rapier",
+    cimeterre: "scimitar", "épée courte": "shortsword", serpe: "sickle", lance: "spear", "arc court": "shortbow",
+    fronde: "sling", trident: "trident", "pic de guerre": "warpick", "marteau de guerre": "warhammer", fouet: "whip"
+  }
 };
