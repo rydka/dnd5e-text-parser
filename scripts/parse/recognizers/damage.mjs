@@ -6,7 +6,14 @@ const EN_PHRASE = "((?:[\\p{L}'-]+[\\s,]+){0,4}?)damage(?![\\p{L}])";
 const FR_WORD = "(?:points?\\s+de\\s+)?d[ée]g[âa]ts?(?![\\p{L}])";
 
 // Each pattern: [regex, kind, group of the formula, language]. Kind "fixed" needs a known damage type.
+// "12 (2d6 + 5) piercing plus 10 (3d6) cold damage": the type precedes "plus" without the word "damage".
+const EN_BARE_TYPE = "([\\p{L}-]+)(?=\\s*,?\\s*(?:plus|and)\\s+(?:an\\s+additional\\s+)?\\d)";
+const BARE = new Set();
+const bare = (regex, kind) => { BARE.add(regex); return [regex, kind]; };
 const EN_PATTERNS = [
+  bare(new RegExp(`(?:\\d+\\s+)?\\(\\s*([^()]*?\\d+\\s*d\\s*\\d+[^()]*?)\\s*\\)\\s*${EN_BARE_TYPE}`, "giu"), "dice"),
+  bare(new RegExp(`${NOT_ID}(\\d+\\s*d\\s*\\d+(?:\\s*[+-]\\s*\\d+)?)\\s+${EN_BARE_TYPE}`, "giu"), "dice"),
+  bare(new RegExp(`${NOT_ID}(\\d+)\\s+${EN_BARE_TYPE}`, "giu"), "fixed"),
   [new RegExp(`(?:\\d+\\s+)?\\(\\s*([^()]*?\\d+\\s*d\\s*\\d+[^()]*?)\\s*\\)\\s*${EN_PHRASE}`, "giu"), "dice"],
   [new RegExp(`${NOT_ID}(\\d+\\s*d\\s*\\d+(?:\\s*[+-]\\s*\\d+)?)\\s+${EN_PHRASE}`, "giu"), "dice"],
   [new RegExp(`${NOT_ID}(\\d+)\\s+${EN_PHRASE}`, "giu"), "fixed"]
@@ -143,6 +150,7 @@ export function recognizeDamage(text, ctx = {}) {
         end += typeInfo.consumed;
         // keep the text up to the end of the type phrase
       }
+      if ( BARE.has(regex) && typeInfo.status !== "ok" ) continue;
       if ( kind === "fixed" && typeInfo.status !== "ok" && typeInfo.status !== "ambiguous" ) continue;
       const formula = match[1];
       const part = kind === "dice"
