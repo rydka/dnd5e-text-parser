@@ -72,10 +72,12 @@ function changesOf(effect, keys, notes) {
     case "abilityScore":
       return isValidKey(keys, "abilities", scope) ? [change(`system.abilities.${scope}.value`, "upgrade", value)] : skip();
     case "speed":
-      // A movement type ("a flying speed of 60 feet") sets that speed; without one, the speed bonus grows
+      // A movement type ("a flying speed of 60 feet") sets that speed; without one, the speed bonus grows.
+      // dnd5e 6 stores speeds in `movement.speeds.<type>` (data/shared/movement-field.mjs, a MappingField of
+      // deterministic FormulaField): `movement.<type>` is only a deprecated shim (removed in dnd5e 7).
       if ( scope ) {
         return isValidKey(keys, "movementTypes", scope)
-          ? [change(`system.attributes.movement.${scope}`, "upgrade", String(value))] : skip();
+          ? [change(`system.attributes.movement.speeds.${scope}`, "upgrade", String(value))] : skip();
       }
       return [change("system.attributes.movement.bonus", "add", `+${value}`)];
     default:
