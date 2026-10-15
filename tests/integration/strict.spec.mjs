@@ -142,3 +142,32 @@ test("B9: an actor with a conditional-result ability gets two activities on the 
   expect(out.stored.map(a => a.parts[0])).toEqual(["1d8+3 piercing", "2d8+4 piercing"]);
   expect(out.stored[1].name).toMatch(/Bloodied/);
 });
+
+test("C26: an NPC with a damage-reduction trait gets system.traits.dm.amount in its prepared data", async ({ foundry }, testInfo) => {
+  const out = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const html = "<p>The statue reduces all incoming bludgeoning, piercing, and slashing damage by 3.</p>";
+    const plan = P.parseFeature("Stone Hide", "<p>The statue reduces all incoming bludgeoning, piercing, and slashing damage by 3.</p>", { keys });
+    const effects = P.toEffects(plan, { keys, idGen, name: "Stone Hide" });
+    const actor = await CONFIG.Actor.documentClass.create({ name: "C26 reduction actor", type: "npc" });
+    try {
+      const before = actor.system.traits.dm.amount.bludgeoning ?? null;
+      await actor.createEmbeddedDocuments("Item", [{
+        name: "Stone Hide", type: "feat", effects,
+        system: { ...P.toItemPatch(plan, { keys, item: { type: "feat" } }) }
+      }]);
+      const amount = actor.system.traits.dm.amount;
+      return { html, before, planEffects: plan.effects.length, effectCount: effects.length, amount: { bludgeoning: amount.bludgeoning, piercing: amount.piercing, slashing: amount.slashing, fire: amount.fire ?? null } };
+    } finally {
+      await actor.delete();
+    }
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(testInfo.outputPath("C26-damage-reduction.json"), JSON.stringify(out, null, 1));
+  expect(out.effectCount).toBe(1);
+  expect(out.amount.bludgeoning).toBe("-3");   // FormulaField: a string
+  expect(out.amount.piercing).toBe("-3");   // FormulaField: a string
+  expect(out.amount.slashing).toBe("-3");   // FormulaField: a string
+  expect(out.amount.fire).not.toBe("-3");
+});
