@@ -10,8 +10,9 @@ const EN_VERSATILE = /\bversatile\s*\(\s*([^)]+?)\s*\)/iu;
 const FR_VERSATILE = /\bpolyvalente?\s*\(\s*([^)]+?)\s*\)/iu;
 const EN_BONUS = /\+(\d+)\s+bonus\s+to\s+(?:attack\s+(?:rolls?\s+)?and\s+damage|hit\s+and\s+damage)\s+rolls?/iu;
 const FR_BONUS = /\bbonus\s+de\s+\+(\d+)\s+aux\s+jets\s+d'attaque\s+et\s+de\s+d[ée]g[âa]ts/iu;
-const EN_MASTERY = /\bmastery\s*:\s*(\p{L}+)/iu;
-const FR_MASTERY = /\bma[iî]trise\s*:\s*(\p{L}+)/iu;
+// "Mastery: Nick", "Maîtrise : Coup rapide", "Maîtrise d'arme : Enchaînement": the name may have several words
+const EN_MASTERY = /\bmastery\s*:\s*(\p{L}+(?:[ '-]\p{L}+)*)/iu;
+const FR_MASTERY = /\bma[iî]trise(?:\s+d'armes?)?\s*:\s*(\p{L}+(?:[ '-]\p{L}+)*)/iu;
 const EXTRA_BEFORE = /\b(?:extra|additional|another|bonus|supplémentaires?|supplementaires?|en plus)\b/iu;
 const EN_DAMAGE = /(\d+\s*d\s*\d+(?:\s*[+-]\s*\d+)?)\s+([\p{L}]+)\s+damage\b/iu;
 const FR_DAMAGE = /(\d+\s*d\s*\d+(?:\s*[+-]\s*\d+)?)\s+d[ée]g[âa]ts\s+(?:de\s+|d')?([\p{L}]+)/iu;
@@ -53,7 +54,8 @@ export function recognizeWeapon(text, ctx = {}, meta = null) {
   const source = String(text ?? "");
   const langs = languagesOf(ctx);
   const spans = [];
-  const none = { fact: null, spans, ambiguous: [], notes: [] };
+  const notes = [];
+  const none = { fact: null, spans, ambiguous: [], notes };
 
   let category = null;
   let categoryMatch = null;
@@ -128,15 +130,19 @@ export function recognizeWeapon(text, ctx = {}, meta = null) {
     if ( fromName ) weapon.magicalBonus = Number(fromName[1]);
   }
 
+  // Mastery: translated by the lexicon (EN and FR names of CONFIG.DND5E.weaponMasteries); an unknown name is never
+  // written as a key, it gives a note
   for ( const [re, lang] of [[EN_MASTERY, "en"], [FR_MASTERY, "fr"]] ) {
     if ( !hasLang(ctx, lang) || weapon.mastery ) continue;
     const match = source.match(re);
-    if ( match ) {
-      weapon.mastery = fold(match[1]);
-      spans.push(span("weapon", match.index, match.index + match[0].length, match[0]));
-    }
+    if ( !match ) continue;
+    const name = match[1].trim();
+    const key = lookup("weaponMasteries", name, langs);
+    if ( key ) weapon.mastery = key;
+    else notes.push({ key: "dnd5e-text-parser.Note.MasteryUnknown", data: { text: name } });
+    spans.push(span("weapon", match.index, match.index + match[0].length, match[0]));
   }
 
   spans.sort((a, b) => a.start - b.start);
-  return { fact: weapon, spans, ambiguous: [], notes: [] };
+  return { fact: weapon, spans, ambiguous: [], notes };
 }

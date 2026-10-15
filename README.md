@@ -189,7 +189,8 @@ ItemPlan = FeaturePlan & { name, itemKind: "weapon"|"armor"|"potion"|"scroll"|"w
   details: { rarity?, attunement?: "required", attunementCondition?, weight?: { value, units: "lb" }, price?: { value, denomination },
     magical?: boolean,
     weapon?: { category: "simpleM"|"martialM"|"simpleR"|"martialR"|null, baseItem, properties[], base: DamagePart|null,
-      versatile: DamagePart|null, magicalBonus: number|null, mastery },
+      versatile: DamagePart|null, magicalBonus: number|null,
+      mastery: "cleave"|"graze"|"nick"|"push"|"sap"|"slow"|"topple"|"vex"|null },   // « Mastery: Nick », « Maîtrise : Coup rapide » (noms FR du PHB 2024) ; nom inconnu : null + Note.MasteryUnknown
     armor?: { type, ac, dexCap, strength, stealthDisadvantage, magicalBonus },
     consumable?: { type, charges: { max, period, formula }|null, destroyOnEmpty } },
   effects: ItemEffect[], activities: ActivityPlan[],

@@ -54,6 +54,7 @@
       "EffectUnknown": "Effet non interprété ({kind}) : {text}",
       "AbilityScoreChoices": "Plusieurs valeurs de {ability} sont listées ({raw}) : aucune n'a été choisie.",
       "EffectSkipped": "L'effet {kind} {scope} n'a pas pu être écrit : clé inconnue ou non prise en charge.",
+      "MasteryUnknown": "Maîtrise d'arme inconnue « {text} » : aucune n'a été écrite.",
       "SpellNotFound": "Sort « {name} » introuvable : aucune activité de lancement n'a été créée.",
       "FallbackRejected": "Proposition de l'assistant rejetée ({field}, {reason}) : {raw}"
     }

@@ -54,6 +54,7 @@
       "EffectUnknown": "Effect not interpreted ({kind}): {text}",
       "AbilityScoreChoices": "Several {ability} scores are listed ({raw}): none was chosen.",
       "EffectSkipped": "The effect {kind} {scope} could not be written: unknown or unsupported key.",
+      "MasteryUnknown": "Unknown weapon mastery \"{text}\": none was written.",
       "SpellNotFound": "Spell \"{name}\" not found: no spell-casting activity was created.",
       "FallbackRejected": "Proposal of the assistant rejected ({field}, {reason}): {raw}"
     }

@@ -38,6 +38,12 @@ export const FR = {
     allonge: "rch", munitions: "amm", chargement: "lod", "spéciale": "spc"
   },
   armor: { "légère": "light", "intermédiaire": "medium", lourde: "heavy", bouclier: "shield" },
+  // Official French names of the PHB 2024 weapon masteries, with the usual variants
+  weaponMasteries: {
+    "enchaînement": "cleave", "éraflure": "graze", "égratignure": "graze", effleurement: "graze",
+    "coup rapide": "nick", bousculade: "push", "poussée": "push", affaiblissement: "sap", sape: "sap",
+    ralentissement: "slow", renversement: "topple", culbute: "topple", "harcèlement": "vex", vexation: "vex"
+  },
   rarity: {
     commun: "common", "peu commun": "uncommon", rare: "rare", "très rare": "veryRare", "légendaire": "legendary",
     artefact: "artifact"
