@@ -109,3 +109,48 @@ describe("comparator counts variants", () => {
     expect(t).toEqual(["variant=activity"]);
   });
 });
+
+// Round 2 (B9 follow-up): five more forms. Texts written for these tests only.
+describe("B9 follow-up", () => {
+  it("a stand-alone sneak attack keeps its damage and gets no variant", () => {
+    const plan = feature("Backstab", "<p>Once per turn, the rogue deals an extra 10 (3d6) necrotic damage when it hits a target with a weapon attack and has advantage on the attack roll.</p>");
+    expect(dice(plan.damage)).toEqual(["3d6 necrotic"]);
+    expect(plan.variants ?? []).toEqual([]);
+  });
+
+  it("'— or 2d8+3 piercing plus 1d4 acid damage if' puts the alternative result in the variant", () => {
+    const plan = feature("Lurking Maw", `<p>${HEAD}9 (2d6 + 2) Piercing damage—or 14 (3d8 + 1) Piercing plus 3 (1d6) Acid damage if the target is Restrained.</p>`);
+    expect(dice(plan.damage)).toEqual(["2d6+2 piercing"]);
+    expect(plan.variants).toHaveLength(1);
+    const parts = [...plan.variants[0].damage, ...(plan.variants[0].extraDamage ? [plan.variants[0].extraDamage] : [])];
+    expect(dice(parts)).toEqual(["3d8+1 piercing", "1d6 acid"]);
+  });
+
+  it("'in melee or N piercing at range' without the word damage gives a ranged variant", () => {
+    const plan = feature("Hurl", "<p>Melee or Ranged Attack Roll: +6, reach 5 ft. or range 20/60 ft. Hit: 11 (2d8 + 2) piercing damage in melee or 6 (1d8 + 2) piercing at range.</p>");
+    expect(dice(plan.damage)).toEqual(["2d8+2 piercing"]);
+    expect(plan.variants).toHaveLength(1);
+    expect(plan.variants[0].attack.type).toBe("ranged");
+    expect(dice(plan.variants[0].damage)).toEqual(["1d8+2 piercing"]);
+  });
+
+  it("'If the target ..., the target takes an extra N damage and has the Prone condition' is a conditional extra", () => {
+    const plan = feature("Trample", `<p>${HEAD}8 (1d10 + 3) Bludgeoning damage. If the target is a Large or smaller creature and the beast moved 20+ feet straight toward it immediately before the hit, the target takes an extra 7 (2d6) Bludgeoning damage and has the Prone condition.</p>`);
+    expect(dice(plan.damage)).toEqual(["1d10+3 bludgeoning"]);
+    expect(plan.variants).toHaveLength(1);
+    expect(plan.variants[0].extraDamage).toMatchObject({ number: 2, denomination: 6, type: "bludgeoning" });
+    expect(plan.variants[0].condition).toMatch(/moved 20\+ feet/);
+  });
+
+  it("a wand variant keeps the activation and the charge consumption of the original activity", () => {
+    const plan = P.parseItem("Wand of Embers", "<p>Wand, Rare (Requires Attunement). This wand has 7 charges. As an action, you can expend 1 charge to make a ranged attack roll +5 against a creature within 60 feet. Hit: 7 (2d6) fire damage, plus 4 (1d8) fire damage if the target is undead. The wand regains 1d6 + 1 charges daily at dawn.</p>", { keys, itemType: "equipment" });
+    const acts = P.toActivities(plan, { keys, idGen, item: { type: "equipment" }, resolveSpell: () => null });
+    const variants = plan.activities.filter(a => a.condition);
+    expect(variants.length).toBeGreaterThan(0);
+    const base = plan.activities.find(a => !a.condition && a.kind === variants[0].kind);
+    expect(base?.consume ?? null).not.toBeNull();
+    expect(variants[0].consume).toEqual(base.consume);
+    expect(variants[0].activation).toEqual(base.activation);
+    expect(acts.filter(a => a.consumption?.targets?.length).length).toBeGreaterThanOrEqual(2);
+  });
+});
