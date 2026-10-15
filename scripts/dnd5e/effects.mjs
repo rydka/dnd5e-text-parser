@@ -11,6 +11,8 @@ export const FLAG_SCOPE = "dnd5e-text-parser";
 
 const ROLL_TYPES = { weapon: ["mwak", "rwak"], spell: ["msak", "rsak"] };
 const ALL_ROLL_TYPES = ["mwak", "rwak", "msak", "rsak"];
+// Physical damage bypasses of dnd5e 6 (`CONFIG.DND5E.itemProperties` with `isPhysical`): magical, silvered, adamantine
+const BYPASSES = new Set(["mgc", "sil", "ada"]);
 
 const change = (key, type, value) => ({ key, type, value, phase: "initial" });
 
@@ -79,6 +81,24 @@ function changesOf(effect, keys, notes) {
     }
     case "abilityScore":
       return isValidKey(keys, "abilities", scope) ? [change(`system.abilities.${scope}.value`, "upgrade", value)] : skip();
+    case "damageReduction": {
+      // "reduces all incoming bludgeoning, piercing, and slashing damage by 3": dnd5e 6 applies
+      // `traits.dm.amount.<type>` (a deterministic formula, added to the damage of that type; `ALL` to every damage
+      // type) in `Actor#calculateDamage` (documents/actor/actor.mjs), and skips it for physical damage whose
+      // properties meet `traits.dm.bypasses` ("from nonmagical attacks" = the `mgc` bypass).
+      const amount = Math.abs(Number(value));
+      if ( !Number.isFinite(amount) || !amount ) return skip();
+      if ( scope !== "all" && !(lookup("damage", scope) === scope && isValidKey(keys, "damageTypes", scope)) ) return skip();
+      const changes = [change(`system.traits.dm.amount.${scope === "all" ? "ALL" : scope}`, "add", `-${amount}`)];
+      for ( const bypass of effect.bypasses ?? [] ) {
+        if ( BYPASSES.has(bypass) ) changes.push(change("system.traits.dm.bypasses", "add", bypass));
+      }
+      return changes;
+    }
+    case "sense":
+      // "darkvision out to 120 feet": dnd5e 6 stores senses in `senses.ranges.<key>` (data/shared/senses-field.mjs)
+      return lookup("senses", scope) === scope && isValidKey(keys, "senses", scope)
+        ? [change(`system.attributes.senses.ranges.${scope}`, "upgrade", String(value))] : skip();
     case "speed":
       // A movement type ("a flying speed of 60 feet") sets that speed; without one, the speed bonus grows.
       // dnd5e 6 stores speeds in `movement.speeds.<type>` (data/shared/movement-field.mjs, a MappingField of
@@ -132,7 +152,14 @@ export function toEffects(plan, { keys, idGen, name, img } = {}) {
     if ( !groups.has(groupKey) ) groups.set(groupKey, { onUse, effect, changes: [] });
     groups.get(groupKey).changes.push(...changes);
   }
-  for ( const { onUse, effect, changes } of groups.values() ) {
+  for ( const { onUse, effect, changes: all } of groups.values() ) {
+    // The same trait entry written twice (the `mgc` bypass of three damage reductions) is kept once: sets
+    const seen = new Set();
+    const changes = all.filter(entry => {
+      if ( !entry.key.startsWith("system.traits.") ) return true;
+      const id = `${entry.key}|${entry.type}|${entry.value}`;
+      return seen.has(id) ? false : seen.add(id);
+    });
     const source = {
       _id: idGen(), name: label, transfer: !onUse, disabled: false, system: { changes }
     };

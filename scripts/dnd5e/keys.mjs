@@ -8,7 +8,7 @@ const SIMPLE = [
   "abilities", "skills", "damageTypes", "conditionTypes", "areaTargetTypes", "individualTargetTypes",
   "activityActivationTypes", "activityTypes", "limitedUsePeriods", "itemRarity", "attunementTypes",
   "weaponTypes", "weaponMasteries", "armorTypes", "consumableTypes", "currencies", "movementTypes",
-  "spellcasting", "weaponIds", "armorIds", "healingTypes"
+  "spellcasting", "weaponIds", "armorIds", "healingTypes", "senses"
 ];
 
 /** `validProperties` groups kept, keyed by item type. */
