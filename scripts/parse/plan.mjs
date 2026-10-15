@@ -37,6 +37,18 @@ const ALT_SEP = /^\s*,?\s*(?:or|ou)\s+(?:(?:an?|une?)\s+)?(?:(?:extra|additional
 const ALT_AFTER = /^\s*(?:if|when|while|unless|si|lorsque|quand)(?![\p{L}])/iu;
 
 /**
+ * Readable text of an unrecognized sentence: tokens made only of punctuation (what is left of the passages cut out
+ * around it, ". . , , (range 20/60). .") are dropped. `null` when fewer than two tokens with a letter or a digit
+ * remain: a lone word or bare punctuation is not a sentence worth reporting or asking a resolver about.
+ * @param {string} text
+ * @returns {string|null}
+ */
+function cleanUnrecognized(text) {
+  const tokens = text.split(/\s+/).filter(token => /[\p{L}\p{N}]/u.test(token));
+  return tokens.length < 2 ? null : tokens.join(" ");
+}
+
+/**
  * Parse the text of a feature (monster action, trait, item) into a `FeaturePlan` (pure, deterministic).
  * Multiattack is never interpreted (`skip: "multiattack"`). Nothing is invented: ambiguous facts are left out
  * and listed in `ambiguous`; sentences no recognizer covered are listed in `unrecognized`.
@@ -154,11 +166,10 @@ export function parseFeature(name, html, opts = {}) {
   const spans = [...attack.spans, ...rangeTarget.spans, ...damage.spans, ...(damage.covered ?? []), ...saveArea.spans,
     ...uses.spans, ...activation.spans, ...legendarySpans];
   for ( const sentence of splitSentences(text) ) {
-    const words = sentence.text.replace(/[:.]+$/, "").split(/\s+/).filter(Boolean);
-    if ( words.length < 2 || !/[\p{L}\d]/u.test(sentence.text) ) continue;
     const span = { start: sentence.index, end: sentence.index + sentence.text.length };
     if ( spans.some(other => overlaps(span, other)) ) continue;
-    plan.unrecognized.push({ text: sentence.text, index: sentence.index });
+    const cleaned = cleanUnrecognized(sentence.text);
+    if ( cleaned ) plan.unrecognized.push({ text: cleaned, index: sentence.index });
   }
   return plan;
 }

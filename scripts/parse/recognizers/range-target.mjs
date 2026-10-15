@@ -5,7 +5,9 @@ const NUM = "(\\d+(?:[.,]\\d+)?)";
 const FT = "\\s*(?:ft\\.?|feet|foot)";
 
 const EN_REACH = new RegExp(`\\breach\\s+${NUM}${FT}`, "giu");
-const EN_RANGE = new RegExp(`\\brange\\s+${NUM}(?:\\s*/\\s*${NUM})?${FT}`, "giu");
+// "range 20/60 ft.", "range 30 ft."; a weapon property list writes "thrown (range 20/60)" without the unit,
+// which the two numbers make unambiguous (the French "portée 6/18 m" already gives it)
+const EN_RANGE = new RegExp(`\\brange\\s+${NUM}(?:\\s*/\\s*${NUM}(?:${FT})?|${FT})`, "giu");
 const FR_UNIT = "\\s*(m(?:[eè]tres?)?|pieds?|pi|ft\\.?)(?![\\p{L}])";
 const FR_REACH = new RegExp(`\\ballonge\\s+(?:de\\s+)?${NUM}${FR_UNIT}`, "giu");
 const FR_RANGE = new RegExp(`\\bportée\\s+(?:de\\s+)?${NUM}(?:\\s*/\\s*${NUM})?${FR_UNIT}`, "giu");

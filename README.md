@@ -171,14 +171,15 @@ Quand le texte ne permet pas d'écrire un fait sans l'inventer, la bibliothèque
 FeaturePlan = { schema: 1, skip: "multiattack"|null,
   activation: { type, cost }|null,                       // action|bonus|reaction|legendary|special
   attack: { type: "melee"|"ranged"|null, classification: "weapon"|"spell"|null, bonus: number|null }|null,  // en-tête sans nombre (« Automatic hit ») : attack null, dégâts seuls, remarque Note.AttackBonusMissing
-  range: { reach, value, long }|null,                    // pieds
+  range: { reach, value, long }|null,                    // pieds (« reach 5 ft. », « range 20/60 ft. », « range 20/60 » d'une liste de propriétés d'arme, « portée 6/18 m » converti)
   target: { count, type }|null,
   damage: DamagePart[],                                  // dégâts du coup, ou dégâts seuls
   save: { ability, dc, onSave: "half"|"none", damage: DamagePart[] }|null,
   template: { type, size, width, height }|null,
   uses: { max, period: "day"|"dawn"|"dusk"|"sr"|"lr", recoverFormula }|null,
   recharge: { min }|null, legendaryResistance: number|null,
-  notes: Descriptor[], ambiguous: Descriptor[], unrecognized: { text, index }[] }
+  notes: Descriptor[], ambiguous: Descriptor[],
+  unrecognized: { text, index }[] }                     // phrases qu'aucun reconnaisseur ne couvre, sans les fragments de ponctuation laissés par les passages reconnus ; au moins deux mots
 DamagePart = { number, denomination, bonus, type, raw,
   typeChoices?: string[],                                // « lightning or thunder damage » : type null, choix listés (Note.AmbiguousDamageType)
   condition?: string }                                   // second résultat « , or 11 (2d8 + 2) Piercing damage if the creature is Bloodied » : partie ajoutée à la suite, condition en texte
