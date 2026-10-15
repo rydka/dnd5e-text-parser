@@ -206,8 +206,13 @@ export function parseItem(name, html, opts = {}) {
     };
     segment.activity = activity;
     activities.push(activity);
+    // A variant acts and consumes like the activity it derives from ("expend 1 charge to ... Hit: 7 (2d6) fire
+    // damage, plus 4 (1d8) fire damage if the target is undead": both activities expend the charge)
     for ( const variant of feature.variants ) {
-      activities.push({ ...variant, name: variantName(activity.name || title, variant.condition) });
+      activities.push({
+        ...variant, name: variantName(activity.name || title, variant.condition),
+        activation: activity.activation, consume: activity.consume
+      });
     }
   }
 
@@ -235,6 +240,7 @@ export function parseItem(name, html, opts = {}) {
       if ( !activity.condition || activity.kind !== "damage" ) continue;
       const variant = {
         ...activity, kind: "attack", attack: attackActivity.attack, range: activity.range ?? attackActivity.range,
+        activation: activity.activation ?? attackActivity.activation, consume: activity.consume ?? attackActivity.consume,
         name: variantName(attackActivity.name || title, activity.condition)
       };
       if ( activities.includes(activity) ) activities.splice(activities.indexOf(activity), 1);
