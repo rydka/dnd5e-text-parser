@@ -289,3 +289,54 @@ describe("item defect 3: a scroll gets no 'uses.max = 1'", () => {
     expect(result.uses).toMatchObject({ max: "5" });
   });
 });
+
+// Corrections after control-3 (bugs 1, 9, 10). Texts written for these tests only.
+describe("control-3 bug 1: versatile damage in French and English adds no second part", () => {
+  it("FR 'si elle est maniée à deux mains'", () => {
+    const plan = feature("Hache runique", "<p>Attaque au corps à corps avec une arme : +6 pour toucher, allonge 1,50 m. Touché : 8 (1d8 + 4) dégâts tranchants, ou 9 (1d10 + 4) dégâts tranchants si elle est maniée à deux mains.</p>");
+    expect(plan.damage).toHaveLength(1);
+  });
+
+  it("FR 'à deux mains'", () => {
+    const plan = feature("Bâton de garde", "<p>Attaque au corps à corps avec une arme : +5 pour toucher, allonge 1,50 m. Touché : 6 (1d6 + 3) dégâts contondants, ou 7 (1d8 + 3) dégâts contondants à deux mains.</p>");
+    expect(plan.damage).toHaveLength(1);
+  });
+
+  it("EN control: versatile", () => {
+    const plan = feature("Spear Strike", "<p>Melee Attack Roll: +5, reach 5 ft. Hit: 6 (1d6 + 3) Piercing damage, or 7 (1d8 + 3) Piercing damage if used with two hands.</p>");
+    expect(plan.damage).toHaveLength(1);
+  });
+});
+
+describe("control-3 bug 9: a target AC is not the item's armor class", () => {
+  const patch = (name, html, type = "equipment") => P.toItemPatch(item(name, html, type), { item: { type }, keys });
+
+  it("EN 'against AC 24' on a non-armor object", () => {
+    const plan = item("Lens of Aim", "<p>Wondrous Item, Rare. Once per day you can make an attack roll against AC 24 with advantage.</p>");
+    expect(plan.armor?.ac ?? null).toBeNull();
+    expect(patch("Lens of Aim", "<p>Wondrous Item, Rare. Once per day you can make an attack roll against AC 24 with advantage.</p>").armor?.value).toBeUndefined();
+  });
+
+  it("FR 'contre une CA de 20' on a non-armor object", () => {
+    const html = "<p>Objet merveilleux, rare. Une fois par jour, vous pouvez effectuer un jet d'attaque contre une CA de 20 avec avantage.</p>";
+    expect(item("Lentille de visée", html).armor?.ac ?? null).toBeNull();
+    expect(patch("Lentille de visée", html).armor?.value).toBeUndefined();
+  });
+
+  it("positive control: an armor 'AC 18' keeps it", () => {
+    const html = "<p>Armor (Plate), Rare. AC 18. You gain a +1 bonus to saving throws while wearing it.</p>";
+    expect(patch("Bastion Plate", html).armor?.value).toBe(18);
+  });
+});
+
+describe("control-3 bug 10: 'Potion of X' / 'Potion de X' is a potion", () => {
+  const patch = (name, html) => P.toItemPatch(item(name, html, "consumable"), { item: { type: "consumable" }, keys });
+
+  it("EN", () => {
+    expect(patch("Potion of Swiftness", "<p>Rare. When you drink this liquid, you gain the effect of the haste spell for 1 minute.</p>").type).toMatchObject({ value: "potion" });
+  });
+
+  it("FR", () => {
+    expect(patch("Potion de célérité", "<p>Rare. Quand vous buvez ce liquide, vous bénéficiez de l'effet du sort rapidité pendant 1 minute.</p>").type).toMatchObject({ value: "potion" });
+  });
+});
