@@ -200,25 +200,28 @@ export function parseFeature(name, html, opts = {}) {
       .replace(/\s*,?\s*(?:\b(?:or|ou|and|et))?\s*,?\s*$/iu, "");
     conditional.set(chain, { condition: tail.trim(), alt, raw: text.slice(start, chain.end + tail.length).trim().replace(/^,\s*/, "") });
   });
-  const direct = chains.filter(chain => !isOngoing(chain) && !conditional.has(chain));
-  const before = direct.filter(chain => chain.start < saveStart);
-  const after = direct.filter(chain => chain.start >= saveStart);
-  let hit = null;
-  let onSave;
   // C4: damage that depends on an ambiguous save (several different saving throws, "Wall of Ice") is withheld with
   // it: no damage activity is invented for an ability whose damage belongs to the unresolved save. An ambiguous
   // attack (several bonuses) keeps its written damage: only the bonus is left out (L3, nothing invented).
   const withheld = !plan.save && saveArea.ambiguous?.length;
-  if ( withheld ) {
-    if ( direct.length ) {
-      plan.ambiguous.push({ key: "dnd5e-text-parser.Note.DamageWithheld", data: { raw: direct.flatMap(chain => chain.parts.map(part => part.raw)) } });
-    }
-    onSave = null;
-  } else if ( plan.save && !plan.attack ) {
-    onSave = after[0] ?? before[0] ?? null;
-  } else {
-    hit = before[0] ?? (plan.save ? null : direct[0]) ?? null;
-    onSave = plan.save ? (after[0] ?? null) : null;
+  // The main results: the damage of the hit (or the damage alone) and the damage of the save
+  const mainResults = () => {
+    const direct = chains.filter(chain => !isOngoing(chain) && !conditional.has(chain));
+    const before = direct.filter(chain => chain.start < saveStart);
+    const after = direct.filter(chain => chain.start >= saveStart);
+    if ( withheld ) return { direct, hit: null, onSave: null };
+    if ( plan.save && !plan.attack ) return { direct, hit: null, onSave: after[0] ?? before[0] ?? null };
+    return { direct, hit: before[0] ?? (plan.save ? null : direct[0]) ?? null, onSave: plan.save ? (after[0] ?? null) : null };
+  };
+  let { direct, hit, onSave } = mainResults();
+  // A variant only stands next to a main result. Without one ("deals an extra 4d6 piercing damage when it hits...
+  // and has advantage", Sneak Attack), the conditional damage is the damage of the feature itself.
+  if ( conditional.size && !hit && !onSave ) {
+    conditional.clear();
+    ({ direct, hit, onSave } = mainResults());
+  }
+  if ( withheld && direct.length ) {
+    plan.ambiguous.push({ key: "dnd5e-text-parser.Note.DamageWithheld", data: { raw: direct.flatMap(chain => chain.parts.map(part => part.raw)) } });
   }
   if ( hit ) plan.damage = hit.parts;
   if ( plan.save && onSave ) plan.save.damage = onSave.parts;
