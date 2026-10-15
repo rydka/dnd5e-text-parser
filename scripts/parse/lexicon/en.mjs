@@ -33,6 +33,7 @@ export const EN = {
     ammunition: "amm", loading: "lod", special: "spc"
   },
   armor: { light: "light", medium: "medium", heavy: "heavy", shield: "shield" },
+  senses: { darkvision: "darkvision", blindsight: "blindsight", tremorsense: "tremorsense", truesight: "truesight" },
   // PHB 2024 weapon masteries (CONFIG.DND5E.weaponMasteries)
   weaponMasteries: {
     cleave: "cleave", graze: "graze", nick: "nick", push: "push", sap: "sap", slow: "slow", topple: "topple", vex: "vex"

@@ -76,3 +76,21 @@ export function isNotWearer(sentence, start) {
   const before = sentence.slice(0, start);
   return NOT_WEARER_VERB.test(before) || NOT_WEARER_SUBJECT.test(before);
 }
+
+// Someone other than the creature itself: a target, an enemy, or an indefinite creature ("each creature within 10
+// feet", "any creature that touches it", "une créature qui..."). "The creature has resistance..." is the creature.
+const NOT_SELF_SUBJECT = new RegExp(String.raw`(?<![\p{L}])(?:targets?|enem(?:y|ies)|foes?|opponents?|cibles?|ennemis?|adversaires?|` +
+  String.raw`(?:an?|any|each|every|another|other|all|une?|toute|chaque|autres?|les\s+autres)\s+(?:(?:friendly|hostile|other|autre)\s+)?` +
+  String.raw`(?:creatures?|cr[ée]atures?|all(?:y|ies)|alli[ée]e?s?))(?![\p{L}])[^.;:]{0,40}$`, "iu");
+
+/**
+ * Same as `isNotWearer`, for the text of a creature's own feature: the creature named or "the creature" is the
+ * subject; a target, an enemy or an indefinite creature ("each creature within 10 feet") is someone else.
+ * @param {string} sentence
+ * @param {number} start
+ * @returns {boolean}
+ */
+export function isNotSelf(sentence, start) {
+  const before = sentence.slice(0, start);
+  return NOT_WEARER_VERB.test(before) || NOT_SELF_SUBJECT.test(before);
+}

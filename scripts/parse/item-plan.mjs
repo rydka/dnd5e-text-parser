@@ -68,7 +68,8 @@ function nameOf(segmentText, leads, cast) {
 export function parseItem(name, html, opts = {}) {
   const title = String(name ?? "");
   const text = htmlToText(html);
-  const parseOpts = { languages: opts.languages, keys: opts.keys };
+  // The effects of an item are read here (`recognizeMagicEffects`), not by `parseFeature`
+  const parseOpts = { languages: opts.languages, keys: opts.keys, featureEffects: false };
   const ctx = { ...parseOpts, name: title, itemType: opts.itemType };
 
   const meta = recognizeItemMeta(text, ctx);

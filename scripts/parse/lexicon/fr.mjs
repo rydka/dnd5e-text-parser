@@ -38,6 +38,10 @@ export const FR = {
     allonge: "rch", munitions: "amm", chargement: "lod", "spéciale": "spc"
   },
   armor: { "légère": "light", "intermédiaire": "medium", lourde: "heavy", bouclier: "shield" },
+  senses: {
+    "vision dans le noir": "darkvision", "vision aveugle": "blindsight", "perception des vibrations": "tremorsense",
+    "vision lucide": "truesight", "vision véritable": "truesight"
+  },
   // Official French names of the PHB 2024 weapon masteries, with the usual variants
   weaponMasteries: {
     "enchaînement": "cleave", "éraflure": "graze", "égratignure": "graze", effleurement: "graze",

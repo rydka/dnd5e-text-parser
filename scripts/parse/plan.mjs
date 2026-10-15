@@ -6,6 +6,7 @@ import { recognizeSaveArea } from "./recognizers/save-area.mjs";
 import { recognizeUses } from "./recognizers/uses.mjs";
 import { recognizeActivation } from "./recognizers/activation.mjs";
 import { recognizeLegendary } from "./recognizers/legendary.mjs";
+import { recognizeFeatureEffects } from "./recognizers/feature-effects.mjs";
 
 export { nameKey } from "./text.mjs";
 export { parseActor } from "./actor-plan.mjs";
@@ -19,7 +20,7 @@ function emptyPlan() {
   return {
     schema: SCHEMA_VERSION, skip: null, activation: null, attack: null, range: null, target: null, damage: [],
     save: null, template: null, uses: null, recharge: null, legendaryResistance: null,
-    variants: [], notes: [], ambiguous: [], unrecognized: []
+    variants: [], effects: [], notes: [], ambiguous: [], unrecognized: []
   };
 }
 
@@ -109,7 +110,8 @@ function cleanUnrecognized(text) {
  * and listed in `ambiguous`; sentences no recognizer covered are listed in `unrecognized`.
  * @param {string} name  Feature name (may carry "(Recharge 5-6)", "(3/Day)", "(Costs 2 Actions)").
  * @param {string} html  Description (HTML or plain text).
- * @param {{ languages?: ("en"|"fr")[], keys?: object }} [opts]
+ * @param {{ languages?: ("en"|"fr")[], keys?: object, featureEffects?: boolean }} [opts]  `featureEffects: false`
+ *   leaves `plan.effects` empty (`parseItem` reads the effects of an item itself).
  * @returns {object} FeaturePlan
  */
 export function parseFeature(name, html, opts = {}) {
@@ -276,9 +278,18 @@ export function parseFeature(name, html, opts = {}) {
     plan.variants.push(variantOf(plan, title, { condition, raw, save, damage, extraDamage }));
   }
 
+  // Passive feature (a trait: no activation, no attack, no save): the effects dnd5e applies by itself go to
+  // `plan.effects` (`toEffects` writes them as one ActiveEffect transferred to the actor); what cannot be applied
+  // without inventing it (limited advantage, aura, "reduced to 1 hit point instead") gives `Note.NotAutomated`
+  const passive = opts.featureEffects !== false && !plan.activation && !plan.attack && !plan.save && !plan.legendaryResistance;
+  const featureEffects = passive ? recognizeFeatureEffects(text, ctx) : { fact: [], spans: [], ambiguous: [], notes: [] };
+  plan.effects = featureEffects.fact.map(effect => Object.fromEntries(Object.entries(effect).filter(([key]) => key !== "sentence")));
+  plan.notes.push(...featureEffects.notes);
+  plan.ambiguous.push(...featureEffects.ambiguous);
+
   // Sentences that no recognizer covered
   const spans = [...attack.spans, ...rangeTarget.spans, ...damage.spans, ...(damage.covered ?? []), ...saveArea.spans,
-    ...uses.spans, ...activation.spans, ...legendarySpans];
+    ...uses.spans, ...activation.spans, ...legendarySpans, ...featureEffects.spans];
   for ( const sentence of sentences ) {
     const span = { start: sentence.index, end: sentence.index + sentence.text.length };
     if ( spans.some(other => overlaps(span, other)) ) continue;

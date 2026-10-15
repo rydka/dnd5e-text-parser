@@ -1,4 +1,4 @@
-import { hasLang, languagesOf, isNegated, isNotWearer, ORIGIN } from "./common.mjs";
+import { hasLang, languagesOf, isNegated, isNotWearer, isNotSelf, ORIGIN } from "./common.mjs";
 import { lookup, fold, damageKey, conditionKey, abilityKey, ABILITY_RE } from "../lexicon/index.mjs";
 import { splitSentences, parseNumber, toFeet } from "../text.mjs";
 
@@ -8,6 +8,8 @@ import { splitSentences, parseNumber, toFeet } from "../text.mjs";
  * Each effect is `{ kind, value, scope, on?, raw, origin, when: "passive", duration: null, activity: null }`;
  * `parseItem` decides `when`, `duration` and `activity` from the surrounding paragraph. `sentence` is the
  * `{ start, end }` span of the sentence the effect was read from.
+ * `ctx.subject === "self"` reads the text of a creature's own feature: "The creature has resistance..." is about
+ * the creature (`isNotSelf`), not about a target as it would be for the wearer of an item (`isNotWearer`).
  */
 
 const STOP_EN = String.raw`(?=[.;]|\s+(?:while|when|whenever|as\s+long|if|against|made|and\s+(?:an?\s+)?\+\d+)\b|$)`;
@@ -16,16 +18,19 @@ const BONUS_FR = new RegExp(
   String.raw`\bbonus\s+de\s+\+(\d+)\s+(?:[àa]|aux?)\s+(.+?)(?=[.;]|\s+(?:tant\s+que|lorsque|quand|si|contre|avec)\b|\s+et\s+(?:d'un|un)\s+bonus|$)`,
   "giu"
 );
+// "has resistance to necrotic damage and is immune to the frightened condition": each clause is read on its own
+const TRAIT_STOP_EN = String.raw`(?=\s+(?:while|when|as\s+long|if|against|for|until|during)\b|\s+and\s+(?:is|has|it|its)\b|[.;]|$)`;
+const TRAIT_STOP_FR = String.raw`(?=\s+(?:tant\s+que|lorsque|quand|si|contre|pendant|jusqu)\b|\s+et\s+(?:est|a|il|elle)\b|[.;]|$)`;
 const TRAIT_EN = new RegExp(
-  String.raw`\b(resistance|immunity|vulnerability)\s+to\s+(.+?)(?=\s+(?:while|when|as\s+long|if|against|for|until|during)\b|[.;]|$)|\b(immune|resistant|vulnerable)\s+to\s+(.+?)(?=\s+(?:while|when|as\s+long|if|against|for|until|during)\b|[.;]|$)`,
+  String.raw`\b(resistance|immunity|vulnerability)\s+to\s+(.+?)${TRAIT_STOP_EN}|\b(immune|resistant|vulnerable)\s+to\s+(.+?)${TRAIT_STOP_EN}`,
   "giu"
 );
 const TRAIT_FR = new RegExp(
-  String.raw`\b(r[ée]sistance|immunit[ée]|vuln[ée]rabilit[ée])\s+(?:aux?\s+d[ée]g[âa]ts\s+(?:de\s+|d')?|contre\s+l'[ée]tat\s+|contre\s+les\s+[ée]tats\s+|aux?\s+)(.+?)(?=\s+(?:tant\s+que|lorsque|quand|si|contre|pendant|jusqu)\b|[.;]|$)`,
+  String.raw`\b(r[ée]sistance|immunit[ée]|vuln[ée]rabilit[ée])\s+(?:aux?\s+d[ée]g[âa]ts\s+(?:de\s+|d')?|contre\s+l'[ée]tat\s+|contre\s+les\s+[ée]tats\s+|aux?\s+)(.+?)${TRAIT_STOP_FR}`,
   "giu"
 );
 // "immunisé contre la peur" (a creature immune to a condition)
-const IMMUNE_FR = /\b(immunis[ée]e?s?)\s+(?:contre\s+|aux?\s+)(.+?)(?=\s+(?:tant\s+que|lorsque|quand|si|pendant|jusqu)\b|[.;]|$)/giu;
+const IMMUNE_FR = new RegExp(String.raw`\b(immunis[ée]e?s?)\s+(?:contre\s+|aux?\s+)(.+?)${TRAIT_STOP_FR}`, "giu");
 // "advantage on saving throws against being frightened" / "against poison" / "contre la peur"
 const AGAINST_EN = /\badvantage\s+on\s+(?:all\s+)?saving\s+throws?\s+against\s+(.+?)(?=[.;]|\s+(?:while|when|as\s+long|if)\b|$)/giu;
 const AGAINST_FR = /\bavantage\s+aux\s+jets\s+de\s+sauvegarde\s+contre\s+(.+?)(?=[.;]|\s+(?:tant\s+que|lorsque|quand|si)\b|$)/giu;
@@ -181,12 +186,13 @@ function scoreVariants(source, ctx) {
 
 /**
  * @param {string} text  Plain text.
- * @param {object} [ctx]  `{ languages, name }`.
+ * @param {object} [ctx]  `{ languages, name, subject? }`.
  * @returns {{ fact: object[], spans: object[], ambiguous: object[], notes: object[] }}
  */
 export function recognizeMagicEffects(text, ctx = {}) {
   const source = String(text ?? "");
   const langs = languagesOf(ctx);
+  const isOther = ctx.subject === "self" ? isNotSelf : isNotWearer;
   const effects = [];
   const spans = [];
   const ambiguous = [];
@@ -226,7 +232,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[TRAIT_EN, "en"], [TRAIT_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
-        if ( skip(match) || isNotWearer(s, match.index) ) continue;
+        if ( skip(match) || isOther(s, match.index) ) continue;
         const object = (match[2] ?? match[4]).trim();
         if ( THIS_EFFECT.test(object) ) continue;
         const word = fold(match[1] ?? match[3]);
@@ -240,7 +246,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[ADVANTAGE_EN, "en"], [ADVANTAGE_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
-        if ( skip(match) || isNotWearer(s, match.index) ) continue;
+        if ( skip(match) || isOther(s, match.index) ) continue;
         const kind = fold(match[1]).startsWith("dis") || fold(match[1]).startsWith("desa") ? "disadvantage" : "advantage";
         const first = lang === "en" ? match[2] : match[3];
         const second = lang === "en" ? match[3] : match[4];
@@ -263,7 +269,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[IMMUNE_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
-        if ( skip(match) || isNotWearer(s, match.index) || THIS_EFFECT.test(match[2].trim()) ) continue;
+        if ( skip(match) || isOther(s, match.index) || THIS_EFFECT.test(match[2].trim()) ) continue;
         const result = traitEffects("immunity", match[2].trim(), raw, langs, lang);
         add(result.effects);
         ambiguous.push(...result.notes);
@@ -273,7 +279,7 @@ export function recognizeMagicEffects(text, ctx = {}) {
     for ( const [re, lang] of [[AGAINST_EN, "en"], [AGAINST_FR, "fr"]] ) {
       if ( !hasLang(ctx, lang) ) continue;
       for ( const match of s.matchAll(re) ) {
-        if ( skip(match) || isNotWearer(s, match.index) ) continue;
+        if ( skip(match) || isOther(s, match.index) ) continue;
         for ( const part of match[1].split(AGAINST_SPLIT) ) {
           const word = part.replace(/^(?:and|et)\s+/iu, "").replace(/^against\s+|^contre\s+/iu, "")
             .replace(AGAINST_NOISE, "").trim();

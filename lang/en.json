@@ -57,7 +57,8 @@
       "EffectSkipped": "The effect {kind} {scope} could not be written: unknown or unsupported key.",
       "MasteryUnknown": "Unknown weapon mastery \"{text}\": none was written.",
       "SpellNotFound": "Spell \"{name}\" not found: no spell-casting activity was created.",
-      "FallbackRejected": "Proposal of the assistant rejected ({field}, {reason}): {raw}"
+      "FallbackRejected": "Proposal of the assistant rejected ({field}, {reason}): {raw}",
+      "NotAutomated": "Not automated (dnd5e has no mechanism for it without inventing one): {raw}"
     }
   }
 }
