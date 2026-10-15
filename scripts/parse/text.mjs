@@ -23,52 +23,65 @@ function decodeEntities(text) {
   });
 }
 
-/** Readable text of a healing enricher; "hit points" is added unless the text that follows already says it. */
+/**
+ * Readable text of a healing enricher; "hit points" is added unless the text that follows already says it.
+ * @param {string} body  Enricher body.
+ * @param {string} rest  The few characters that follow the enricher.
+ */
 function healText(body, rest) {
   const formula = body.match(/(\d+\s*d\s*\d+(?:\s*[+-]\s*\d+)*|\d+)/)?.[1];
   if ( !formula ) return body;
   return /^\s*(?:hit\s+points?|points?\s+de\s+vie|PV|HP)(?![\p{L}])/iu.test(rest) ? formula : `${formula} hit points`;
 }
 
-/** Replace Foundry / dnd5e enrichers with their readable text. */
+/** Characters after an enricher that `healText` needs to look at. */
+const AFTER = 40;
+
+/**
+ * Replace Foundry / dnd5e enrichers with their readable text.
+ * Every bracket class excludes the opening bracket too (`[^[\]]`, `[^{}]`): an unclosed "@UUID[" or "[[/damage "
+ * stops at the next opener instead of rescanning to the end of the text, which keeps the pass linear.
+ */
 function stripEnrichers(text) {
   return text
-    .replace(/@Embed\[[^\]]*\](?:\{[^}]*\})?/g, "")
-    .replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, "$1")
-    .replace(/@\w+\[([^\]/]*)\]/g, "$1")
-    .replace(/&Reference\[([^\]=]*?)(?:\s+[a-z]+=[^\]]*)?\](?:\{([^}]*)\})?/g, (m, a, b) => b ?? a)
-    .replace(/\[\[\/save\s+(?:ability=)?(\w+)\s+dc=(\d+)[^\]]*\]\](?:\{([^}]*)\})?/gi,
+    .replace(/@Embed\[[^[\]]*\](?:\{[^{}]*\})?/g, "")
+    .replace(/@\w+\[[^[\]]*\]\{([^{}]*)\}/g, "$1")
+    .replace(/@\w+\[([^[\]/]*)\]/g, "$1")
+    .replace(/&Reference\[([^[\]=]*?)(?:\s+[a-z]+=[^[\]]*)?\](?:\{([^{}]*)\})?/g, (m, a, b) => b ?? a)
+    .replace(/\[\[\/save\s+(?:ability=)?(\w+)\s+dc=(\d+)[^[\]]*\]\](?:\{([^{}]*)\})?/gi,
       (m, ab, dc, label) => label ?? `DC ${dc} ${ABILITY_NAMES[ab.toLowerCase().slice(0, 3)] ?? ab} saving throw`)
     // Healing without visible words: "[[/heal 2d4 + 2]]" -> "2d4 + 2 hit points"
-    .replace(/\[\[\/heal(?:ing)?\s+([^\]]*?)\]\](?:\{([^}]*)\})?/gi, (m, body, label, offset, all) =>
-      label ?? healText(body, all.slice(offset + m.length)))
-    .replace(/\[\[\/damage\s+([^\]]*?)\]\](?:\{([^}]*)\})?/gi, (m, body, label, offset, all) => {
+    .replace(/\[\[\/heal(?:ing)?\s+([^[\]]*?)\]\](?:\{([^{}]*)\})?/gi, (m, body, label, offset, all) =>
+      label ?? healText(body, all.slice(offset + m.length, offset + m.length + AFTER)))
+    .replace(/\[\[\/damage\s+([^[\]]*?)\]\](?:\{([^{}]*)\})?/gi, (m, body, label, offset, all) => {
       if ( label ) return label;
-      if ( /type=heal(?:ing)?\b/i.test(body) ) return healText(body, all.slice(offset + m.length));
+      if ( /type=heal(?:ing)?\b/i.test(body) ) return healText(body, all.slice(offset + m.length, offset + m.length + AFTER));
       const formula = body.match(/(\d+d\d+(?:\s*[+-]\s*\d+)?|\d+)/)?.[1] ?? body;
       const type = body.match(/type=([a-z,|]+)/i)?.[1] ?? body.replace(/(\d+d\d+(?:\s*[+-]\s*\d+)?|\d+)/, "").trim();
       return `${formula}${type ? ` ${type.split(/[,|]/)[0]}` : ""} damage`;
     })
-    .replace(/\[\[\/(?:r|roll|item|check|skill|tool|heal|healing)\s*([^\]]*?)\]\](?:\{([^}]*)\})?/gi,
+    .replace(/\[\[\/(?:r|roll|item|check|skill|tool|heal|healing)\s*([^[\]]*?)\]\](?:\{([^{}]*)\})?/gi,
       (m, body, label) => label ?? body.replace(/^(?:\w+=\S+\s*)+/, "").trim())
-    .replace(/\[\[([^\]]*)\]\](?:\{([^}]*)\})?/g, (m, body, label) => label ?? body);
+    .replace(/\[\[([^[\]]*)\]\](?:\{([^{}]*)\})?/g, (m, body, label) => label ?? body);
 }
 
 /**
  * HTML (or already plain text) to plain text. Lines are separated by "\n"; blank lines are removed.
+ * Linear in the size of the input, even when a "<", "@UUID[" or "[[/" is never closed: tag classes exclude "<"
+ * and a cell's content stops at the next cell tag, so nothing rescans to the end of the text.
  * @param {string} html
  * @returns {string}
  */
 export function htmlToText(html) {
   let text = String(html ?? "");
   // A table cell stays on its row: block tags inside <td> / <th> become spaces, not line breaks
-  text = text.replace(/<(td|th)(?:\s[^>]*)?>([\s\S]*?)<\/\s*\1\s*>/gi,
-    (match, tag, inner) => `<${tag}>${inner.replace(/<\/?\s*(?:p|div|br|h[1-6]|ul|ol|li)(?:\s[^>]*)?\/?>/gi, " ")}</${tag}>`);
+  text = text.replace(/<(td|th)(?:\s[^<>]*)?>((?:(?!<\/?\s*t[dh]\b)[\s\S])*)<\/\s*\1\s*>/gi,
+    (match, tag, inner) => `<${tag}>${inner.replace(/<\/?\s*(?:p|div|br|h[1-6]|ul|ol|li)(?:\s[^<>]*)?\/?>/gi, " ")}</${tag}>`);
   text = text.replace(/<\s*br\s*\/?>/gi, "\n")
     .replace(/<\/\s*(?:p|div|li|tr|h[1-6]|ul|ol|table|section|blockquote)\s*>/gi, "\n")
     .replace(/<\/\s*(?:td|th)\s*>/gi, " ")
-    .replace(/<\s*(?:p|div|li|tr|h[1-6])(?:\s[^>]*)?>/gi, "\n")
-    .replace(/<[^>]*>/g, "");
+    .replace(/<\s*(?:p|div|li|tr|h[1-6])(?:\s[^<>]*)?>/gi, "\n")
+    .replace(/<[^<>]*>/g, "");
   text = decodeEntities(text);
   text = stripEnrichers(text);
   text = text
