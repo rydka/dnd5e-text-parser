@@ -147,6 +147,8 @@ Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "
 const lines = parser.describe(plan).map(d => game.i18n.format(d.key, d.data));
 ```
 
+**Texte brut, à échapper avant tout affichage HTML.** La bibliothèque ne produit jamais de HTML, mais tout ce qu'elle rend du texte source est du **texte brut non fiable** : `raw` de chaque fait, `unrecognized[].text`, `data.*` des descripteurs (`data.raw`, `data.text`, `data.word`…) et les chaînes de `describe`. `htmlToText` décode les entités après avoir retiré les balises : `&lt;img onerror=…&gt;` dans une description devient le texte littéral `<img onerror=…>` dans ces champs. Un module qui les insère dans l'interface doit donc les échapper (`foundry.utils.escapeHTML`, `{{ }}` de Handlebars, `textContent`), jamais `innerHTML` ni `{{{ }}}` directement.
+
 Clés : `dnd5e-text-parser.Describe.{Attack, Range, Target, Damage, ExtraDamage, Save, Template, Uses, Recharge, LegendaryResistance, Activation, Activity, Heal, Cast, Consume, Skipped, Weapon, Armor, Consumable, Charges, Rarity, Attunement, Weight, Price, Effect, Field, Fallback}` et `dnd5e-text-parser.Note.*`. Une donnée proposée par le secours porte `data.origin === "fallback"` : ajoutez `Describe.Fallback` (« proposé par l'assistant »).
 
 #### Ambiguïtés et abstentions (`plan.ambiguous`, `plan.notes`)
