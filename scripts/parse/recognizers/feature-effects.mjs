@@ -35,8 +35,9 @@ const AURA = new RegExp(String.raw`(?<![\p{L}])(?:within\s+\d+\s*(?:feet|foot|ft
 const CONDITIONAL = new RegExp(String.raw`(?<![\p{L}'])(?:while|when|whenever|if|unless|until|as\s+long\s+as|only|` +
   String.raw`that\s+rel(?:y|ies)\s+on|tant\s+qu(?:e|')|lorsqu(?:e|')|quand|si|jusqu'[àa]|sauf|seulement|uniquement|` +
   String.raw`qui\s+(?:reposent?|font\s+appel|fait\s+appel))(?![\p{L}])`, "iu");
-const AC_EN = /\b(?:AC|Armor\s+Class)\s+(?:increases|is\s+increased)\s+by\s+(\d+)/giu;
-const AC_FR = /\bCA\s+(?:augmente|est\s+augment[ée]e)\s+de\s+(\d+)/giu;
+// "its AC increases by 2", "the AC of the guardian increases by 3", "La CA du gardien augmente de 3"
+const AC_EN = /\b(?:AC|Armor\s+Class)\s+(?:of\s+(?:the\s+)?(?:[\p{L}'-]+\s+){1,3}?)?(?:increases|is\s+increased)\s+by\s+(\d+)/giu;
+const AC_FR = /\bCA\s+(?:(?:du|de\s+la|de\s+l'|des)\s*(?:[\p{L}'-]+\s+){1,3}?)?(?:augmente|est\s+augment[ée]e)\s+de\s+(\d+)/giu;
 const BYPASS = /non-?\s?magi/iu;
 // Words of a sentence that states an effect (even one no recognizer read)
 const EFFECT_WORDS = /\b(?:resistan|immun|vulnerab|advantage|disadvantage|bonus|r[ée]sistan|avantage|d[ée]savantage)/iu;
