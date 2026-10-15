@@ -40,9 +40,10 @@ const overlaps = (span, other) => span.start < other.end && span.end > other.sta
 const COND_START = String.raw`(?:if|when|while|unless|at\s+range|in\s+melee|in\s+(?:[\p{L}'-]+\s+){0,3}?form|` +
   String.raw`si|lorsque|lorsqu'|quand|tant\s+que|[àa]\s+(?:distance|port[ée]e)|au\s+corps\s+[àa]\s+corps|sous\s+(?:sa\s+|la\s+)?forme)(?![\p{L}])`;
 const COND_AFTER = new RegExp(String.raw`^\s*(?:(?:suppl[ée]mentaires?|en\s+plus)\s+)?${COND_START}`, "iu");
-// ", or an extra" before the alternative; the first result may carry its own condition ("7 (1d6 + 4) piercing
-// damage in melee or 5 (1d4 + 3) piercing damage at range", "in Small or Medium form, or 10 (2d6 + 3)...")
-const ALT_LEAD = /,?\s*(?:or|ou)\s+(?:(?:an?|une?|des?)\s+)?(?:(?:extra|additional|suppl[ée]mentaires?)\s+)?$/iu;
+// ", or an extra" / "—or" (a dash, normalized to "-" by htmlToText) before the alternative; the first result may carry
+// its own condition ("7 (1d6 + 4) piercing damage in melee or 5 (1d4 + 3) piercing damage at range", "in Small or
+// Medium form, or 10 (2d6 + 3)...")
+const ALT_LEAD = /(?:,|\s*-)?\s*(?:or|ou)\s+(?:(?:an?|une?|des?)\s+)?(?:(?:extra|additional|suppl[ée]mentaires?)\s+)?$/iu;
 const ALT_SEP = new RegExp(String.raw`^(?:\s*${COND_START}[^.;,]{0,60}?)?\s*${ALT_LEAD.source}`, "iu");
 // "takes an extra", "deals an additional", "also takes", "subit également", "inflige en plus"
 const EXTRA_LEAD = /\b(?:(?:an?|une?|des?)\s+)?(?:extra|additional|also\s+(?:takes?|deals?|suffers?)|suppl[ée]mentaires?|en\s+plus|(?:subit|subissent|inflige|infligent)\s+(?:aussi|[ée]galement))\s+(?:(?:an?|une?|des?)\s+)?$/iu;
@@ -198,7 +199,7 @@ export function parseFeature(name, html, opts = {}) {
     // The clause ends before the next result ("... in melee or 5 (1d4 + 3) ...") or the next sentence part
     const tail = text.slice(chain.end, next ? next.start : undefined).match(COND_TEXT)[0]
       .replace(/\s*,?\s*(?:\b(?:or|ou|and|et))?\s*,?\s*$/iu, "");
-    conditional.set(chain, { condition: tail.trim(), alt, raw: text.slice(start, chain.end + tail.length).trim().replace(/^,\s*/, "") });
+    conditional.set(chain, { condition: tail.trim(), alt, raw: text.slice(start, chain.end + tail.length).trim().replace(/^[,-]\s*/, "") });
   });
   // C4: damage that depends on an ambiguous save (several different saving throws, "Wall of Ice") is withheld with
   // it: no damage activity is invented for an ability whose damage belongs to the unresolved save. An ambiguous
