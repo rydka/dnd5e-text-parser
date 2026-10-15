@@ -79,9 +79,10 @@ export function isNotWearer(sentence, start) {
 
 // Someone other than the creature itself: a target, an enemy, or an indefinite creature ("each creature within 10
 // feet", "any creature that touches it", "une créature qui..."). "The creature has resistance..." is the creature.
+// The subject may stand up to 60 characters before the effect ("Chaque créature à moins de 4,50 mètres de la banshee a un").
 const NOT_SELF_SUBJECT = new RegExp(String.raw`(?<![\p{L}])(?:targets?|enem(?:y|ies)|foes?|opponents?|cibles?|ennemis?|adversaires?|` +
   String.raw`(?:an?|any|each|every|another|other|all|une?|toute|chaque|autres?|les\s+autres)\s+(?:(?:friendly|hostile|other|autre)\s+)?` +
-  String.raw`(?:creatures?|cr[ée]atures?|all(?:y|ies)|alli[ée]e?s?))(?![\p{L}])[^.;:]{0,40}$`, "iu");
+  String.raw`(?:creatures?|cr[ée]atures?|all(?:y|ies)|alli[ée]e?s?))(?![\p{L}])[^.;:]{0,60}$`, "iu");
 
 /**
  * Same as `isNotWearer`, for the text of a creature's own feature: the creature named or "the creature" is the

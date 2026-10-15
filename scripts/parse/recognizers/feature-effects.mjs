@@ -29,7 +29,8 @@ const TAKES_EN = String.raw`(?:(?:that\s+)?(?:it|they|the\s+(?:[\p{L}'-]+\s+){0,
 const SUBIT_FR = String.raw`(?:(?:qu'(?:il|elle)\s+subit|subis(?:\s+par\s+(?:[\p{L}'-]+\s+){1,3}?)?)\s*(?:(?:provenant\s+)?d'attaques\s+non\s+magiques\s*)?)?`;
 const ONE_HP = /(?:drops?|falls?|(?:is\s+|are\s+)?reduced)\s+to\s+1\s+hit\s+point\s+instead|(?:tombe|descend|est\s+r[ée]duite?)\s+[àa]\s+1\s+point\s+de\s+vie\s+[àa]\s+la\s+place/iu;
 const AURA = new RegExp(String.raw`(?<![\p{L}])(?:within\s+\d+\s*(?:feet|foot|ft)|dans\s+un\s+rayon\s+de|` +
-  String.raw`[àa]\s+(?:moins\s+de\s+)?\d+(?:[.,]\d+)?\s*(?:m|m[eè]tres?)\s+(?:de\s+lui|d'elle|ou\s+moins)|` +
+  // "à 9 m de lui", "à moins de 4,50 mètres de la banshee", "à 9 m ou moins"
+  String.raw`[àa]\s+(?:moins\s+de\s+)?\d+(?:[.,]\d+)?\s*(?:m|m[eè]tres?)\s+(?:de\s+[\p{L}'-]+|d'[\p{L}-]+|du\s+[\p{L}'-]+|des\s+[\p{L}'-]+|ou\s+moins)|` +
   String.raw`other\s+creatures?|its\s+allies|ses\s+alli[ée]s|friendly\s+creatures?|allied\s+creatures?|` +
   String.raw`creatures?\s+of\s+(?:its|the\s+[\p{L}'-]+)\s+choice|cr[ée]atures?\s+de\s+son\s+choix)(?![\p{L}])`, "iu");
 const CONDITIONAL = new RegExp(String.raw`(?<![\p{L}'])(?:while|when|whenever|if|unless|until|as\s+long\s+as|only|` +
