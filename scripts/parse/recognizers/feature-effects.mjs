@@ -34,7 +34,7 @@ const AURA = new RegExp(String.raw`(?<![\p{L}])(?:within\s+\d+\s*(?:feet|foot|ft
   String.raw`creatures?\s+of\s+(?:its|the\s+[\p{L}'-]+)\s+choice|cr[ée]atures?\s+de\s+son\s+choix)(?![\p{L}])`, "iu");
 const CONDITIONAL = new RegExp(String.raw`(?<![\p{L}'])(?:while|when|whenever|if|unless|until|as\s+long\s+as|only|` +
   String.raw`that\s+rel(?:y|ies)\s+on|tant\s+qu(?:e|')|lorsqu(?:e|')|quand|si|jusqu'[àa]|sauf|seulement|uniquement|` +
-  String.raw`qui\s+(?:reposent?|font\s+appel|fait\s+appel))(?![\p{L}])`, "iu");
+  String.raw`qui\s+(?:reposent?|font\s+appel|fait\s+appel))(?:(?<=')|(?![\p{L}]))`, "iu");   // "tant qu'il": the elided form is followed by a letter
 // "its AC increases by 2", "the AC of the guardian increases by 3", "La CA du gardien augmente de 3"
 const AC_EN = /\b(?:AC|Armor\s+Class)\s+(?:of\s+(?:the\s+)?(?:[\p{L}'-]+\s+){1,3}?)?(?:increases|is\s+increased)\s+by\s+(\d+)/giu;
 const AC_FR = /\bCA\s+(?:(?:du|de\s+la|de\s+l'|des)\s*(?:[\p{L}'-]+\s+){1,3}?)?(?:augmente|est\s+augment[ée]e)\s+de\s+(\d+)/giu;
