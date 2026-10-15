@@ -9,7 +9,7 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace
 
 // eslint-disable-next-line no-empty-pattern
 test("M2/M3: recall and precision on the reference and control sets (recorded, not asserted)", async ({}, testInfo) => {
-  for ( const set of ["reference", "control"] ) {
+  for ( const set of ["reference", "control", "control-2", "control-3"] ) {
     const out = testInfo.outputPath(`M2-M3-${set}.json`);
     const run = spawnSync(process.execPath, [path.join(root, "tests/metrics/measure-sets.mjs"), `--set=${set}`, `--out=${out}`], { cwd: root, encoding: "utf8" });
     expect(run.status, run.stderr).toBe(0);

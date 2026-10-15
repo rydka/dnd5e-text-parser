@@ -52,14 +52,14 @@ describe("validateFallbackFacts: hostile proposals", () => {
 });
 
 describe("weapon mastery", () => {
-  const mastery = (name, text, lang) => patch(name, `<p>${text}</p>`).mastery;
+  const mastery = (name, text) => patch(name, `<p>${text}</p>`).mastery;
   it("EN Nick and Cleave", () => {
-    expect(mastery("Dirk", "Weapon (dagger), Common. Mastery: Nick", "en")).toBe("nick");
-    expect(mastery("Greataxe", "Weapon (greataxe), Common. Mastery: Cleave", "en")).toBe("cleave");
+    expect(mastery("Dirk", "Weapon (dagger), Common. Mastery: Nick")).toBe("nick");
+    expect(mastery("Greataxe", "Weapon (greataxe), Common. Mastery: Cleave")).toBe("cleave");
   });
   it("FR Coup rapide and Enchaînement", () => {
-    expect(mastery("Dague", "Arme (dague), commune. Maîtrise : Coup rapide", "fr")).toBe("nick");
-    expect(mastery("Grande hache", "Arme (grande hache), commune. Maîtrise d'arme : Enchaînement", "fr")).toBe("cleave");
+    expect(mastery("Dague", "Arme (dague), commune. Maîtrise : Coup rapide")).toBe("nick");
+    expect(mastery("Grande hache", "Arme (grande hache), commune. Maîtrise d'arme : Enchaînement")).toBe("cleave");
   });
   it("an unknown mastery gives a note and no key", () => {
     const plan = item("Blade", "<p>Weapon (longsword), Common. Mastery: Flourish</p>", "weapon");

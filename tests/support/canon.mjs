@@ -48,6 +48,17 @@ export function featureTokens(plan) {
   if ( plan.uses ) t.push(`uses=${plan.uses.max}/${plan.uses.period}`);
   if ( plan.recharge ) t.push(`recharge=${plan.recharge.min}`);
   if ( plan.legendaryResistance != null ) t.push(`legendaryResistance=${plan.legendaryResistance}`);
+  // B9: a conditional or alternative result is a second activity: one "variant" token per variant, with its facts
+  // (attack, damage with the conditional extra, save and its damage).
+  for ( const v of plan.variants ?? [] ) {
+    t.push("variant=activity");
+    if ( v.attack ) t.push(`variant.attack=${v.attack.type ?? "-"}/${v.attack.classification ?? "-"} ${signed(v.attack.bonus)}`);
+    for ( const d of [...(v.damage ?? []), ...(v.extraDamage ? [v.extraDamage] : [])] ) t.push(`variant.damage=${canonDamagePart(d)}`);
+    if ( v.save ) {
+      t.push(`variant.save=${abilityOf(v.save.ability)} ${v.save.dc} ${v.save.onSave}`);
+      for ( const d of v.save.damage ?? [] ) t.push(`variant.saveDamage=${canonDamagePart(d)}`);
+    }
+  }
   return t;
 }
 
@@ -56,9 +67,20 @@ export function expectedFeatureTokens(c) {
   const e = c.expected ?? {};
   const t = [];
   for ( const [k, v] of Object.entries(e) ) {
-    if ( v == null ) continue;
+    if ( v == null || k === "variants" ) continue;
     if ( Array.isArray(v) ) v.forEach(x => t.push(`${k}=${x}`));
     else t.push(`${k}=${v}`);
+  }
+  // Variants (B9): { damage[], saveDamage[], attack?, save? }; the attack and the save are those of the main result
+  // unless given.
+  for ( const v of e.variants ?? [] ) {
+    t.push("variant=activity");
+    const attack = v.attack ?? e.attack;
+    for ( const x of [].concat(attack ?? []) ) t.push(`variant.attack=${x}`);
+    (v.damage ?? []).forEach(x => t.push(`variant.damage=${x}`));
+    const save = v.save ?? ((v.saveDamage ?? []).length ? e.save : null);
+    for ( const x of [].concat(save ?? []) ) t.push(`variant.save=${x}`);
+    (v.saveDamage ?? []).forEach(x => t.push(`variant.saveDamage=${x}`));
   }
   return filterTokens(t, c);
 }
@@ -69,7 +91,8 @@ const FIELD_ALIASES = { damage: ["damage", "saveDamage"] };
 export function filterTokens(tokens, c) {
   if ( c.onlySkip ) return tokens.filter(x => x.startsWith("skip="));
   const ignored = new Set((c.ignore ?? []).flatMap(f => FIELD_ALIASES[f] ?? [f]));
-  return tokens.filter(x => !ignored.has(x.split("=")[0]));
+  // Ignoring a field also ignores it in the variants ("variant.damage" for "damage"); "variant=activity" stays.
+  return tokens.filter(x => { const f = x.split("=")[0]; return !ignored.has(f) && !ignored.has(f.replace(/^variant\./, "")); });
 }
 
 export function producedFeatureTokens(plan, c) {
@@ -92,7 +115,7 @@ export function compare(expected, produced) {
 }
 
 /** Facts whose error is critical (attack bonus, damage dice, save DC). */
-export const isCritical = (token) => /^(attack|damage|saveDamage|save)=/.test(token);
+export const isCritical = (token) => /^(variant\.)?(attack|damage|saveDamage|save)=/.test(token);
 
 // ---------------------------------------------------------------- items
 

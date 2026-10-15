@@ -20,4 +20,6 @@ Case options: `ignore` (fields not scored), `onlySkip` (multiattack: only `skip`
 
 Object: dotted keys (`rarity`, `attunement`, `attunementCondition`, `weapon.*`, `armor.*`, `consumable.*`, `weight` "6 lb", `price` "50 gp") + `effects[]` ({kind, scope, value}; value ignored for resistance/immunity/advantage, scope ignored for speed).
 
+Variants (B9): a conditional or alternative result (« or N (dice) ... if », « in melee or ... at range », « extra ... if ») is not a damage part but a second activity: `variants: [{ damage[], saveDamage[], attack?, save? }]` in `expected` (the attack and the save are those of the main result unless given; an extra is written with the base: `damage` of the variant lists the base then the extra). Canonical tokens `variant=activity`, `variant.attack`, `variant.damage`, `variant.save`, `variant.saveDamage`; `ignore` of a field also ignores its variant form.
+
 Scoring: recall = expected facts found / expected facts; precision = produced facts correct / produced facts. Critical errors (attack bonus, damage part, save DC) counted apart.

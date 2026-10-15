@@ -6104,8 +6104,14 @@
      "reach 5"
     ],
     "damage": [
-     "2d4 piercing",
-     "1d4 piercing"
+     "2d4 piercing"
+    ],
+    "variants": [
+     {
+      "damage": [
+       "1d4 piercing"
+      ]
+     }
     ]
    },
    "ignore": [
@@ -7330,8 +7336,14 @@
      "reach 5"
     ],
     "damage": [
-     "2d4+1 piercing",
-     "1d4+1 piercing"
+     "2d4+1 piercing"
+    ],
+    "variants": [
+     {
+      "damage": [
+       "1d4+1 piercing"
+      ]
+     }
     ]
    },
    "ignore": [
@@ -7980,8 +7992,14 @@
      "reach 5"
     ],
     "damage": [
-     "2d6+2 bludgeoning",
-     "2d8+2 bludgeoning"
+     "2d6+2 bludgeoning"
+    ],
+    "variants": [
+     {
+      "damage": [
+       "2d8+2 bludgeoning"
+      ]
+     }
     ]
    },
    "ignore": [
@@ -8426,8 +8444,15 @@
      "range 80/320"
     ],
     "damage": [
-     "1d6+2 piercing",
-     "1d4 piercing"
+     "1d6+2 piercing"
+    ],
+    "variants": [
+     {
+      "damage": [
+       "1d6+2 piercing",
+       "1d4 piercing"
+      ]
+     }
     ]
    },
    "ignore": [
@@ -8698,8 +8723,14 @@
    ],
    "expected": {
     "damage": [
-     "1d8 force",
-     "2d8 force"
+     "1d8 force"
+    ],
+    "variants": [
+     {
+      "damage": [
+       "2d8 force"
+      ]
+     }
     ]
    },
    "ignore": [
@@ -11710,8 +11741,15 @@
      "reach 5"
     ],
     "damage": [
-     "1d6+2 slashing",
-     "1d4 slashing"
+     "1d6+2 slashing"
+    ],
+    "variants": [
+     {
+      "damage": [
+       "1d6+2 slashing",
+       "1d4 slashing"
+      ]
+     }
     ]
    },
    "ignore": [

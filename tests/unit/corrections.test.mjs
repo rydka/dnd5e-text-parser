@@ -141,25 +141,33 @@ describe("bug 4: alternative damage types keep the formula and list the choices"
   });
 });
 
-describe("bug 5: the second result 'or N (dice) ... if' is kept", () => {
+describe("bug 5 (B9): the second result 'or N (dice) ... if' is a variant, never a damage part", () => {
+  const variantDice = (plan) => (plan.variants ?? []).map(v => dice(v.damage));
   it("bloodied variant", () => {
     const plan = feature("Gnaw", "<p>Melee Attack Roll: +4, reach 5 ft. Hit: 6 (1d8 + 2) Piercing damage, or 11 (2d8 + 2) Piercing damage if the creature is Bloodied.</p>");
-    expect(dice(plan.damage)).toEqual(["1d8+2 piercing", "2d8+2 piercing"]);
+    expect(dice(plan.damage)).toEqual(["1d8+2 piercing"]);
+    expect(variantDice(plan)).toEqual([["2d8+2 piercing"]]);
+    expect(plan.variants[0].condition).toMatch(/Bloodied/);
+    expect(withKey(plan.ambiguous, "ConditionalDamage")).toHaveLength(1);
   });
 
   it("swarm variant, 2014 form", () => {
     const plan = feature("Swarming Bites", "<p>Melee Weapon Attack: +3 to hit, 0 ft., one creature in the swarm's space. Hit: 9 (2d8) piercing damage, or 4 (1d8) piercing damage if the swarm has half of its hit points or fewer.</p>");
-    expect(dice(plan.damage)).toEqual(["2d8 piercing", "1d8 piercing"]);
+    expect(dice(plan.damage)).toEqual(["2d8 piercing"]);
+    expect(variantDice(plan)).toEqual([["1d8 piercing"]]);
   });
 
   it("a two-handed (versatile) alternative is not extra damage", () => {
     const plan = feature("Sword Cut", "<p>Melee Weapon Attack: +4 to hit, reach 5 ft, one target. Hit: 6 (1d8 + 2) slashing damage, or 7 (1d10 + 2) slashing damage if used with two hands.</p>");
     expect(dice(plan.damage)).toEqual(["1d8+2 slashing"]);
+    expect(plan.variants ?? []).toEqual([]);
   });
 
   it("French 'ou ... si'", () => {
     const plan = feature("Morsure", "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants, ou 8 (2d6 + 1) dégâts perforants si la créature est en péril.</p>");
-    expect(dice(plan.damage)).toEqual(["1d6+2 piercing", "2d6+1 piercing"]);
+    expect(dice(plan.damage)).toEqual(["1d6+2 piercing"]);
+    expect(variantDice(plan)).toEqual([["2d6+1 piercing"]]);
+    expect(plan.variants[0].condition).toMatch(/^si /);
   });
 
   it("a single result gives a single part", () => {

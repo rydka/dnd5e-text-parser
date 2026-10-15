@@ -111,3 +111,34 @@ test("L4: a recharge ends up in uses.recovery and the item is accepted by the st
   fs.writeFileSync(testInfo.outputPath("L4-recharge.json"), JSON.stringify(out, null, 1));
   expect(out.recovery.some(r => r.period === "recharge" && r.formula === "5")).toBe(true);
 });
+
+test("B9: an actor with a conditional-result ability gets two activities on the same item", async ({ foundry }, testInfo) => {
+  const out = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const html = "<p>Melee Attack Roll: +5, reach 5 ft. Hit: 7 (1d8 + 3) Piercing damage, or 13 (2d8 + 4) Piercing damage if the creature is Bloodied.</p>";
+    const plan = P.parseFeature("Test Gnaw", html, { keys });
+    const acts = P.toActivities(plan, { keys, idGen, item: { type: "feat" } });
+    const actor = await CONFIG.Actor.documentClass.create({ name: "B9 variant actor", type: "npc" });
+    try {
+      const [item] = await actor.createEmbeddedDocuments("Item", [{
+        name: "Test Gnaw", type: "feat",
+        system: { ...P.toItemPatch(plan, { keys, item: { type: "feat" } }), activities: Object.fromEntries(acts.map(a => [a._id, a])) }
+      }]);
+      const stored = [...item.system.activities].map(a => ({
+        type: a.type, name: a.name, parts: a.damage.parts.map(p => `${p.number}d${p.denomination}+${p.bonus} ${[...p.types].join(",")}`), attack: a.attack.type.value
+      }));
+      return { planVariants: plan.variants.length, planParts: plan.damage.length, stored };
+    } finally {
+      await actor.delete();
+    }
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(testInfo.outputPath("B9-variant-activities.json"), JSON.stringify(out, null, 1));
+  expect(out.planVariants).toBe(1);
+  expect(out.planParts).toBe(1);
+  expect(out.stored).toHaveLength(2);
+  expect(out.stored.every(a => a.type === "attack" && a.parts.length === 1)).toBe(true);
+  expect(out.stored.map(a => a.parts[0])).toEqual(["1d8+3 piercing", "2d8+4 piercing"]);
+  expect(out.stored[1].name).toMatch(/Bloodied/);
+});
