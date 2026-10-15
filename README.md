@@ -119,6 +119,8 @@ Disposition des activités d'un `FeaturePlan` : `attack` (avec `plan.damage`), p
 
 Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "N"` ; DD fixe `save.dc = { calculation: "", formula: "N" }` ; `damage.includeBase = false` quand les dégâts sont écrits ; usages sur l'objet (`system.uses`) + cible de consommation `itemUses` sur l'activité ; recharge « Recharge 5-6 » = `uses.max "1"` + `uses.recovery [{ period: "recharge", type: "recoverAll", formula: "5" }]` (période fixe de dnd5e 6, hors `limitedUsePeriods`). Seules des clés présentes dans `keys` sont écrites.
 
+Armure lourde : `toItemPatch` écrit `armor.dex = 0` quand le texte ne donne pas de plafond de Dextérité. Ce n'est pas un fait du texte mais la règle que dnd5e applique lui-même à ce type d'armure : le calcul de CA force le modificateur de Dextérité à 0 dès que `type.value === "heavy"` (`data/actor/templates/attributes.mjs`, `isHeavy ? 0 : Math.min(mod, armor.dex ?? Infinity)`), si bien que la valeur écrite ne change pas la CA et garde la fiche de l'objet cohérente avec ce calcul (un `dex` vide se lit « sans plafond » sur la fiche). Un plafond énoncé (« max 2 ») est toujours écrit tel quel.
+
 ### Fusion
 
 | Fonction | Rôle |
@@ -164,6 +166,28 @@ Quand le texte ne permet pas d'écrire un fait sans l'inventer, la bibliothèque
 | `SaveAbilities` | `ambiguous` | `{ values: { ability, dc }[], raw: string[] }` | Plusieurs sauvegardes différentes : pas de `save` |
 | `DamageWithheld` | `ambiguous` | `{ raw: string[] }` | Dégâts qui dépendent d'une sauvegarde ambiguë : non écrits |
 | `AbilityScoreChoices` | `ambiguous` | `{ ability, choices: { name, value }[], raw: string[] }` | Plusieurs valeurs fixées listées (« Hill Giant Strength: 21… Storm Giant Strength: 29 ») sans variante reconnaissable dans le nom de l'objet : aucun effet |
+| `SaveDcFormula` | `ambiguous` | `{ raw, formula }` | DD écrit en formule (« DC 8 plus your Dexterity modifier ») : `save.dc` null, `save.dcFormula` = `formula` (écrite par `toActivities`) |
+| `UsesConflict`, `RechargeConflict` | `ambiguous` | `{ raw: string[] }` | Plusieurs nombres d'utilisations ou de recharge différents : le premier est conservé |
+| `LegendaryConflict` | `ambiguous` (ActorPlan) | `{ kind: "legact"\|"legres", values: number[] }` | Plusieurs valeurs trouvées dans l'acteur : la première est conservée |
+| `TraitQualifier`, `TraitBypassMixed`, `TraitUnknown` | `ambiguous` (ActorPlan) | `{ kind: "dr"\|"di"\|"dv"\|"ci", text }` | Entrée de résistance / immunité qui n'est pas une simple clé (« from spells », contournements mélangés, mot inconnu) : gardée en texte libre dans `traits.<kind>.custom` |
+| `EffectUnknown` | `ambiguous` (ItemPlan) | `{ kind, text }` | Effet d'objet non interprété : « nonmagical », « from spells », mot inconnu, bonus limité (« +1 to saving throws against spells ») |
+| `UnknownDamageType` | `notes` | `{ word }` | Type de dégâts inconnu ou absent de `keys` : la partie est écrite sans type |
+| `DamageTypeFromWeapon` | `notes` | `{ raw }` | « damage of the weapon's type » : aucune partie sans type n'est écrite |
+| `RangeNotCarried` | `notes` | `{ reach, value }` | Allonge et portée dans la même attaque : type d'attaque déduit, portée non reportée |
+| `ExtraDamageIgnored` | `notes` | `{ raw: string[] }` | Dégâts rattachés ni au coup ni à la sauvegarde |
+| `MasteryUnknown` | `notes` (ItemPlan) | `{ text }` | « Mastery: … » / « Maîtrise : … » avec un nom qui n'est pas une maîtrise connue : `details.weapon.mastery` reste `null` |
+| `FallbackRejected` | `plan.fallback.rejected` et `notes` | `{ field, reason: "type"\|"bound"\|"key", raw }` | Proposition du résolveur de secours refusée (voir plus bas) |
+
+Remarques émises à la **traduction** (sur la propriété non énumérable `result.notes` des fonctions, ou dans leur retour), pas dans le plan :
+
+| Clé (`dnd5e-text-parser.Note.*`) | Où | `data` | Cas |
+|---|---|---|---|
+| `EffectSkipped` | `toEffects(...).notes` | `{ kind, scope }` | Effet sans chemin dnd5e : clé absente de `keys`, `scope` invalide, ou avantage limité (`against`) |
+| `SpellNotFound` | `toActivities(...).notes` (et `notes` passé en option) | `{ name }` | `resolveSpell(name)` a rendu `null` : pas d'activité `cast` |
+| `TraitKeyInvalid` | `toActorPatch(...).notes` | `{ kind, value }` | Valeur de trait absente de `keys` : écartée |
+| `TraitBypassSkipped` | `toActorPatch(...).notes` | `{ kind, bypasses: string[] }` | Contournements non écrits (ils s'appliqueraient aux mauvaises entrées) |
+| `SpellcastingAbilityConflict` | `toActorPatch(...).notes` | `{ abilities: string[] }` | Plusieurs caractéristiques d'incantation : aucune n'est écrite |
+| `Unrecognized` | `describe(plan)` seulement | `{ text }` | Une phrase de `plan.unrecognized` |
 
 ### Structure intermédiaire (plans, `SCHEMA_VERSION = 1`)
 
@@ -212,7 +236,19 @@ ActivityPlan = { kind: "attack"|"save"|"damage"|"heal"|"cast"|"utility", name, r
 
 `scope` d'un effet : `null` (tous), `"weapon"` / `"spell"` / `mwak` / `rwak` / `msak` / `rsak` (attaque, dégâts), clé de caractéristique (`save`, `check`, `abilityScore`), de compétence (`advantage` et `check` avec `on: "skill"`), de type de dégâts ou d'état (`resistance`, `immunity`, `vulnerability`), de type de mouvement (`speed`). Un effet `speed` avec un type (« a flying speed of 60 feet » → `scope: "fly"`) s'écrit en `system.attributes.movement.speeds.<type>` (mode `upgrade`, valeur `"60"` : dnd5e 6 range les vitesses dans `movement.speeds`, `movement.<type>` n'étant qu'un alias déprécié) ; sans type (« your speed increases by 10 feet »), en `system.attributes.movement.bonus` (mode `add`, valeur `"+10"`). Un bonus limité à une compétence (« +5 bonus to Wisdom (Survival) checks », « bonus de +5 aux tests de Sagesse (Survie) », « +2 bonus to Stealth checks ») donne `{ kind: "check", on: "skill", scope: "sur" }` → `system.skills.sur.roll.bonus`, jamais un bonus à toute la caractéristique. Une caractéristique fixée s'écrit « Your Strength score changes to 21 », « Your Intelligence is 19 », ou avec deux-points : « Strength: 23 », « Force : 21 » (« Strength: DC 14 » et « Strength: +2 » ne sont pas des valeurs) ; des variantes nommées (« Hill Giant Strength: 21. Storm Giant Strength: 29. », ou « Géant des collines : 21 » après « votre valeur de Force passe à la valeur indiquée… ») donnent l'effet de la variante dont le nom figure dans le nom de l'objet, sinon `Note.AbilityScoreChoices`. Un bonus d'arme (+N aux jets d'attaque et de dégâts) et un bonus d'armure (+N à la CA) vont dans `details.weapon.magicalBonus` / `details.armor.magicalBonus`, jamais dans un effet. `toItemPatch` n'écrit `system.uses` que pour des charges ou des usages énoncés (« has 7 charges », « 3/Day », recharge) ; un parchemin ou une potion sans charges n'a **pas** de `uses.max` (même si le texte dit qu'il tombe en poussière : `details.consumable.destroyOnEmpty` reste disponible pour le consommateur), et `autoDestroy` n'accompagne que des charges (« crumbles into ashes » sur la dernière charge d'une baguette). Sans usages, `toActivities` n'ajoute pas non plus de consommation `itemUses`.
 
-Les plans d'acteur (`ActorPlan`) et de sorts (`SpellcastingPlan`) sont décrits dans `specs/dnd5e-text-parser/initial/design.md`. Chaque fait porte `raw` (le passage source) et `origin: "rules"|"fallback"`.
+```js
+ActorPlan = { schema: 1,
+  legact: number|null, legres: number|null,              // actions et résistances légendaires (« can take 3 legendary actions », « Legendary Resistance (3/Day) »)
+  traits: { dr, di, dv, ci: { values: string[], bypasses: string[], custom: string[] } },   // clés dnd5e, contournements (« mgc », « sil », « ada »), passages gardés en texte libre
+  spellcasting: SpellcastingPlan[],                       // un par capacité d'incantation reconnue (« Spellcasting », « Innate Spellcasting », « Incantation »)
+  features: Map<itemId, FeaturePlan>,                     // un FeaturePlan par objet de l'acteur (hors sorts), clé = `_id` de l'objet source
+  notes: Descriptor[], ambiguous: Descriptor[] }
+SpellcastingPlan = { ability: "int"|"wis"|"cha"|...|null, dc: number|null, attack: number|null, casterLevel: number|null,
+  innate: boolean,                                        // « Innate Spellcasting », « innée », ou listes « 3/day »
+  lists: { mode: "atwill"|"innate"|"cantrip"|"slots", uses: number|null, level: number|null, slots: number|null, spells: string[] }[] }
+```
+
+`parseActor(actorSource, opts?)` lit une source dnd5e (`actor.toObject()` ou une entrée de compendium : `system`, `items[]`) : la biographie, la description de chaque objet et les champs `traits.*.custom`. **`features` est une `Map`**, pas un objet : `JSON.stringify(plan)` la rend `{}` ; pour sérialiser, convertir d'abord (`Object.fromEntries(plan.features)` ou `[...plan.features]`). `toActorPatch(actorPlan, { keys, actor? })` traduit `legact`, `legres`, `traits` et `spellcasting` (caractéristique, emplacements) ; les `features` se traduisent une à une avec `toActivities` / `toItemPatch`. `toSpellStubs(spellcastingPlan)` rend, pour chaque sort listé, `{ name, system: { prepared, method: "spell"|"innate"|"atwill", level?, uses? } }` sans aucun contenu inventé (le sort lui-même reste à retrouver dans un compendium). Chaque fait porte `raw` (le passage source) et `origin: "rules"|"fallback"`.
 
 ## Résolveur de secours (point d'extension)
 
