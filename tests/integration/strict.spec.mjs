@@ -171,3 +171,45 @@ test("C26: an NPC with a damage-reduction trait gets system.traits.dm.amount in 
   expect(out.amount.slashing).toBe("-3");   // FormulaField: a string
   expect(out.amount.fire).not.toBe("-3");
 });
+
+test("recette: the Ring of the Last Breath builds in Foundry with a valid heal activity and an effect applied by it", async ({ foundry }, testInfo) => {
+  const lines = [
+    "L'Anneau du Dernier Souffle", "Peu commun", "Objet merveilleux (anneau), nécessite un lien d'harmonisation",
+    "Forgé dans l'argent noirci et serti d'une pierre bleutée, cet anneau est toujours froid au toucher.",
+    "Propriétés magiques",
+    "Refus de mourir. Une fois par repos long, lorsque vous tombez à 0 point de vie sans être tué sur le coup, vous pouvez utiliser votre réaction pour tomber à 1 point de vie à la place.",
+    "Souffle emprunté. Lorsque vous utilisez cette propriété, vous gagnez également un nombre de points de vie temporaires égal à 1d6 + votre bonus de maîtrise.",
+    "Le prix du sursis. Jusqu'à la fin de votre prochain tour, votre vitesse est réduite de moitié et vous ne pouvez pas effectuer de réactions."
+  ];
+  const out = await foundry(async ({ moduleId, html }) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const plan = P.parseItem("L'Anneau du Dernier Souffle", html, { keys, itemType: "equipment" });
+    const effects = P.toEffects(plan, { keys, idGen, name: plan.name });
+    const acts = P.toActivities(plan, { keys, idGen, item: { type: "equipment" }, effects, resolveSpell: () => null });
+    const doc = new CONFIG.Item.documentClass({
+      name: "Ring", type: "equipment", effects,
+      system: { ...P.toItemPatch(plan, { keys, item: { type: "equipment" } }), activities: Object.fromEntries(acts.map(a => [a._id, a])) }
+    }, { strict: true });
+    for ( const e of effects ) new CONFIG.ActiveEffect.documentClass(e, { strict: true, parent: doc });
+    const activities = [...doc.system.activities];
+    const heal = activities.find(a => a.type === "heal");
+    return {
+      activityTypes: activities.map(a => a.type),
+      healingTypes: heal ? [...heal.healing.types] : null,
+      bonus: heal?.healing.bonus ?? null,
+      activityEffects: heal ? [...heal.effects].map(e => e._id ?? e.effect?.id ?? null) : null,
+      docEffects: doc.effects.map(e => ({ id: e.id, transfer: e.transfer, duration: e.duration?.value ?? null })),
+      uses: doc.system.uses?.max ?? null
+    };
+  }, { moduleId: "dnd5e-text-parser", html: lines.join("\n") });
+  fs.writeFileSync(testInfo.outputPath("recette-ring.json"), JSON.stringify(out, null, 1));
+  expect(out.activityTypes).toEqual(["heal"]);
+  expect(out.healingTypes).toEqual(["temphp"]);
+  expect(out.bonus).toBe("@prof");
+  expect(out.docEffects).toHaveLength(1);
+  expect(out.docEffects[0].transfer).toBe(false);
+  expect(out.activityEffects).toEqual([out.docEffects[0].id]);
+  expect(out.uses).toBe(1);
+});
