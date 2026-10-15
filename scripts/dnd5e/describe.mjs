@@ -24,7 +24,7 @@ export const DESCRIBE_KEYS = Object.freeze([
   "Describe.Weapon", "Describe.Armor", "Describe.Consumable", "Describe.Charges", "Describe.Rarity", "Describe.Attunement",
   "Describe.Weight", "Describe.Price", "Describe.Effect", "Describe.Field", "Describe.Fallback",
   "Describe.Activity", "Describe.Heal", "Describe.Cast", "Describe.Consume", "Describe.ExtraDamage",
-  "Note.Unrecognized"
+  "Note.Unrecognized", "Note.Flavor"
 ].map(key => PREFIX + key));
 
 /**
@@ -120,7 +120,7 @@ function flatPaths(plan) {
 /**
  * Describe a plan (FeaturePlan / ItemPlan) or a list of changes (`mergeMissing` result).
  * Notes and ambiguities of the plan are passed through as they are (with `group: null`); unrecognized sentences
- * become `dnd5e-text-parser.Note.Unrecognized`.
+ * become `dnd5e-text-parser.Note.Unrecognized`, the flavor text of an item `dnd5e-text-parser.Note.Flavor`.
  * @param {object|{path: string, value: *}[]} planOrChanges
  * @returns {{key: string, data: object, group: string|null, raw: string, origin: string, paths: string[]}[]}
  */
@@ -243,6 +243,13 @@ export function describe(planOrChanges) {
   for ( const sentence of plan.unrecognized ?? [] ) {
     result.push({
       key: `${PREFIX}Note.Unrecognized`, data: { text: sentence.text }, group: null, raw: sentence.text,
+      origin: "rules", paths: []
+    });
+  }
+  // Flavor text of an item: not interpreted either, reported apart
+  for ( const sentence of plan.flavor ?? [] ) {
+    result.push({
+      key: `${PREFIX}Note.Flavor`, data: { text: sentence.text }, group: null, raw: sentence.text,
       origin: "rules", paths: []
     });
   }

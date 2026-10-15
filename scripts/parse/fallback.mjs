@@ -372,8 +372,11 @@ async function parseAsync(plan, text, opts, isItem) {
   plan.fallback = fallback;
   try {
     const resolver = opts.fallback ?? getFallback();
-    if ( typeof resolver !== "function" || !plan.unrecognized.length ) return plan;
-    const requests = plan.unrecognized.map(entry => ({
+    // The sentences no rule read: `unrecognized`, then the flavor text of an item (a rule may hide in it)
+    const lists = ["unrecognized", "flavor"].filter(list => Array.isArray(plan[list]));
+    const entries = lists.flatMap(list => plan[list].map(entry => ({ list, entry })));
+    if ( typeof resolver !== "function" || !entries.length ) return plan;
+    const requests = entries.map(({ entry }) => ({
       sentence: entry.text,
       context: { name: String(text.name ?? ""), itemType: opts.itemType, lang: guessLang(entry.text, opts.languages), plan },
       wanted: wantedFor(plan, isItem)
@@ -385,12 +388,12 @@ async function parseAsync(plan, text, opts, isItem) {
     const resolved = new Set();
     results.forEach((result, index) => {
       if ( !isObject(result) || !isObject(result.facts) ) return;
-      const sentence = plan.unrecognized[index]?.text ?? "";
+      const sentence = entries[index]?.entry.text ?? "";
       const { facts, rejected } = validateFallbackFacts(result.facts, { keys: opts.keys, sentence });
       fallback.rejected.push(...rejected);
-      if ( mergeFacts(plan, facts, sentence, isItem).length ) resolved.add(index);
+      if ( mergeFacts(plan, facts, sentence, isItem).length ) resolved.add(entries[index].entry);
     });
-    plan.unrecognized = plan.unrecognized.filter((entry, index) => !resolved.has(index));
+    for ( const list of lists ) plan[list] = plan[list].filter(entry => !resolved.has(entry));
     plan.notes.push(...fallback.rejected);
   } catch {
     fallback.status = "error";

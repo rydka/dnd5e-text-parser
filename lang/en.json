@@ -31,6 +31,7 @@
     },
     "Note": {
       "Unrecognized": "Sentence not recognized: {text}",
+      "Flavor": "Flavor text (not interpreted): {text}",
       "LegendaryConflict": "Conflicting values for {kind} ({values}): the first one was kept.",
       "TraitQualifier": "Qualified {kind} ignored (not a plain damage type or condition): {text}",
       "TraitBypassMixed": "Mixed {kind} entries with and without bypass conditions: not interpreted: {text}",

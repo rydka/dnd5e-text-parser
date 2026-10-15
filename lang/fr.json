@@ -31,6 +31,7 @@
     },
     "Note": {
       "Unrecognized": "Phrase non reconnue : {text}",
+      "Flavor": "Texte d'ambiance (non interprété) : {text}",
       "LegendaryConflict": "Valeurs contradictoires pour {kind} ({values}) : la première a été conservée.",
       "TraitQualifier": "{kind} avec condition ignoré (ce n'est pas un simple type de dégâts ou d'état) : {text}",
       "TraitBypassMixed": "Entrées de {kind} avec et sans contournement mélangées : non interprétées : {text}",

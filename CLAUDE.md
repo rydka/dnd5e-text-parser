@@ -28,7 +28,7 @@ Foundry v14, dnd5e 6.x. Sources en lecture seule : Foundry `C:/Users/Shadow/AppD
 | `scripts/dnd5e/describe.mjs` | `describe` -> descripteurs `{ key, data, group, raw, origin, paths }`, `DESCRIBE_KEYS` |
 | `scripts/parse/item-plan.mjs` | `parseItem` : détails, effets, activités d'objet |
 | `scripts/parse/fallback.mjs` | `parseFeatureAsync`, `parseItemAsync`, `validateFallbackFacts` (seul fichier qui utilise `AbortController` et les minuteries, déclarés dans `eslint.config.mjs`) |
-| `scripts/parse/recognizers/` | `attack`, `range-target`, `damage`, `save-area`, `uses`, `activation`, `legendary`, `traits`, `item-meta`, `weapon`, `armor`, `consumable`, `magic-effects`, `feature-effects` (effets d'une capacité passive de créature : réduction de dégâts, sens, hausse de CA, remarque `Note.NotAutomated`), `item-activity` (heal, cast, consume, durée, segmentation) |
+| `scripts/parse/recognizers/` | `attack`, `range-target`, `damage`, `save-area`, `uses`, `activation`, `legendary`, `traits`, `item-meta`, `weapon`, `armor`, `consumable`, `magic-effects`, `feature-effects` (effets d'une capacité passive de créature : réduction de dégâts, sens, hausse de CA, remarque `Note.NotAutomated`), `item-activity` (heal, soin et PV temporaires, cast, consume, durée, segmentation, paragraphe qui renvoie à la propriété précédente), `headings` (intitulés d'un objet en texte brut : nom, titres de section, noms de propriété ; texte d'ambiance `isFlavorLine`) |
 | `lang/` | Traductions `en` et `fr`, clés sous `dnd5e-text-parser.*` (`Describe.*`, `Note.*`) |
 | `tests/unit/` | Tests Vitest ; `tests/integration/` : tests dans un vrai Foundry |
 

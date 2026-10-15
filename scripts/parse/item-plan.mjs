@@ -1,6 +1,7 @@
-import { htmlToText, splitSentences } from "./text.mjs";
+import { htmlToText, splitSentences, splitLines } from "./text.mjs";
 import { parseFeature, variantName } from "./plan.mjs";
 import { recognizeItemMeta } from "./recognizers/item-meta.mjs";
+import { recognizeHeadings, isFlavorLine } from "./recognizers/headings.mjs";
 import { recognizeWeapon } from "./recognizers/weapon.mjs";
 import { recognizeArmor } from "./recognizers/armor.mjs";
 import { recognizeConsumable } from "./recognizers/consumable.mjs";
@@ -108,7 +109,10 @@ export function parseItem(name, html, opts = {}) {
   else if ( consumable.charges ) details.charges = consumable.charges;
 
   // Segments -> activities
-  const leads = leadIns(html);
+  // Headings written as plain text (item name, section titles, property names opening a paragraph) are titles,
+  // not rules: covered, and the property names name the activities like bold lead-ins do
+  const headings = recognizeHeadings(text, ctx);
+  const leads = [...leadIns(html), ...headings.leads];
   const segments = [];
   for ( const segment of segmentText(text, ctx) ) {
     // "When you use this property, you also gain..." continues the previous paragraph: one activity for both
@@ -122,7 +126,7 @@ export function parseItem(name, html, opts = {}) {
   }
   const segmentOf = offset => segments.find(segment => offset >= segment.start && offset < segment.end);
   const activitySpans = [];
-  const coverSpans = [];
+  const coverSpans = headings.spans.map(({ start, end }) => ({ start, end }));
   const sentences = splitSentences(text).map(sentence => ({ start: sentence.index, end: sentence.index + sentence.text.length }));
   const sentenceAt = offset => sentences.find(sentence => offset >= sentence.start && offset < sentence.end);
   const notes = [];
@@ -303,6 +307,17 @@ export function parseItem(name, html, opts = {}) {
   activities.forEach((activity, index) => { activity.index = index; });
   for ( const segment of segments ) for ( const effect of segment.effects ) effect.activity = segment.activity?.index ?? null;
 
+  // Flavor text: a paragraph no recognizer touched that states no rule (no number, no "you", no game term) is
+  // not interpreted either, but reported apart from `unrecognized`
+  const flavor = [];
+  const covered = [...itemSpans, ...activitySpans, ...coverSpans];
+  for ( const line of splitLines(text) ) {
+    const span = { start: line.index, end: line.index + line.text.length };
+    if ( covered.some(other => overlaps(span, other)) || !isFlavorLine(line.text) ) continue;
+    for ( const sentence of splitSentences(line.text) ) flavor.push({ text: sentence.text, index: line.index + sentence.index });
+    coverSpans.push(span);
+  }
+
   // Item-level feature (uses, recharge...) from what is left of the text
   const feature = parseFeature(title, cutSpans(text, [...itemSpans, ...activitySpans, ...coverSpans]), parseOpts);
   for ( const entry of feature.unrecognized ) {
@@ -314,7 +329,8 @@ export function parseItem(name, html, opts = {}) {
   if ( !feature.uses && uses.fact.uses ) feature.uses = uses.fact.uses;
   const plan = {
     ...feature, name: title, itemKind: fact.kind, details,
-    effects: effects.map(effect => Object.fromEntries(Object.entries(effect).filter(([key]) => key !== "sentence"))), activities
+    effects: effects.map(effect => Object.fromEntries(Object.entries(effect).filter(([key]) => key !== "sentence"))), activities,
+    flavor
   };
   plan.notes = [...feature.notes, ...notes, ...meta.notes, ...weapon.notes, ...armor.notes, ...consumable.notes]
     .filter((note, index, all) => all.findIndex(other => JSON.stringify(other) === JSON.stringify(note)) === index);

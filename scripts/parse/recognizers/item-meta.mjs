@@ -56,6 +56,14 @@ export function recognizeItemMeta(text, ctx = {}) {
       fact.raw = bare[0].trim();
       span("meta", bare);
     }
+    // A header line without a rarity: "Wondrous item (ring), requires attunement", "Objet merveilleux (anneau)"
+    const kindLine = source.match(new RegExp(`^[ \\t]*(${alternation("itemKinds", langs)})(?![\\p{L}])[ \\t]*(?:\\(([^)\\n]*)\\))?[ \\t]*(?:,|$)`, "imu"));
+    if ( kindLine ) {
+      fact.kind = lookup("itemKinds", kindLine[1], langs);
+      fact.kindDetail = kindLine[2]?.trim() || null;
+      fact.raw ||= kindLine[0].replace(/,\s*$/, "").trim();
+      span("meta", kindLine);
+    }
   }
 
   const attunement = [hasLang(ctx, "en") && EN_ATTUNEMENT, hasLang(ctx, "fr") && FR_ATTUNEMENT]
