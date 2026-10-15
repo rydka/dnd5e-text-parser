@@ -15,6 +15,12 @@ const EXTRA = /\b(?:extra|additional|supplémentaires?|supplementaires?|en plus)
 // French puts the word after the type: "2d6 dégâts de feu supplémentaires"
 const EXTRA_AFTER = /^\s*(?:suppl[ée]mentaires?|en\s+plus)(?![\p{L}])/iu;
 const overlaps = (a, b) => a.start < b.end && a.end > b.start;
+const NOTE_NOT_AUTOMATED = "dnd5e-text-parser.Note.NotAutomated";
+// Clauses dnd5e 6 has no mechanism for: no reactions, "drop to 1 hit point instead"
+const NOT_AUTOMATED = new RegExp(String.raw`\b(?:you\s+)?can(?:'t|not)\s+(?:take|use)\s+(?:a\s+)?reactions?\b|` +
+  String.raw`\b(?:you\s+)?(?:drops?|falls?|(?:is\s+|are\s+)?reduced)\s+to\s+1\s+hit\s+point\s+instead\b|` +
+  String.raw`\b(?:vous\s+)?ne\s+(?:pouvez|peut|peuvent)\s+pas\s+(?:effectuer|utiliser|prendre|faire)\s+de\s+r[ée]actions?\b|` +
+  String.raw`\b(?:tombe[rz]?|descend(?:ez|re)?|[êe]tes\s+r[ée]duite?|est\s+r[ée]duite?)\s+[àa]\s+1\s+point\s+de\s+vie\s+[àa]\s+la\s+place\b`, "giu");
 
 /**
  * Text with the given spans removed (each removed range leaves one space).
@@ -170,18 +176,31 @@ export function parseItem(name, html, opts = {}) {
   }
 
   // Effects: passive (carried / worn) or applied on use
+  const hasActivity = segment => Boolean(segment.activation || segment.heal || segment.cast || segment.consume);
   for ( const effect of effects ) {
     const segment = segmentOf(effect.sentence.start);
     if ( !segment ) continue;
     const duration = recognizeDuration(effect.raw, ctx);
     const passive = hasPassiveMarker(effect.raw, ctx);
     const onUse = !passive && (duration || segment.activation || hasUseTrigger(segment.text, ctx));
-    if ( onUse ) {
-      effect.when = "onUse";
-      effect.duration = duration ?? segment.duration ?? null;
-      segment.forced = true;
-      segment.effects.push(effect);
-    }
+    if ( !onUse ) continue;
+    effect.when = "onUse";
+    effect.duration = duration ?? segment.duration ?? null;
+    // A temporary effect stated right after an activity, without an activation or a use trigger of its own
+    // ("Until the end of your next turn, your speed is halved"), is the backlash of that activity: it is applied by
+    // it rather than by a utility activity of its own
+    const previous = segments[segments.indexOf(segment) - 1];
+    const host = !segment.activation && !hasUseTrigger(segment.text, ctx) && previous && hasActivity(previous) && !hasActivity(segment)
+      ? previous : segment;
+    host.forced = true;
+    host.effects.push(effect);
+  }
+
+  // What dnd5e cannot apply without inventing it ("you can't take reactions", "drop to 1 hit point instead")
+  for ( const match of text.matchAll(NOT_AUTOMATED) ) {
+    notes.push({ key: NOTE_NOT_AUTOMATED, data: { raw: match[0] } });
+    const sentence = sentenceAt(match.index);
+    if ( sentence ) coverSpans.push(sentence);
   }
 
   const activities = [];

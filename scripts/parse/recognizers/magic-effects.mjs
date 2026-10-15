@@ -4,7 +4,8 @@ import { splitSentences, parseNumber, toFeet } from "../text.mjs";
 
 /**
  * Magic effects of an item (C7): bonuses to AC, attack, damage, saves and checks, resistance / immunity /
- * vulnerability, advantage / disadvantage, fixed ability score, speed. English and French.
+ * vulnerability, advantage / disadvantage, fixed ability score, speed, speed multiplier ("your speed is halved":
+ * `{ kind: "speedMultiplier", value: 0.5 }`). English and French.
  * Each effect is `{ kind, value, scope, on?, raw, origin, when: "passive", duration: null, activity: null }`;
  * `parseItem` decides `when`, `duration` and `activity` from the surrounding paragraph. `sentence` is the
  * `{ start, end }` span of the sentence the effect was read from.
@@ -42,6 +43,11 @@ const SCORE_EN = /\bYour\s+(\p{L}+)(?:\s+score)?\s+(?:is|becomes|changes\s+to|in
 const SCORE_FR = /\bVotre\s+(?:(?:valeur|score)\s+(?:de\s+|d'))?(\p{L}+)\s+(?:passe|monte|est|devient|est\s+port[ée]e?)\s+(?:[àa]\s+|de\s+)?(\d+)/giu;
 const SPEED_EN = /\bspeed\s+(?:increases|is\s+increased)\s+by\s+(\d+)\s*(?:feet|ft\.?)/giu;
 const SPEED_FR = /\bvitesse(?:\s+de\s+d[ée]placement)?\s+augmente\s+de\s+(\d+(?:[.,]\d+)?)\s*m\b/giu;
+// "your speed is halved" / "doubled", "votre vitesse est réduite de moitié" / "divisée par deux" / "doublée":
+// a multiplier of every speed (dnd5e 6 `movement.multiplier`)
+const SPEED_MULT_EN = /\bspeed\s+is\s+(halved|reduced\s+(?:by|to)\s+half|cut\s+in\s+half|doubled)\b/giu;
+const SPEED_MULT_FR = /\bvitesse(?:\s+de\s+d[ée]placement)?\s+est\s+(r[ée]duite\s+de\s+moiti[ée]|divis[ée]e\s+par\s+(?:deux|2)|doubl[ée]e)(?![\p{L}])/giu;
+const SPEED_MULTIPLIERS = [[/doubl/iu, 2], [/halv|half|moiti|divis/iu, 0.5]];
 
 const AGAINST_TAIL = /^\s*(?:against|contre)(?![\p{L}])/iu;
 const THIS_EFFECT = /^(?:this|that|these|those|the\s+effect|it|its|ce|cet|cette)(?![\p{L}])/iu;
@@ -307,6 +313,14 @@ export function recognizeMagicEffects(text, ctx = {}) {
         if ( skip(match) ) continue;
         const value = lang === "en" ? Number(match[1]) : toFeet(parseNumber(match[1]), "m");
         add([{ kind: "speed", value, scope: null, raw }]);
+      }
+    }
+    for ( const [re, lang] of [[SPEED_MULT_EN, "en"], [SPEED_MULT_FR, "fr"]] ) {
+      if ( !hasLang(ctx, lang) ) continue;
+      for ( const match of s.matchAll(re) ) {
+        if ( skip(match) || isOther(s, match.index) ) continue;
+        const value = SPEED_MULTIPLIERS.find(([word]) => word.test(match[1]))?.[1];
+        if ( value ) add([{ kind: "speedMultiplier", value, scope: null, raw }]);
       }
     }
     // "a flying speed of 60 feet", "vitesse de vol de 18 m"

@@ -108,6 +108,14 @@ function changesOf(effect, keys, notes) {
           ? [change(`system.attributes.movement.speeds.${scope}`, "upgrade", String(value))] : skip();
       }
       return [change("system.attributes.movement.bonus", "add", `+${value}`)];
+    case "speedMultiplier": {
+      // "your speed is halved": dnd5e 6.0.6 multiplies every speed by `movement.multiplier` (a NumberField of
+      // data/shared/movement-field.mjs, initial 1, applied in `prepareMovement` of data/actor/templates/attributes.mjs);
+      // the Foundry v14 change type `multiply` scales it
+      const factor = Number(value);
+      if ( !Number.isFinite(factor) || factor <= 0 ) return skip();
+      return [change("system.attributes.movement.multiplier", "multiply", String(factor))];
+    }
     default:
       return skip();
   }
