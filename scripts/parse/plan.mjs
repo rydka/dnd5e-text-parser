@@ -52,6 +52,10 @@ const EXTRA_RAW = /\b(?:extra|additional)\b/iu;
 const EXTRA_TRAIL = /^\s*(?:suppl[ée]mentaires?|en\s+plus)(?![\p{L}])/iu;
 // The condition runs to the end of its clause (not into ", and the target..." / ", or N (dice)...")
 const COND_TEXT = /^\s*(?:(?!,\s*(?:and|or|et|ou)(?![\p{L}]))[^.;\n]){0,120}/u;
+// The condition stated first, at the start of the sentence of an extra: "If the target moved 20+ feet straight
+// toward it immediately before the hit, the target takes an extra 7 (2d6) Bludgeoning damage", "Si la cible…, elle
+// subit 7 (2d6) dégâts contondants supplémentaires"
+const COND_BEFORE = new RegExp(String.raw`^\s*((?:if|when|while|unless|si|lorsque|lorsqu'|quand|tant\s+que)(?![\p{L}])[^.;\n]{1,160}?),\s*[^,.;\n]{0,60}$`, "iu");
 // "at range" / "in melee": the variant is the other side of a weapon used both ways (its own attack type and range)
 const RANGED_COND = /^(?:at\s+range|[àa]\s+(?:distance|port[ée]e))(?![\p{L}])/iu;
 const MELEE_COND = /^(?:in\s+melee|au\s+corps\s+[àa]\s+corps)(?![\p{L}])/iu;
@@ -184,22 +188,32 @@ export function parseFeature(name, html, opts = {}) {
   // gives `Note.ConditionalDamage` in `ambiguous` and a variant in `plan.variants`: an ActivityPlan with `condition`
   // that `toActivities` turns into a second activity (same attack or save, named after the condition).
   const conditional = new Map();
+  const sentences = splitSentences(text);
+  const sentenceStart = offset => sentences.findLast(sentence => sentence.index <= offset)?.index ?? 0;
   chains.forEach((chain, index) => {
     if ( isOngoing(chain) ) return;
     const after = text.slice(chain.end, chain.end + 40);
-    if ( !COND_AFTER.test(after) ) return;
     const lead = text.slice(Math.max(0, chain.start - 40), chain.start);
     const previous = chains[index - 1];
     const alt = Boolean(previous && ALT_SEP.test(text.slice(previous.end, chain.start)));
     const extra = chain.split || EXTRA_LEAD.test(lead) || chain.parts.some(part => EXTRA_RAW.test(part.raw)) || EXTRA_TRAIL.test(after);
     if ( !alt && !extra ) return;
-    const leadMatch = lead.match(alt ? ALT_LEAD : EXTRA_LEAD);
-    const start = leadMatch ? chain.start - (lead.length - leadMatch.index) : chain.start;
-    const next = chains[index + 1];
-    // The clause ends before the next result ("... in melee or 5 (1d4 + 3) ...") or the next sentence part
-    const tail = text.slice(chain.end, next ? next.start : undefined).match(COND_TEXT)[0]
-      .replace(/\s*,?\s*(?:\b(?:or|ou|and|et))?\s*,?\s*$/iu, "");
-    conditional.set(chain, { condition: tail.trim(), alt, raw: text.slice(start, chain.end + tail.length).trim().replace(/^[,-]\s*/, "") });
+    if ( COND_AFTER.test(after) ) {
+      const leadMatch = lead.match(alt ? ALT_LEAD : EXTRA_LEAD);
+      const start = leadMatch ? chain.start - (lead.length - leadMatch.index) : chain.start;
+      const next = chains[index + 1];
+      // The clause ends before the next result ("... in melee or 5 (1d4 + 3) ...") or the next sentence part
+      const tail = text.slice(chain.end, next ? next.start : undefined).match(COND_TEXT)[0]
+        .replace(/\s*,?\s*(?:\b(?:or|ou|and|et))?\s*,?\s*$/iu, "");
+      conditional.set(chain, { condition: tail.trim(), alt, raw: text.slice(start, chain.end + tail.length).trim().replace(/^[,-]\s*/, "") });
+      return;
+    }
+    // Extra damage whose condition opens its sentence: "If the target ..., the target takes an extra 7 (2d6) ..."
+    if ( alt ) return;
+    const start = sentenceStart(chain.start);
+    const head = text.slice(start, chain.start).match(COND_BEFORE);
+    if ( !head ) return;
+    conditional.set(chain, { condition: head[1].trim(), alt: false, raw: text.slice(start, chain.end).trim() });
   });
   // C4: damage that depends on an ambiguous save (several different saving throws, "Wall of Ice") is withheld with
   // it: no damage activity is invented for an ability whose damage belongs to the unresolved save. An ambiguous
@@ -265,7 +279,7 @@ export function parseFeature(name, html, opts = {}) {
   // Sentences that no recognizer covered
   const spans = [...attack.spans, ...rangeTarget.spans, ...damage.spans, ...(damage.covered ?? []), ...saveArea.spans,
     ...uses.spans, ...activation.spans, ...legendarySpans];
-  for ( const sentence of splitSentences(text) ) {
+  for ( const sentence of sentences ) {
     const span = { start: sentence.index, end: sentence.index + sentence.text.length };
     if ( spans.some(other => overlaps(span, other)) ) continue;
     const cleaned = cleanUnrecognized(sentence.text);
