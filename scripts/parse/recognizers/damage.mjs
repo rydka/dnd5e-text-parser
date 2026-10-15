@@ -41,8 +41,14 @@ const STOP = new Set([
 const PENALTY_BEFORE = /(?:subtracts?|minus|reduc(?:es?|ed)\s+by|lowers?\s+by|loses?|retranch(?:e|ez|ent)|soustra(?:it|yez|ient)|r[ée]duits?\s+de|diminu[ée]s?\s+de|perd(?:ent)?)\s+(?:an?\s+|une?\s+)?$/iu;
 const PENALTY_PHRASE = /^\s*(?:from|to|on)\s+(?:its|their|his|her|your|the)\b/iu;
 
-const IGNORE_BEFORE = /(?:increases?\s+to|instead|if\s+(?:used|wielded)\s+with\s+two\s+hands|[àa]\s+la\s+place|passe\s+[àa]|augmentent?\s+[àa])[^.]*$/iu;
-const IGNORE_AFTER = /^\s*(?:,\s*)?(?:if\s+(?:used|wielded)\s+with\s+two\s+hands|s'il\s+est\s+mani[ée]\s+[àa]\s+deux\s+mains|lorsqu'(?:il|elle)\s+est\s+utilis[ée]e?\s+[àa]\s+deux\s+mains)/iu;
+// Versatile weapons: "if used with two hands", "si elle est maniée à deux mains", "tenue à deux mains", "à deux mains"
+const EN_TWO_HANDS = String.raw`(?:if|when|while)\s+(?:used|wielded|held)\s+(?:with|in)\s+(?:both|two)\s+hands`;
+const FR_TWO_HANDS_IF = String.raw`(?:si|lorsqu[e'’]|quand)\s+(?:elle|il|l['’]arme|l['’]objet)\s+est\s+(?:mani[ée]e?|tenue?|utilis[ée]e?|empoign[ée]e?)\s+[àa]\s+deux\s+mains`;
+const FR_TWO_HANDS = String.raw`${FR_TWO_HANDS_IF}|(?:(?:mani[ée]e?|tenue?|utilis[ée]e?|empoign[ée]e?)\s+)?[àa]\s+deux\s+mains`;
+// Before the clause, the French form needs its condition ("si elle est maniée à deux mains"): "sa hache à deux mains,
+// infligeant 10 (2d6 + 3) dégâts" is a weapon name, not an alternative
+const IGNORE_BEFORE = new RegExp(String.raw`(?:increases?\s+to|instead|${EN_TWO_HANDS}|[àa]\s+la\s+place|passe\s+[àa]|augmentent?\s+[àa]|${FR_TWO_HANDS_IF})[^.]*$`, "iu");
+const IGNORE_AFTER = new RegExp(String.raw`^\s*(?:,\s*)?(?:${EN_TWO_HANDS}|${FR_TWO_HANDS})`, "iu");
 const CHAIN_SEP = /^\s*(?:[,;]\s*)?(?:(?:plus|and|et|\+)\s+)?(?:(?:an\s+additional|additional|un\s+suppl[ée]ment\s+de)\s+)?$/iu;
 
 // "of the weapon's type", "of the same type", "du type de l'arme", "du même type"
