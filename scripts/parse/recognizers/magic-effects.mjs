@@ -128,6 +128,8 @@ function traitEffects(kind, object, raw, langs, lang) {
   for ( const part of parts ) {
     const word = part.replace(/^(?:(?:immune|resistant|vulnerable)\s+to|immunis[ée]e?s?\s+(?:contre|[àa]))\s+/iu, "")
       .replace(/^(?:being|the|les?|l'|la|d'|de\s+|du\s+)\s*/iu, "")
+      // "l'état charmé", "les états charmé et effrayé": the word "état" is not the condition
+      .replace(/^(?:[ée]tats?|conditions?)\s+/iu, "")
       .replace(/\s+(?:damage|condition|conditions)$/i, "").replace(/^(?:d[ée]g[âa]ts\s+(?:de\s+|d')?)/iu, "").trim();
     const key = damageKey(word) ?? conditionKey(word);
     if ( key ) effects.push({ kind, value: null, scope: key, raw });
