@@ -1,6 +1,5 @@
 import { hasLang, languagesOf, ORIGIN } from "./common.mjs";
-import { parseFormula } from "./damage.mjs";
-import { lookup, fold, toNumber, NUMBER_RE } from "../lexicon/index.mjs";
+import { lookup, fold, toNumber, abilityKey, NUMBER_RE } from "../lexicon/index.mjs";
 import { splitSentences } from "../text.mjs";
 
 /**
@@ -22,9 +21,26 @@ const ACTIVATION_FR = [
 ];
 
 const NUM = `(${NUMBER_RE})`;
-const FORMULA = String.raw`\d+\s*d\s*\d+(?:\s*[+-]\s*\d+)?|\d+`;
-const HEAL_EN = new RegExp(String.raw`\b(?:regains?|restores?|heals?|recovers?)\s+(?:up\s+to\s+)?(${FORMULA})\s+hit\s+points?\b`, "iu");
-const HEAL_FR = new RegExp(String.raw`\b(?:regagn(?:e|ez|es|ent)|r[ée]cup[èéeê]r(?:e|ez|es|ent)|rend(?:ez|s)?|restaur(?:e|ez))\s+(?:jusqu'[àa]\s+)?(${FORMULA})\s+(?:points?\s+de\s+vie|hit\s+points?)\b`, "iu");
+// A healing formula: dice and numbers, plus "your proficiency bonus" (@prof) and "your Wisdom modifier"
+// (@abilities.wis.mod), "votre bonus de maîtrise", "votre modificateur de Sagesse"
+const TERM = String.raw`\d+\s*d\s*\d+|\d+|(?:your|its)\s+proficiency\s+bonus|(?:votre|son)\s+bonus\s+de\s+ma[îi]trise|` +
+  String.raw`(?:your|its)\s+\p{L}+\s+modifier|(?:votre|son)\s+modificateur\s+(?:de\s+|d')\p{L}+`;
+const FORMULA = String.raw`(?:${TERM})(?:\s*[+-]\s*(?:${TERM}))*`;
+const HEAL_WORDS_EN = String.raw`(?:regains?|restores?|heals?|recovers?)`;
+const HEAL_WORDS_FR = String.raw`(?:regagn(?:e|ez|es|ent)|r[ée]cup[èéeê]r(?:e|ez|es|ent)|rend(?:ez|s)?|restaur(?:e|ez))`;
+const GAIN_FR = String.raw`gagn(?:e|ez|es|ent)\s+(?:[ée]galement\s+|aussi\s+)?`;
+const HEAL_EN = new RegExp(String.raw`\b${HEAL_WORDS_EN}\s+(?:up\s+to\s+)?(${FORMULA})\s+hit\s+points?\b|` +
+  String.raw`\b${HEAL_WORDS_EN}\s+(?:a\s+number\s+of\s+)?hit\s+points?\s+equal\s+to\s+(${FORMULA})`, "iu");
+const HEAL_FR = new RegExp(String.raw`\b${HEAL_WORDS_FR}\s+(?:jusqu'[àa]\s+)?(${FORMULA})\s+(?:points?\s+de\s+vie|hit\s+points?)\b|` +
+  String.raw`\b${HEAL_WORDS_FR}\s+(?:un\s+nombre\s+de\s+)?points?\s+de\s+vie\s+[ée]ga(?:l|ux)\s+[àa]\s+(${FORMULA})`, "iu");
+// "gain 1d6 temporary hit points", "gain temporary hit points equal to 1d6 + your proficiency bonus",
+// "gagnez 5 points de vie temporaires", "gagnez un nombre de points de vie temporaires égal à 1d6 + votre bonus de maîtrise"
+const TEMP_EN = new RegExp(String.raw`\b(?:gains?|receives?|has)\s+(${FORMULA})\s+temporary\s+hit\s+points?\b|` +
+  String.raw`\b(?:gains?|receives?)\s+(?:a\s+number\s+of\s+)?temporary\s+hit\s+points?\s+equal\s+to\s+(${FORMULA})`, "iu");
+const TEMP_FR = new RegExp(String.raw`\b${GAIN_FR}(${FORMULA})\s+points?\s+de\s+vie\s+temporaires?\b|` +
+  String.raw`\b${GAIN_FR}(?:un\s+nombre\s+de\s+)?points?\s+de\s+vie\s+temporaires?\s+[ée]ga(?:l|ux)\s+[àa]\s+(${FORMULA})`, "iu");
+const PROF = /^(?:your|its)\s+proficiency\s+bonus$|^(?:votre|son)\s+bonus\s+de\s+ma[îi]trise$/iu;
+const MOD = /^(?:your|its)\s+(\p{L}+)\s+modifier$|^(?:votre|son)\s+modificateur\s+(?:de\s+|d')(\p{L}+)$/iu;
 const CONSUME_EN = new RegExp(String.raw`\b(?:expend|expends|spend|spends)\s+${NUM}\s+(?:or\s+more\s+)?(?:of\s+(?:its|the)\s+)?charges?\b`, "iu");
 const CONSUME_FR = new RegExp(String.raw`\bd[ée]pens(?:er|ez|e)\s+${NUM}\s+charges?(?:\s+ou\s+plus)?\b`, "iu");
 const CAST_EN = /(?<!can't\s)(?<!cannot\s)(?<!not\s)\bcast\s+(?:the\s+)?([\p{L}'-]+(?:\s+[\p{L}'-]+){0,3}?)(?:\s+spell)?(?:\s*\(([^)]*)\))?(?=\s*[.,;:]|\s+(?:from|with|using|by|at|as|once|without|requiring|expending|on|to|and|or|but|if)\b|\s*$)/iu;
@@ -67,23 +83,57 @@ export function recognizeItemActivation(text, ctx = {}) {
 }
 
 /**
- * Healing ("regain 2d4 + 2 hit points").
+ * Dice and bonus of a healing formula ("2d4 + 2", "1d6 + your proficiency bonus", "5"): the first dice term gives
+ * `number` / `denomination`, the other terms the `bonus` (a dnd5e roll formula: "@prof", "@abilities.wis.mod").
+ * `null` when a modifier names an unknown ability.
+ * @param {string} formula
+ * @returns {{ number: number|null, denomination: number|null, bonus: string }|null}
+ */
+function healFormula(formula) {
+  const terms = formula.match(/[+-]?\s*[^+-]+/g) ?? [];
+  const part = { number: null, denomination: null, bonus: "" };
+  for ( const term of terms ) {
+    const sign = term.trim().startsWith("-") ? "-" : "+";
+    const body = term.replace(/^[+-]\s*/, "").trim();
+    if ( !body ) continue;
+    const dice = body.match(/^(\d+)\s*d\s*(\d+)$/i);
+    let value;
+    if ( dice && part.number === null && sign === "+" ) { part.number = Number(dice[1]); part.denomination = Number(dice[2]); continue; }
+    else if ( dice ) value = `${dice[1]}d${dice[2]}`;
+    else if ( /^\d+$/.test(body) ) value = String(Number(body));
+    else if ( PROF.test(body) ) value = "@prof";
+    else {
+      const mod = body.match(MOD);
+      const ability = mod ? abilityKey(mod[1] ?? mod[2]) : null;
+      if ( !ability ) return null;
+      value = `@abilities.${ability}.mod`;
+    }
+    part.bonus += part.bonus ? ` ${sign} ${value}` : (sign === "-" ? `-${value}` : value);
+  }
+  return part;
+}
+
+/**
+ * Healing ("regain 2d4 + 2 hit points", "regagnez 10 points de vie") or temporary hit points ("gain 1d6
+ * temporary hit points", "gain temporary hit points equal to 1d6 + your proficiency bonus", "gagnez un nombre de
+ * points de vie temporaires égal à 1d6 + votre bonus de maîtrise").
  * @param {string} text
  * @param {object} [ctx]
- * @returns {{ part: object, span: object }|null}  `part` is a DamagePart with `type: "healing"`.
+ * @returns {{ part: object, span: object }|null}  `part` is a DamagePart with `type: "healing"` or `"temphp"`;
+ *   "your proficiency bonus" / "votre bonus de maîtrise" gives `@prof` in `bonus`, an ability modifier
+ *   `@abilities.<key>.mod`.
  */
 export function recognizeHeal(text, ctx = {}) {
   const source = String(text ?? "");
-  for ( const [re, lang] of [[HEAL_EN, "en"], [HEAL_FR, "fr"]] ) {
+  const patterns = [[TEMP_EN, "en", "temphp"], [TEMP_FR, "fr", "temphp"], [HEAL_EN, "en", "healing"], [HEAL_FR, "fr", "healing"]];
+  for ( const [re, lang, type] of patterns ) {
     if ( !hasLang(ctx, lang) ) continue;
     const match = source.match(re);
     if ( !match ) continue;
-    const formula = match[1];
-    const part = /d/i.test(formula)
-      ? parseFormula(formula)
-      : { number: null, denomination: null, bonus: String(Number(formula)) };
+    const part = healFormula(match[1] ?? match[2]);
+    if ( !part ) continue;
     return {
-      part: { ...part, type: "healing", raw: match[0], origin: ORIGIN },
+      part: { ...part, type, raw: match[0], origin: ORIGIN },
       span: span("heal", match.index, match.index + match[0].length, match[0])
     };
   }
