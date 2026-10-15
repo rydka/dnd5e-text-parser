@@ -7,10 +7,12 @@ const FR_WORD = "(?:points?\\s+de\\s+)?d[ée]g[âa]ts?(?![\\p{L}])";
 
 // Each pattern: [regex, kind, group of the formula, language]. Kind "fixed" needs a known damage type.
 // "12 (2d6 + 5) piercing plus 10 (3d6) cold damage": the type precedes "plus" without the word "damage".
-// ... "or 2 (1d4) Piercing if the swarm is Bloodied" and "5 (1d10) Poison at the start of each of its turns": the type
-// precedes the condition of a second result or the timing of ongoing damage.
+// ... "or 2 (1d4) Piercing if the swarm is Bloodied", "or 5 (1d4 + 3) piercing at range", "in Large form" and
+// "5 (1d10) Poison at the start of each of its turns": the type precedes the condition of a second result or the
+// timing of ongoing damage.
 const EN_BARE_TYPE = "([\\p{L}-]+)(?=\\s*,?\\s*(?:plus|and)\\s+(?:an\\s+additional\\s+)?\\d"
-  + "|\\s+(?:if|when|while|unless)(?![\\p{L}])|\\s+at\\s+the\\s+(?:start|end|beginning)(?![\\p{L}]))";
+  + "|\\s+(?:if|when|while|unless)(?![\\p{L}])|\\s+at\\s+the\\s+(?:start|end|beginning)(?![\\p{L}])"
+  + "|\\s+at\\s+range(?![\\p{L}])|\\s+in\\s+melee(?![\\p{L}])|\\s+in\\s+(?:[\\p{L}'-]+\\s+){0,3}?form(?![\\p{L}]))";
 const BARE = new Set();
 const bare = (regex, kind) => { BARE.add(regex); return [regex, kind]; };
 const EN_PATTERNS = [
