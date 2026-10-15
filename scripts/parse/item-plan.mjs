@@ -5,6 +5,7 @@ import { recognizeWeapon } from "./recognizers/weapon.mjs";
 import { recognizeArmor } from "./recognizers/armor.mjs";
 import { recognizeConsumable } from "./recognizers/consumable.mjs";
 import { recognizeMagicEffects } from "./recognizers/magic-effects.mjs";
+import { recognizeUses } from "./recognizers/uses.mjs";
 import {
   segmentText, recognizeItemActivation, recognizeHeal, recognizeCast, recognizeConsume, recognizeDuration,
   hasUseTrigger, hasPassiveMarker, recognizeCastList
@@ -139,6 +140,25 @@ export function parseItem(name, html, opts = {}) {
     }
   }
 
+  // Limited uses ("3/Day", "once per long rest", "une fois par repos long"): the item's uses, read on the whole text
+  // (the sentence that states them often carries the activation and is cut from the item-level text below); the
+  // activity of the paragraph that states them consumes one use, so a second activity of the item does not
+  const uses = recognizeUses(text, ctx);
+  ambiguous.push(...uses.ambiguous);
+  for ( const span of uses.spans ) {
+    if ( span.kind !== "uses" ) continue;
+    activitySpans.push({ start: span.start, end: span.end });
+    const sentence = sentenceAt(span.start);
+    if ( sentence ) coverSpans.push(sentence);
+    const segment = segmentOf(span.start);
+    if ( segment && uses.fact.uses && !segment.consume && (segment.activation || segment.heal || segment.cast) ) {
+      segment.consume = {
+        consume: { target: "itemUses", amount: 1, raw: span.text, origin: "rules" },
+        span: { kind: "consume", start: span.start - segment.start, end: span.end - segment.start, text: span.text }
+      };
+    }
+  }
+
   // Effects: passive (carried / worn) or applied on use
   for ( const effect of effects ) {
     const segment = segmentOf(effect.sentence.start);
@@ -262,6 +282,7 @@ export function parseItem(name, html, opts = {}) {
   }
   const extraRaw = new Set(activities.flatMap(activity => activity.extraDamage ? [activity.extraDamage.raw] : []));
   feature.damage = feature.damage.filter(part => !extraRaw.has(part.raw));
+  if ( !feature.uses && uses.fact.uses ) feature.uses = uses.fact.uses;
   const plan = {
     ...feature, name: title, itemKind: fact.kind, details,
     effects: effects.map(effect => Object.fromEntries(Object.entries(effect).filter(([key]) => key !== "sentence"))), activities

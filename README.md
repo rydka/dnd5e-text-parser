@@ -202,7 +202,7 @@ FeaturePlan = { schema: 1, skip: "multiattack"|null,
   damage: DamagePart[],                                  // dégâts du coup, ou dégâts seuls
   save: { ability, dc, onSave: "half"|"none", damage: DamagePart[] }|null,
   template: { type, size, width, height }|null,
-  uses: { max, period: "day"|"dawn"|"dusk"|"sr"|"lr", recoverFormula }|null,
+  uses: { max, period: "day"|"dawn"|"dusk"|"sr"|"lr", recoverFormula }|null,   // « 3/Day », « Recharges after a Long Rest », en prose « once per long rest », « twice a day », « 3 times per short rest », « une fois par repos long », « deux fois par jour »
   recharge: { min }|null, legendaryResistance: number|null,
   variants: ActivityPlan[],                              // variantes conditionnelles (ActivityPlan avec `condition`), voir « Dégâts d'une capacité »
   effects: ItemEffect[],                                 // capacité passive seulement (toujours `when: "passive"`, `activity: null`), voir « Effets d'une capacité passive »
@@ -235,7 +235,7 @@ ActivityPlan = { kind: "attack"|"save"|"damage"|"heal"|"cast"|"utility", name, r
   activation, attack, range, target, template, damage: DamagePart[], save,       // comme FeaturePlan
   heal: DamagePart|null,                  // type "healing"
   cast: { name, level|null, dc|null, attack|null, charges|null, raw }|null,
-  consume: { target: "itemUses", amount, raw }|null,
+  consume: { target: "itemUses", amount, raw }|null,   // « expend 1 charge », ou 1 usage quand le paragraphe de l'activité énonce les usages limités (« Once per long rest, … you can use your reaction… »)
   extraDamage: DamagePart|null,           // dégâts en plus de la base, rattachés à l'activité d'attaque
   condition?: string,                     // variante conditionnelle (« if the target is Bloodied ») : seconde activité, voir « Résultat conditionnel »
   origin }
