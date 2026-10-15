@@ -1,7 +1,7 @@
 import { htmlToText, splitSentences, nameKey } from "./text.mjs";
 import { recognizeAttack } from "./recognizers/attack.mjs";
 import { recognizeRangeTarget } from "./recognizers/range-target.mjs";
-import { recognizeDamage } from "./recognizers/damage.mjs";
+import { recognizeDamage, formulaOf } from "./recognizers/damage.mjs";
 import { recognizeSaveArea } from "./recognizers/save-area.mjs";
 import { recognizeUses } from "./recognizers/uses.mjs";
 import { recognizeActivation } from "./recognizers/activation.mjs";
@@ -19,7 +19,7 @@ function emptyPlan() {
   return {
     schema: SCHEMA_VERSION, skip: null, activation: null, attack: null, range: null, target: null, damage: [],
     save: null, template: null, uses: null, recharge: null, legendaryResistance: null,
-    notes: [], ambiguous: [], unrecognized: []
+    variants: [], notes: [], ambiguous: [], unrecognized: []
   };
 }
 
@@ -32,9 +32,59 @@ const ONGOING_AFTER = new RegExp(String.raw`^[^.]{0,40}?${ONGOING_PHRASE}`, "iu"
 // "...at the start of each of its turns or take 12 (2d8 + 3) damage" is the damage of a repeated save, not ongoing
 const ONGOING_BEFORE = new RegExp(String.raw`${ONGOING_PHRASE}(?:(?!\b(?:or|ou)\s+(?:takes?|subit))[^.]){0,40}$`, "iu");
 const overlaps = (span, other) => span.start < other.end && span.end > other.start;
-// Second result: "6 (1d8 + 2) Piercing damage, or 11 (2d8 + 2) Piercing damage if the creature is Bloodied"
-const ALT_SEP = /^\s*,?\s*(?:or|ou)\s+(?:(?:an?|une?)\s+)?(?:(?:extra|additional|suppl[ée]mentaires?)\s+)?$/iu;
-const ALT_AFTER = /^\s*(?:if|when|while|unless|si|lorsque|quand)(?![\p{L}])/iu;
+// Conditional damage (B9): a second result "6 (1d8 + 2) Piercing damage, or 11 (2d8 + 2) Piercing damage if the
+// creature is Bloodied" or extra damage "takes an extra 2d6 Fire damage if the target is undead" is never rolled
+// with the main result: dnd5e 6 rolls every part of an activity together.
+// What introduces the condition right after the damage: "if", "when", "while", "unless", "at range", "in melee",
+// "in bear form", "si", "lorsque", "quand", "tant que", "à distance", "au corps à corps", "sous forme de loup"
+const COND_START = String.raw`(?:if|when|while|unless|at\s+range|in\s+melee|in\s+(?:[\p{L}'-]+\s+){0,3}?form|` +
+  String.raw`si|lorsque|lorsqu'|quand|tant\s+que|[àa]\s+(?:distance|port[ée]e)|au\s+corps\s+[àa]\s+corps|sous\s+(?:sa\s+|la\s+)?forme)(?![\p{L}])`;
+const COND_AFTER = new RegExp(String.raw`^\s*(?:(?:suppl[ée]mentaires?|en\s+plus)\s+)?${COND_START}`, "iu");
+// ", or an extra" before the alternative; the first result may carry its own condition ("7 (1d6 + 4) piercing
+// damage in melee or 5 (1d4 + 3) piercing damage at range", "in Small or Medium form, or 10 (2d6 + 3)...")
+const ALT_LEAD = /,?\s*(?:or|ou)\s+(?:(?:an?|une?|des?)\s+)?(?:(?:extra|additional|suppl[ée]mentaires?)\s+)?$/iu;
+const ALT_SEP = new RegExp(String.raw`^(?:\s*${COND_START}[^.;,]{0,60}?)?\s*${ALT_LEAD.source}`, "iu");
+// "takes an extra", "deals an additional", "also takes", "subit également", "inflige en plus"
+const EXTRA_LEAD = /\b(?:(?:an?|une?|des?)\s+)?(?:extra|additional|also\s+(?:takes?|deals?|suffers?)|suppl[ée]mentaires?|en\s+plus|(?:subit|subissent|inflige|infligent)\s+(?:aussi|[ée]galement))\s+(?:(?:an?|une?|des?)\s+)?$/iu;
+const EXTRA_RAW = /\b(?:extra|additional)\b/iu;
+// French puts the word after the type: "2d6 dégâts de feu supplémentaires si..."
+const EXTRA_TRAIL = /^\s*(?:suppl[ée]mentaires?|en\s+plus)(?![\p{L}])/iu;
+// The condition runs to the end of its clause (not into ", and the target..." / ", or N (dice)...")
+const COND_TEXT = /^\s*(?:(?!,\s*(?:and|or|et|ou)(?![\p{L}]))[^.;\n]){0,120}/u;
+// "at range" / "in melee": the variant is the other side of a weapon used both ways (its own attack type and range)
+const RANGED_COND = /^(?:at\s+range|[àa]\s+(?:distance|port[ée]e))(?![\p{L}])/iu;
+const MELEE_COND = /^(?:in\s+melee|au\s+corps\s+[àa]\s+corps)(?![\p{L}])/iu;
+
+/**
+ * Name of the activity of a conditional variant: "Bite (if the target is Bloodied)".
+ * @param {string} base       Name of the feature or of the base activity ("" when unknown).
+ * @param {string} condition  Condition as written in the text.
+ * @returns {string}
+ */
+export function variantName(base, condition) {
+  const name = String(base ?? "").replace(/\s*\([^()]*\)\s*$/u, "").trim();   // "Spear (Recharge 5-6)" -> "Spear"
+  return name ? `${name} (${condition})` : `(${condition})`;
+}
+
+/**
+ * ActivityPlan of a conditional result (B9): the same attack (or save) as the plan, with the damage of that case.
+ * @param {object} plan   FeaturePlan being built (attack, save, range, target, template, activation).
+ * @param {string} title  Feature name.
+ * @param {{condition: string, raw: string, save: boolean, damage: object[], extraDamage: object|null}} variant
+ * @returns {object}
+ */
+function variantOf(plan, title, { condition, raw, save, damage, extraDamage }) {
+  let attack = save ? null : plan.attack;
+  if ( attack && (RANGED_COND.test(condition) || MELEE_COND.test(condition)) ) {
+    attack = { ...attack, type: RANGED_COND.test(condition) ? "ranged" : "melee" };
+  }
+  return {
+    kind: save ? "save" : (attack ? "attack" : "damage"), name: variantName(title, condition), condition, raw, index: -1,
+    activation: plan.activation, attack, range: plan.range, target: plan.target, template: plan.template,
+    damage: save ? [] : damage, save: save ? { ...plan.save, damage } : null,
+    heal: null, cast: null, consume: null, extraDamage: save ? null : extraDamage, origin: "rules"
+  };
+}
 
 /**
  * Readable text of an unrecognized sentence: tokens made only of punctuation (what is left of the passages cut out
@@ -112,15 +162,45 @@ export function parseFeature(name, html, opts = {}) {
   const chains = [];
   let cursor = 0;
   for ( const chain of damage.chains ) {
-    chains.push({ parts: chain, start: damage.spans[cursor].start, end: damage.spans[cursor + chain.length - 1].end });
+    const spans = damage.spans.slice(cursor, cursor + chain.length);
     cursor += chain.length;
+    // "9 (2d8) Slashing damage plus 7 (2d6) Fire damage if the target is undead": the condition is the last part's
+    const alternative = chains.length && ALT_SEP.test(text.slice(chains.at(-1).end, spans[0].start));
+    if ( chain.length > 1 && !alternative && COND_AFTER.test(text.slice(spans.at(-1).end, spans.at(-1).end + 40)) ) {
+      chains.push({ parts: chain.slice(0, -1), start: spans[0].start, end: spans.at(-2).end });
+      chains.push({ parts: chain.slice(-1), start: spans.at(-1).start, end: spans.at(-1).end, split: true });
+      continue;
+    }
+    chains.push({ parts: chain, start: spans[0].start, end: spans.at(-1).end });
   }
   // Ongoing damage of a condition ("takes 21 (6d6) acid damage at the start of each of its turns" while swallowed,
   // poisoned, grappled...) is never the damage of a saving throw: it rides on the attack when there is one, else it
   // stands as its own damage activity next to the save (`toActivities`).
   const isOngoing = chain => ONGOING_AFTER.test(text.slice(chain.end, chain.end + 80))
     || ONGOING_BEFORE.test(text.slice(Math.max(0, chain.start - 90), chain.start));
-  const direct = chains.filter(chain => !isOngoing(chain));
+  // Conditional damage (B9): a second result ("or N (dice) type damage if...") or extra damage followed by its
+  // condition is never a part rolled with the main result (dnd5e 6 rolls every part of an activity together). It
+  // gives `Note.ConditionalDamage` in `ambiguous` and a variant in `plan.variants`: an ActivityPlan with `condition`
+  // that `toActivities` turns into a second activity (same attack or save, named after the condition).
+  const conditional = new Map();
+  chains.forEach((chain, index) => {
+    if ( isOngoing(chain) ) return;
+    const after = text.slice(chain.end, chain.end + 40);
+    if ( !COND_AFTER.test(after) ) return;
+    const lead = text.slice(Math.max(0, chain.start - 40), chain.start);
+    const previous = chains[index - 1];
+    const alt = Boolean(previous && ALT_SEP.test(text.slice(previous.end, chain.start)));
+    const extra = chain.split || EXTRA_LEAD.test(lead) || chain.parts.some(part => EXTRA_RAW.test(part.raw)) || EXTRA_TRAIL.test(after);
+    if ( !alt && !extra ) return;
+    const leadMatch = lead.match(alt ? ALT_LEAD : EXTRA_LEAD);
+    const start = leadMatch ? chain.start - (lead.length - leadMatch.index) : chain.start;
+    const next = chains[index + 1];
+    // The clause ends before the next result ("... in melee or 5 (1d4 + 3) ...") or the next sentence part
+    const tail = text.slice(chain.end, next ? next.start : undefined).match(COND_TEXT)[0]
+      .replace(/\s*,?\s*(?:\b(?:or|ou|and|et))?\s*,?\s*$/iu, "");
+    conditional.set(chain, { condition: tail.trim(), alt, raw: text.slice(start, chain.end + tail.length).trim().replace(/^,\s*/, "") });
+  });
+  const direct = chains.filter(chain => !isOngoing(chain) && !conditional.has(chain));
   const before = direct.filter(chain => chain.start < saveStart);
   const after = direct.filter(chain => chain.start >= saveStart);
   let hit = null;
@@ -142,24 +222,40 @@ export function parseFeature(name, html, opts = {}) {
   }
   if ( hit ) plan.damage = hit.parts;
   if ( plan.save && onSave ) plan.save.damage = onSave.parts;
-  let previous = null;   // chain just before in text order, with the list its parts went to
+  const pending = [];     // conditional chains, with the result each one stands in for
+  let previous = null;    // list the parts of the chain just before went to
   for ( const chain of chains ) {
     let list = null;
     if ( chain === hit ) list = plan.damage;
     else if ( chain === onSave ) list = plan.save.damage;
-    else if ( isOngoing(chain) ) {
+    else if ( conditional.has(chain) ) {
+      const info = conditional.get(chain);
+      for ( const part of chain.parts ) {
+        plan.ambiguous.push({
+          key: "dnd5e-text-parser.Note.ConditionalDamage",
+          data: { formula: formulaOf(part), type: part.type ?? "", condition: info.condition, raw: info.raw }
+        });
+      }
+      // It stands in for the damage of the save when it follows it, else for the hit (or the damage alone)
+      if ( !withheld ) pending.push({ chain, ...info, save: previous != null && previous === plan.save?.damage });
+      list = previous;
+    } else if ( isOngoing(chain) ) {
       plan.damage.push(...chain.parts);
       list = plan.damage;
-    } else if ( previous?.list && ALT_SEP.test(text.slice(previous.chain.end, chain.start))
-      && ALT_AFTER.test(text.slice(chain.end, chain.end + 12)) ) {
-      // A second result ("or N (dice) type damage if ...") follows the result it replaces, with its condition
-      const condition = text.slice(chain.end).match(/^\s*[^.;\n]{0,120}/u)[0].trim();
-      for ( const part of chain.parts ) previous.list.push({ ...part, condition });
-      list = previous.list;
     } else if ( !withheld ) {
       plan.notes.push({ key: "dnd5e-text-parser.Note.ExtraDamageIgnored", data: { raw: chain.parts.map(part => part.raw) } });
     }
-    previous = { chain, list };
+    previous = list;
+  }
+  for ( const { chain, condition, raw, alt, save } of pending ) {
+    if ( save && !onSave ) continue;
+    const baseChain = save ? onSave : hit;
+    const baseList = save ? plan.save.damage : plan.damage;
+    // An alternative replaces the result (ongoing damage riding on it stays); extra damage adds to it
+    const rest = baseList.filter(part => !baseChain?.parts.includes(part));
+    const damage = alt ? [...chain.parts, ...rest] : [...baseList, ...(save ? chain.parts : chain.parts.slice(1))];
+    const extraDamage = alt || save ? null : chain.parts[0];
+    plan.variants.push(variantOf(plan, title, { condition, raw, save, damage, extraDamage }));
   }
 
   // Sentences that no recognizer covered

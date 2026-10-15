@@ -71,6 +71,19 @@ export function parseFormula(formula) {
   return { number: Number(dice[1]), denomination: Number(dice[2]), bonus };
 }
 
+/**
+ * Readable formula of a damage part ("2d8 + 2", "1d6", "5").
+ * @param {object} part  `{ number, denomination, bonus }`.
+ * @returns {string}
+ */
+export function formulaOf(part) {
+  const dice = (part.number && part.denomination) ? `${part.number}d${part.denomination}` : "";
+  const bonus = String(part.bonus ?? "");
+  if ( !dice ) return bonus;
+  if ( !bonus ) return dice;
+  return /^[+-]/.test(bonus) ? `${dice} ${bonus[0]} ${bonus.slice(1).trim()}` : `${dice} + ${bonus}`;
+}
+
 /** Classify the words of an English type phrase. */
 function classifyWords(words, languages) {
   const known = [];

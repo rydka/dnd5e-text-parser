@@ -48,6 +48,7 @@
       "UnknownDamageType": "Type de dégâts inconnu « {word} » : laissé vide.",
       "RangeNotCarried": "Allonge ({reach} pi) et portée ({value} pi) trouvées : la portée n'a pas pu être reportée.",
       "ExtraDamageIgnored": "Dégâts supplémentaires non rattachés à l'attaque ou à la sauvegarde ignorés : {raw}",
+      "ConditionalDamage": "Dégâts conditionnels {formula} {type} ({condition}) non lancés avec le résultat principal : activité distincte : {raw}",
       "DamageTypeFromWeapon": "Dégâts du type de l'arme laissés de côté (pas de type fixe) : {raw}",
       "UsesConflict": "Plusieurs nombres d'utilisations différents trouvés ({raw}) : le premier a été conservé.",
       "RechargeConflict": "Plusieurs valeurs de recharge différentes trouvées ({raw}) : la première a été conservée.",

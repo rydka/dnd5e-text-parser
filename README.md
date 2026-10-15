@@ -115,7 +115,7 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `toSpellStubs(spellcastingPlan) -> object[]` | Sorts listés -> données minimales (aucun contenu inventé) |
 | `toDamagePart(part, keys?) -> object` | Une partie de dégâts du plan -> `DamageData` |
 
-Disposition des activités d'un `FeaturePlan` : `attack` (avec `plan.damage`), puis `save` (avec `save.damage`), puis `damage` si `plan.damage` est renseigné sans attaque (dégâts seuls, ou dégâts d'un état continu à côté d'une sauvegarde : « takes 21 (6d6) acid damage at the start of each of its turns » pendant que la cible est avalée, empoisonnée, agrippée…), puis la résistance légendaire.
+Disposition des activités d'un `FeaturePlan` : `attack` (avec `plan.damage`), puis `save` (avec `save.damage`), puis `damage` si `plan.damage` est renseigné sans attaque (dégâts seuls, ou dégâts d'un état continu à côté d'une sauvegarde : « takes 21 (6d6) acid damage at the start of each of its turns » pendant que la cible est avalée, empoisonnée, agrippée…), puis **une activité par variante conditionnelle** de `plan.variants` (voir « Dégâts d'une capacité » : « Bite (if the target is Bloodied) », même attaque ou même sauvegarde avec les dégâts de ce cas, même consommation), puis la résistance légendaire. dnd5e 6 trie les activités par `sort` (stable, tous à 0) : l'ordre du tableau est conservé.
 
 Valeurs écrites : bonus d'attaque fixe `attack.flat = true` + `attack.bonus = "N"` ; DD fixe `save.dc = { calculation: "", formula: "N" }` ; `damage.includeBase = false` quand les dégâts sont écrits ; usages sur l'objet (`system.uses`) + cible de consommation `itemUses` sur l'activité ; recharge « Recharge 5-6 » = `uses.max "1"` + `uses.recovery [{ period: "recharge", type: "recoverAll", formula: "5" }]` (période fixe de dnd5e 6, hors `limitedUsePeriods`). Seules des clés présentes dans `keys` sont écrites.
 
@@ -165,6 +165,7 @@ Quand le texte ne permet pas d'écrire un fait sans l'inventer, la bibliothèque
 | `AmbiguousDamageType` | `ambiguous` | `{ word, choices: string[], raw }` | « 3 (1d6) lightning or thunder damage », « bludgeoning, piercing, or slashing » : la partie est écrite avec ses dés et `types: []`, `part.typeChoices` = `choices` (clés dnd5e, par exemple `["lightning", "thunder"]`) |
 | `SaveAbilities` | `ambiguous` | `{ values: { ability, dc }[], raw: string[] }` | Plusieurs sauvegardes différentes : pas de `save` |
 | `DamageWithheld` | `ambiguous` | `{ raw: string[] }` | Dégâts qui dépendent d'une sauvegarde ambiguë : non écrits |
+| `ConditionalDamage` | `ambiguous` | `{ formula, type, condition, raw }` | Résultat conditionnel ou alternatif (« , or 11 (2d8 + 2) Piercing damage if the creature is Bloodied », « takes an extra 2d6 Fire damage if… », « in melee or … at range », « ou 8 (2d6 + 1) dégâts perforants si… ») : jamais une partie lancée avec le résultat principal ; il donne une variante (`plan.variants`, ou un `ActivityPlan` avec `condition` dans `activities` pour un objet) que `toActivities` écrit en seconde activité. `type` vaut `""` sans type connu |
 | `AbilityScoreChoices` | `ambiguous` | `{ ability, choices: { name, value }[], raw: string[] }` | Plusieurs valeurs fixées listées (« Hill Giant Strength: 21… Storm Giant Strength: 29 ») sans variante reconnaissable dans le nom de l'objet : aucun effet |
 | `SaveDcFormula` | `ambiguous` | `{ raw, formula }` | DD écrit en formule (« DC 8 plus your Dexterity modifier ») : `save.dc` null, `save.dcFormula` = `formula` (écrite par `toActivities`) |
 | `UsesConflict`, `RechargeConflict` | `ambiguous` | `{ raw: string[] }` | Plusieurs nombres d'utilisations ou de recharge différents : le premier est conservé |
@@ -202,14 +203,16 @@ FeaturePlan = { schema: 1, skip: "multiattack"|null,
   template: { type, size, width, height }|null,
   uses: { max, period: "day"|"dawn"|"dusk"|"sr"|"lr", recoverFormula }|null,
   recharge: { min }|null, legendaryResistance: number|null,
+  variants: ActivityPlan[],                              // variantes conditionnelles (ActivityPlan avec `condition`), voir « Dégâts d'une capacité »
   notes: Descriptor[], ambiguous: Descriptor[],
   unrecognized: { text, index }[] }                     // phrases qu'aucun reconnaisseur ne couvre, sans les fragments de ponctuation laissés par les passages reconnus ; au moins deux mots
 DamagePart = { number, denomination, bonus, type, raw,
-  typeChoices?: string[],                                // « lightning or thunder damage » : type null, choix listés (Note.AmbiguousDamageType)
-  condition?: string }                                   // second résultat « , or 11 (2d8 + 2) Piercing damage if the creature is Bloodied » : partie ajoutée à la suite, condition en texte
+  typeChoices?: string[] }                               // « lightning or thunder damage » : type null, choix listés (Note.AmbiguousDamageType)
 ```
 
-Dégâts d'une capacité : `damage` reçoit les dégâts du coup (ou les dégâts seuls), puis les **dégâts continus** d'un état (« While swallowed… takes 21 (6d6) acid damage at the start of each of its turns », « While Poisoned… », « Until the grapple ends… »), qui ne sont jamais `save.damage` ; `save.damage` reçoit les dégâts de l'échec (« Failure: 9 (2d8) Piercing damage », « …or take 12 (2d8 + 3) bludgeoning damage »). Un second résultat (« , or N (dés) type damage if/when/while… ») suit la partie qu'il remplace dans la même liste, avec `condition` ; dnd5e 6 n'ayant pas de dégâts conditionnels, les deux parties sont écrites sur l'activité. Les tournures « instead », « à la place » et « if used with two hands » restent ignorées (usage polyvalent d'une arme).
+Dégâts d'une capacité : `damage` reçoit les dégâts du coup (ou les dégâts seuls), puis les **dégâts continus** d'un état (« While swallowed… takes 21 (6d6) acid damage at the start of each of its turns », « While Poisoned… », « Until the grapple ends… »), qui ne sont jamais `save.damage` ; `save.damage` reçoit les dégâts de l'échec (« Failure: 9 (2d8) Piercing damage », « …or take 12 (2d8 + 3) bludgeoning damage »).
+
+**Résultat conditionnel** (B9) : un second résultat (« 6 (1d8 + 2) Piercing damage, or 11 (2d8 + 2) Piercing damage if the creature is Bloodied », « 7 (1d6 + 4) piercing damage in melee or 5 (1d4 + 3) piercing damage at range », « in Small or Medium form, or … in Large form », « ou 8 (2d6 + 1) dégâts perforants si… ») ou des dégâts supplémentaires soumis à une condition (« takes an extra 7 (2d6) Fire damage if it is Bloodied », « … plus 7 (2d6) Fire damage if the target is undead ») ne sont **jamais** une partie de dégâts de l'activité principale : dnd5e 6 lance toutes les parties ensemble. Ils donnent `Note.ConditionalDamage` dans `ambiguous` et une **variante** dans `plan.variants` : un `ActivityPlan` avec `condition` (texte de la condition tel qu'écrit, sans traduction), `kind` `attack` / `save` / `damage`, la même attaque (bonus, portée, cible ; « at range » / « à distance » donne `attack.type: "ranged"` et la portée correspondante, « in melee » / « au corps à corps » la mêlée) ou la même sauvegarde, et les dégâts de ce cas : la partie alternative (avec les dégâts continus qui s'y ajoutent), ou la partie principale plus l'`extraDamage`. `name` vaut « <nom de la capacité> (<condition>) », le suffixe entre parenthèses du nom (« (Recharge 5-6) ») retiré : « Bite (if the target is Bloodied) », « Morsure (si la cible est en sang) ». `toActivities` en fait une seconde activité après les activités principales, avec la même consommation. Pour un objet, les variantes sont des `ActivityPlan` de `activities` (après l'activité dont elles dérivent ; les dégâts supplémentaires conditionnels d'une arme deviennent une variante de son attaque) et `plan.variants` reste vide. Les tournures « instead », « à la place » et « if used with two hands » restent ignorées (usage polyvalent d'une arme, règle du jeu de référence).
 
 ```js
 ItemPlan = FeaturePlan & { name, itemKind: "weapon"|"armor"|"potion"|"scroll"|"wand"|"rod"|"staff"|"ring"|"wondrous"|"ammo"|"poison"|"food"|null,
@@ -231,6 +234,7 @@ ActivityPlan = { kind: "attack"|"save"|"damage"|"heal"|"cast"|"utility", name, r
   cast: { name, level|null, dc|null, attack|null, charges|null, raw }|null,
   consume: { target: "itemUses", amount, raw }|null,
   extraDamage: DamagePart|null,           // dégâts en plus de la base, rattachés à l'activité d'attaque
+  condition?: string,                     // variante conditionnelle (« if the target is Bloodied ») : seconde activité, voir « Résultat conditionnel »
   origin }
 ```
 

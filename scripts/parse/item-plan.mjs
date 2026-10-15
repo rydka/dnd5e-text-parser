@@ -1,5 +1,5 @@
 import { htmlToText, splitSentences } from "./text.mjs";
-import { parseFeature } from "./plan.mjs";
+import { parseFeature, variantName } from "./plan.mjs";
 import { recognizeItemMeta } from "./recognizers/item-meta.mjs";
 import { recognizeWeapon } from "./recognizers/weapon.mjs";
 import { recognizeArmor } from "./recognizers/armor.mjs";
@@ -108,6 +108,8 @@ export function parseItem(name, html, opts = {}) {
   const sentences = splitSentences(text).map(sentence => ({ start: sentence.index, end: sentence.index + sentence.text.length }));
   const sentenceAt = offset => sentences.find(sentence => offset >= sentence.start && offset < sentence.end);
   const notes = [];
+  const ambiguous = [];
+  const orphanVariants = [];   // conditional variants of segments that give no activity of their own
 
   // Spells cast for charges (staffs, wands): the intro and the list / table are covered, one cast activity per spell
   const castList = recognizeCastList(text, ctx);
@@ -180,9 +182,14 @@ export function parseItem(name, html, opts = {}) {
       }
       continue;
     }
+    // Conditional variants (B9) of the segment: a second activity each, named after the condition
+    ambiguous.push(...feature.ambiguous.filter(note => note.key.endsWith("ConditionalDamage")));
     const keep = segment.activation || segment.heal || segment.cast || segment.consume || segment.forced
       || feature.attack || feature.save || damage.length || extra.length;
-    if ( !keep ) continue;
+    if ( !keep ) {
+      orphanVariants.push(...feature.variants);
+      continue;
+    }
     if ( extra.length > 1 ) {
       notes.push({ key: "dnd5e-text-parser.Note.ExtraDamageIgnored", data: { raw: extra.slice(1).map(part => part.raw) } });
     }
@@ -199,6 +206,9 @@ export function parseItem(name, html, opts = {}) {
     };
     segment.activity = activity;
     activities.push(activity);
+    for ( const variant of feature.variants ) {
+      activities.push({ ...variant, name: variantName(activity.name || title, variant.condition) });
+    }
   }
 
   // A weapon always has its attack; the extra damage of the text rides on it
@@ -215,10 +225,24 @@ export function parseItem(name, html, opts = {}) {
   const attackActivity = activities.find(activity => activity.kind === "attack");
   if ( attackActivity ) {
     for ( const activity of activities ) {
-      if ( activity === attackActivity || !activity.extraDamage ) continue;
+      if ( activity === attackActivity || activity.condition || !activity.extraDamage ) continue;
       attackActivity.extraDamage ??= activity.extraDamage;
       activity.extraDamage = null;
     }
+    // A conditional variant of damage alone ("deals an extra 2d6 Fire damage if...") is a variant of the weapon attack
+    const attackVariants = [];
+    for ( const activity of [...activities, ...orphanVariants] ) {
+      if ( !activity.condition || activity.kind !== "damage" ) continue;
+      const variant = {
+        ...activity, kind: "attack", attack: attackActivity.attack, range: activity.range ?? attackActivity.range,
+        name: variantName(attackActivity.name || title, activity.condition)
+      };
+      if ( activities.includes(activity) ) activities.splice(activities.indexOf(activity), 1);
+      attackVariants.push(variant);
+    }
+    activities.splice(activities.indexOf(attackActivity) + 1, 0, ...attackVariants);
+  } else {
+    activities.push(...orphanVariants.map(variant => ({ ...variant, name: variantName(title, variant.condition) })));
   }
   activities.forEach((activity, index) => { activity.index = index; });
   for ( const segment of segments ) for ( const effect of segment.effects ) effect.activity = segment.activity?.index ?? null;
@@ -237,7 +261,9 @@ export function parseItem(name, html, opts = {}) {
   };
   plan.notes = [...feature.notes, ...notes, ...meta.notes, ...weapon.notes, ...armor.notes, ...consumable.notes]
     .filter((note, index, all) => all.findIndex(other => JSON.stringify(other) === JSON.stringify(note)) === index);
-  plan.ambiguous = [...feature.ambiguous, ...magic.ambiguous, ...meta.ambiguous, ...weapon.ambiguous,
-    ...armor.ambiguous, ...consumable.ambiguous];
+  plan.ambiguous = [...feature.ambiguous, ...ambiguous, ...magic.ambiguous, ...meta.ambiguous, ...weapon.ambiguous,
+    ...armor.ambiguous, ...consumable.ambiguous]
+    .filter((note, index, all) => all.findIndex(other => JSON.stringify(other) === JSON.stringify(note)) === index);
+  plan.variants = [];   // the conditional variants of an item are ActivityPlans of `activities`
   return plan;
 }

@@ -1,4 +1,7 @@
 import { effectGroupKey } from "./effects.mjs";
+import { formulaOf } from "../parse/recognizers/damage.mjs";
+
+export { formulaOf };
 
 /**
  * Neutral descriptors `{ key, data, group, raw, origin, paths }` of a plan or of a list of changes, for summaries
@@ -45,19 +48,6 @@ function entry(name, data, fact, { group = null, paths = [], raw } = {}) {
 function note(descriptor) {
   const raw = Array.isArray(descriptor.data?.raw) ? descriptor.data.raw.join(" ") : (descriptor.data?.raw ?? descriptor.data?.text ?? "");
   return { ...descriptor, group: null, raw: String(raw), origin: descriptor.origin ?? "rules", paths: [] };
-}
-
-/**
- * Readable formula of a damage part.
- * @param {object} part
- * @returns {string}
- */
-export function formulaOf(part) {
-  const dice = (part.number && part.denomination) ? `${part.number}d${part.denomination}` : "";
-  const bonus = String(part.bonus ?? "");
-  if ( !dice ) return bonus;
-  if ( !bonus ) return dice;
-  return /^[+-]/.test(bonus) ? `${dice} ${bonus[0]} ${bonus.slice(1).trim()}` : `${dice} + ${bonus}`;
 }
 
 const damageEntry = (part, save, options, name = "Damage") => entry(name, {
@@ -111,12 +101,19 @@ function flatPaths(plan) {
   const attackAt = attack ? next++ : -1;
   const saveAt = save ? next++ : -1;
   const damageAt = damage ? next++ : -1;
+  const base = next;
+  // One activity per conditional variant, after the base activities
+  const variants = (plan.variants ?? []).map(variant => {
+    const path = [`activities.${next++}`];
+    return { all: path, first: path, attack: variant.kind === "attack" ? path : [], save: variant.kind === "save" ? path : [],
+      damage: variant.kind === "damage" ? path : [] };
+  });
   const legresAt = plan.legendaryResistance ? next++ : -1;
   const at = index => (index >= 0 ? [`activities.${index}`] : []);
   return {
-    all: Array.from({ length: next }, (_, i) => `activities.${i}`).filter((_, i) => i !== legresAt),
+    all: Array.from({ length: base }, (_, i) => `activities.${i}`),
     first: at([attackAt, saveAt, damageAt].some(i => i >= 0) ? 0 : -1),
-    attack: at(attackAt), save: at(saveAt), damage: at(damageAt), legres: at(legresAt)
+    attack: at(attackAt), save: at(saveAt), damage: at(damageAt), legres: at(legresAt), variants
   };
 }
 
@@ -149,9 +146,9 @@ export function describe(planOrChanges) {
         save: saveAt >= 0 ? all.slice(saveAt, saveAt + 1) : [], damage: all.slice(damageAt, damageAt + 1)
       };
       offset += count;
-      result.push(entry("Activity", { kind: activity.kind, name: activity.name ?? "" }, activity, {
-        group: "activities", paths: all, raw: activity.raw
-      }));
+      result.push(entry("Activity", {
+        kind: activity.kind, name: activity.name ?? "", ...(activity.condition ? { condition: activity.condition } : {})
+      }, activity, { group: "activities", paths: all, raw: activity.raw }));
       featureFacts(activity, paths, result);
       const options = fact => ({ group: "activities", paths: all, raw: fact?.raw });
       if ( activity.heal ) result.push(damageEntry(activity.heal, false, options(activity.heal), "Heal"));
@@ -164,7 +161,16 @@ export function describe(planOrChanges) {
       }
     }
   } else {
-    featureFacts(plan, flatPaths(plan), result);
+    const paths = flatPaths(plan);
+    featureFacts(plan, paths, result);
+    // Conditional variants: one activity each, described like the activities of an item
+    (plan.variants ?? []).forEach((variant, index) => {
+      const own = paths.variants[index];
+      result.push(entry("Activity", { kind: variant.kind, name: variant.name ?? "", condition: variant.condition }, variant, {
+        group: "activities", paths: own.all, raw: variant.raw
+      }));
+      featureFacts(variant, own, result);
+    });
   }
 
   // Item-level facts: uses, recharge and legendary resistance

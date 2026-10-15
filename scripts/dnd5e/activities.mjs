@@ -222,8 +222,11 @@ function itemActivity(plan, context, { item, resolveSpell, notes }) {
  * - `save` plan -> save activity (fixed DC: `calculation: ""` + `formula`); also created next to an attack.
  * - damage alone (no attack, no save) -> damage activity; `damage` next to a `save` (ongoing damage of a condition,
  *   never the save's own damage) -> a damage activity after the save activity.
+ * - `variants` (conditional results: "or 11 (2d8 + 2) Piercing damage if the creature is Bloodied", "an extra 2d6
+ *   Fire damage if...") -> after those, one activity per variant: the same attack (or save) with the damage of that
+ *   case, named "<feature> (<condition>)". A conditional result is never a part of the first activity.
  * - `legendaryResistance` -> utility activity consuming `resources.legres`.
- * - uses / recharge -> an `itemUses` consumption target on the first activity only.
+ * - uses / recharge -> an `itemUses` consumption target on the first activity only (and on each variant).
  * A `multiattack` plan, or a plan without any of these facts, gives no activity.
  *
  * ItemPlan with `activities` (see `parseItem`): one or more activities per ActivityPlan, in order: `attack`
@@ -273,6 +276,15 @@ export function toActivities(plan, { keys, idGen, item, lang = "en", resolveSpel
   }
 
   result.push(...featureActivities(plan, context, { item }));
+
+  // Conditional variants (B9): a second activity for each conditional result ("or 11 (2d8 + 2) Piercing damage if
+  // the creature is Bloodied"), same attack or save (bonus, range, target, consumption), named after the condition.
+  // The order of the array is kept by dnd5e (stable sort on `sort`, all 0).
+  for ( const variant of plan.variants ?? [] ) {
+    const group = featureActivities({ ...plan, ...variant, variants: [] }, context, { item });
+    for ( const activity of group ) activity.name = variant.name;
+    result.push(...group);
+  }
 
   if ( plan.legendaryResistance ) {
     const resistance = { _id: idGen(), type: "utility" };
