@@ -2,6 +2,8 @@ import { hasLang, languagesOf, ORIGIN } from "./common.mjs";
 import { lookup } from "../lexicon/index.mjs";
 
 const KINDS = new Set(["potion", "scroll", "wand", "rod", "ammo", "poison", "food"]);
+// "Potion of Healing", "Potion de guérison", "Potion d'invisibilité": the name alone says it is a potion
+const NAME_POTION = /^\s*potions?\s+(?:(?:of|de|du|des)(?![\p{L}])|d['’])/iu;
 
 const EN_CHARGES = /\b(?:has|have|with|holds?|contains?)\s+(\d+)\s+charges?\b/iu;
 const FR_CHARGES = /\b(?:poss[èe]de|contient|dispose\s+de|a)\s+(\d+)\s+charges?\b/iu;
@@ -25,9 +27,10 @@ function sentenceAt(text, index) {
 
 /**
  * Consumable details (C5): type (potion, scroll, wand...), charges and their recovery, destruction once empty.
- * Applies when the header names a consumable kind or when `ctx.itemType === "consumable"`.
+ * Applies when the header names a consumable kind, when the name reads "Potion of ..." / "Potion de ...", or when
+ * `ctx.itemType === "consumable"`.
  * @param {string} text  Plain text.
- * @param {object} [ctx]  `{ languages, itemType }`.
+ * @param {object} [ctx]  `{ languages, itemType, name }`.
  * @param {object|null} [meta]  `fact` of `recognizeItemMeta`.
  * @returns {{ fact: object|null, spans: object[], ambiguous: object[], notes: object[] }}
  */
@@ -35,7 +38,8 @@ export function recognizeConsumable(text, ctx = {}, meta = null) {
   const source = String(text ?? "");
   const langs = languagesOf(ctx);
   const spans = [];
-  const type = KINDS.has(meta?.kind) ? meta.kind : null;
+  let type = KINDS.has(meta?.kind) ? meta.kind : null;
+  if ( !type && !meta?.kind && NAME_POTION.test(ctx.name ?? "") ) type = "potion";
   const isConsumable = Boolean(type) || ctx.itemType === "consumable";
   const consumable = { type, charges: null, destroyOnEmpty: false, raw: meta?.raw ?? "", origin: ORIGIN };
 
