@@ -1,8 +1,10 @@
 import { hasLang, languagesOf, isNegated, ORIGIN } from "./common.mjs";
 import { lookup } from "../lexicon/index.mjs";
 
-const EN_AC = /\bAC\s+(\d+)(?:\s*\+\s*Dex(?:terity)?\s+modifier(?:\s*\(\s*max(?:imum)?\s*(?:of\s+)?(\d)\s*\))?)?/iu;
-const FR_AC = /\bCA\s+(\d+)(?:\s*\+\s*modificateur\s+de\s+Dex(?:t[ée]rit[ée])?(?:\s*\(\s*max(?:imum)?\s*(?:de\s+)?(\d)\s*\))?)?/iu;
+const EN_AC = /\bAC\s+(\d+)(?:\s*\+\s*Dex(?:terity)?\s+modifier(?:\s*\(\s*max(?:imum)?\s*(?:of\s+)?(\d)\s*\))?)?/giu;
+const FR_AC = /\bCA\s+(?:de\s+)?(\d+)(?:\s*\+\s*modificateur\s+de\s+Dex(?:t[ée]rit[ée])?(?:\s*\(\s*max(?:imum)?\s*(?:de\s+)?(\d)\s*\))?)?/giu;
+// "against AC 24", "contre une CA de 20", "hits AC 15": the AC of a target, never the item's
+const TARGET_AC_BEFORE = /(?:against|versus|vs\.?|hits?|contre|touche[rz]?)\s+(?:(?:an?|the|une?|la)\s+)?$/iu;
 const EN_STRENGTH = /\bStrength\s+(\d+)\b/u;
 const FR_STRENGTH = /\bForce\s+(\d+)\b/u;
 const EN_STEALTH = /\bdisadvantage\s+on\s+(?:Dexterity\s*\(\s*)?Stealth(?:\s*\))?(?:\s+checks?)?/iu;
@@ -53,15 +55,21 @@ export function recognizeArmor(text, ctx = {}, meta = null) {
     raw: meta?.kind === "armor" ? meta.raw : "", origin: ORIGIN
   };
 
+  // A base AC belongs to the item only when nothing says it is something else (a wondrous item that lets you
+  // "make an attack roll against AC 24" has no armor class)
+  const mayHaveAc = !meta?.kind || meta.kind === "armor";
   let acMatch = null;
   for ( const [re, lang] of [[EN_AC, "en"], [FR_AC, "fr"]] ) {
-    if ( !hasLang(ctx, lang) || acMatch ) continue;
-    const match = source.match(re);
-    if ( !match ) continue;
-    acMatch = match;
-    armor.ac = Number(match[1]);
-    if ( match[2] ) armor.dexCap = Number(match[2]);
-    spans.push(span("armor", match.index, match.index + match[0].length, match[0]));
+    if ( !hasLang(ctx, lang) || acMatch || !mayHaveAc ) continue;
+    for ( const match of source.matchAll(re) ) {
+      if ( TARGET_AC_BEFORE.test(source.slice(Math.max(0, match.index - 20), match.index)) ) continue;
+      acMatch = match;
+      break;
+    }
+    if ( !acMatch ) continue;
+    armor.ac = Number(acMatch[1]);
+    if ( acMatch[2] ) armor.dexCap = Number(acMatch[2]);
+    spans.push(span("armor", acMatch.index, acMatch.index + acMatch[0].length, acMatch[0]));
   }
   // An equipment named "Leather Armor +3" / "Shield +2" / "Breastplate +3" is armor even when its text says nothing
   // about it, or only "a bonus to AC while wearing this armor" without the number
