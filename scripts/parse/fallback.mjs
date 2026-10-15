@@ -19,8 +19,17 @@ const set = value => (value && typeof value.has === "function" ? value : null);
 const ABILITIES = new Set(Object.values(LEXICON.abilities));
 const DAMAGE_TYPES = new Set(Object.values(LEXICON.damage));
 const ZONES = new Set(Object.values(LEXICON.zones));
+const SKILLS = new Set(Object.values(LEXICON.skills));
+const CONDITIONS = new Set(Object.values(LEXICON.conditions));
 const EFFECT_KINDS = new Set(["ac", "attack", "damage", "save", "check", "resistance", "immunity", "vulnerability",
   "advantage", "disadvantage", "abilityScore", "speed"]);
+// Effect scopes are closed lists: `toEffects` builds `system.*` paths from them
+const ROLL_SCOPES = new Set(["weapon", "spell", "mwak", "rwak", "msak", "rsak"]);
+const MOVEMENT_TYPES = new Set(["walk", "fly", "swim", "climb", "burrow"]);
+const EFFECT_ON = new Set(["save", "check", "skill"]);
+const VALUED_KINDS = new Set(["ac", "attack", "damage", "save", "check", "abilityScore", "speed"]);
+// Effect value: a number, or a simple dice formula ("+1", "1d4", "2d6 + 1"); never a free formula
+const EFFECT_VALUE = /^[+-]?\s*\d+(?:\s*d\s*\d+)?(?:\s*[+-]\s*\d+(?:\s*d\s*\d+)?)?$/i;
 
 /** A set of valid keys: from `keys[name]` when given, else the fallback list. */
 const allowed = (keys, name, fallback) => set(keys?.[name]) ?? fallback;
@@ -45,6 +54,57 @@ function checkDamagePart(value, keys, origin = "damage") {
     if ( !valid.has(type) ) reject("key");
   }
   return { number, denomination, bonus: bonus.trim(), type, raw: String(value.raw ?? ""), origin: "fallback" };
+}
+
+/** Scope of a proposed effect: a string of the closed list of its kind (or `null` where the kind allows it). */
+function checkEffectScope(effect, keys) {
+  const { kind, on } = effect;
+  const scope = effect.scope ?? null;
+  if ( scope !== null && typeof scope !== "string" ) reject("type");
+  if ( on !== undefined && on !== null && !EFFECT_ON.has(on) ) reject("key");
+  const abilities = allowed(keys, "abilities", ABILITIES);
+  const skills = allowed(keys, "skills", SKILLS);
+  const skillScoped = on === "skill" && kind !== "save";
+  switch ( kind ) {
+    case "ac":
+      if ( scope !== null ) reject("key");
+      break;
+    case "attack":
+    case "damage":
+      if ( scope !== null && !ROLL_SCOPES.has(scope) ) reject("key");
+      break;
+    case "save":
+    case "check":
+    case "advantage":
+    case "disadvantage":
+      if ( skillScoped ? !skills.has(scope) : (scope !== null && !abilities.has(scope)) ) reject("key");
+      break;
+    case "abilityScore":
+      if ( !abilities.has(scope) ) reject("key");
+      break;
+    case "speed":
+      if ( scope !== null && !allowed(keys, "movementTypes", MOVEMENT_TYPES).has(scope) ) reject("key");
+      break;
+    default:   // resistance, immunity, vulnerability
+      if ( !allowed(keys, "damageTypes", DAMAGE_TYPES).has(scope)
+        && !allowed(keys, "conditionTypes", CONDITIONS).has(scope) ) reject("key");
+  }
+  return scope;
+}
+
+/** Value of a proposed effect: a bounded number or a simple dice formula; required by the kinds that write it. */
+function checkEffectValue(effect) {
+  const entry = effect.value ?? null;
+  if ( entry === null ) {
+    if ( VALUED_KINDS.has(effect.kind) ) reject("type");
+    return null;
+  }
+  if ( typeof entry === "number" ) {
+    if ( !Number.isFinite(entry) || Math.abs(entry) > 1000 ) reject("bound");
+    return entry;
+  }
+  if ( typeof entry !== "string" || !EFFECT_VALUE.test(entry.trim()) ) reject("type");
+  return entry.trim();
 }
 
 const VALIDATORS = {
@@ -134,14 +194,10 @@ const VALIDATORS = {
     if ( !Array.isArray(value) ) reject("type");
     return value.map(effect => {
       if ( !isObject(effect) || !EFFECT_KINDS.has(effect.kind) ) reject("key");
-      const entry = effect.value ?? null;
-      if ( entry !== null && typeof entry !== "number" && typeof entry !== "string" ) reject("type");
-      if ( typeof entry === "number" && Math.abs(entry) > 1000 ) reject("bound");
-      if ( ["resistance", "immunity", "vulnerability"].includes(effect.kind)
-        && !allowed(keys, "damageTypes", DAMAGE_TYPES).has(effect.scope)
-        && !allowed(keys, "conditionTypes", new Set(Object.values(LEXICON.conditions))).has(effect.scope) ) reject("key");
+      const scope = checkEffectScope(effect, keys);
+      const entry = checkEffectValue(effect);
       return {
-        kind: effect.kind, value: entry, scope: effect.scope ?? null, ...(effect.on ? { on: effect.on } : {}),
+        kind: effect.kind, value: entry, scope, ...(effect.on ? { on: effect.on } : {}),
         when: "passive", duration: null, activity: null, raw: String(effect.raw ?? ""), origin: "fallback"
       };
     });
@@ -174,7 +230,8 @@ const VALIDATORS = {
 
 /**
  * Validate the facts proposed by a fallback resolver: same types as the plan, keys checked against `keys`, bounds
- * (attack bonus -5..30, save DC 5..40, dice 1-100 d 2-100). What is invalid is rejected (never corrected).
+ * (attack bonus -5..30, save DC 5..40, dice 1-100 d 2-100), effect scopes from the closed list of their kind and
+ * effect values limited to a number or a simple dice formula. What is invalid is rejected (never corrected).
  * @param {object} facts                       Partial ItemPlan proposed by the resolver.
  * @param {{ keys?: object, sentence?: string }} [options]
  * @returns {{ facts: object, rejected: { key: string, data: object }[] }}
@@ -195,7 +252,8 @@ export function validateFallbackFacts(facts, { keys, sentence = "" } = {}) {
   }
   for ( const [field, value] of Object.entries(facts) ) {
     if ( value === undefined || value === null ) continue;
-    const validator = VALIDATORS[field];
+    // Own fields only: "constructor" or "toString" from a resolver's JSON are not plan fields
+    const validator = Object.hasOwn(VALIDATORS, field) ? VALIDATORS[field] : null;
     try {
       if ( !validator ) reject("key");
       valid[field] = validator(value, keys);

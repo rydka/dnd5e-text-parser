@@ -4,6 +4,7 @@
 
 - Corrections après la relecture initiale :
   - effets de vitesse typée (« a flying speed of 60 feet ») : `toEffects` écrit `system.attributes.movement.speeds.<type>` (chemin de dnd5e 6.0.6, `data/shared/movement-field.mjs`) et plus `system.attributes.movement.<type>`, qui n'est qu'un alias déprécié jusqu'à dnd5e 7 ;
+  - `validateFallbackFacts` contrôle le `scope` de chaque effet proposé contre la liste fermée de son `kind` (types de jet, caractéristiques, compétences, types de mouvement, types de dégâts ou d'état) et sa `value` (nombre borné ou formule de dés simple, plus de formule libre) ; les champs hérités du prototype (`constructor`, `toString`) sont refusés (`Object.hasOwn`) ; `toEffects` lit ses tables avec `Object.hasOwn` et écarte (`Note.EffectSkipped`) un `scope` qui n'est pas une chaîne, au lieu de lever une exception ;
 - Corrections après la mesure sur control-2 :
   - attaque sans nombre (« Melee Attack Roll: Automatic hit ») : plus de bonus `0` inventé ; le plan n'a pas d'`attack` (dnd5e calculerait un bonus), les dégâts du coup donnent une activité `damage` seule, remarque `Note.AttackBonusMissing { raw }` dans `notes` ;
   - pénalité aux jets (« subtracts 3 (1d6) from its damage rolls », « retranche 1d6 à ses jets ») : plus jamais une partie de dégâts ; `Note.DamagePenalty { raw }` dans `ambiguous`, passage couvert (ni `unrecognized`, ni proposé au résolveur de secours) ;

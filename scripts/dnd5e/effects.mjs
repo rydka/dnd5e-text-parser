@@ -14,8 +14,12 @@ const ALL_ROLL_TYPES = ["mwak", "rwak", "msak", "rsak"];
 
 const change = (key, type, value) => ({ key, type, value, phase: "initial" });
 
-/** Roll types (`mwak`...) of an attack / damage scope. */
-const rollTypes = (scope, all) => (scope ? (ROLL_TYPES[scope] ?? [scope]) : all);
+/**
+ * Roll types (`mwak`...) of an attack / damage scope: `weapon` / `spell` expand to their two roll types, a roll type
+ * stands for itself. `null` for an unknown scope (`Object.hasOwn`: "constructor" or "toString" are not scopes).
+ */
+const rollTypesOf = scope => (Object.hasOwn(ROLL_TYPES, scope) ? ROLL_TYPES[scope]
+  : ALL_ROLL_TYPES.includes(scope) ? [scope] : null);
 
 /**
  * Changes of one plan effect.
@@ -26,17 +30,21 @@ const rollTypes = (scope, all) => (scope ? (ROLL_TYPES[scope] ?? [scope]) : all)
  */
 function changesOf(effect, keys, notes) {
   const { kind, value, scope } = effect;
-  const skip = () => { notes.push({ key: "dnd5e-text-parser.Note.EffectSkipped", data: { kind, scope: effect.against ?? scope ?? "" } }); return []; };
+  const skip = () => { notes.push({ key: "dnd5e-text-parser.Note.EffectSkipped", data: { kind, scope: String(effect.against ?? scope ?? "") } }); return []; };
+  // A scope is a key (string) or nothing: anything else cannot name a dnd5e path
+  if ( scope != null && typeof scope !== "string" ) return skip();
   switch ( kind ) {
     case "ac":
       return [change("system.attributes.ac.bonus", "add", value)];
-    case "attack":
-      return scope && !ROLL_TYPES[scope] && !ALL_ROLL_TYPES.includes(scope) ? skip()
-        : (scope ? rollTypes(scope, []) : [null]).map(roll => change(
-          roll ? `system.rolls.attack.${roll}.bonus` : "system.rolls.attack.bonus", "add", value));
-    case "damage":
-      return scope && !ROLL_TYPES[scope] && !ALL_ROLL_TYPES.includes(scope) ? skip()
-        : rollTypes(scope, ALL_ROLL_TYPES).map(roll => change(`system.rolls.damage.${roll}.bonus`, "add", value));
+    case "attack": {
+      if ( !scope ) return [change("system.rolls.attack.bonus", "add", value)];
+      const rolls = rollTypesOf(scope);
+      return rolls ? rolls.map(roll => change(`system.rolls.attack.${roll}.bonus`, "add", value)) : skip();
+    }
+    case "damage": {
+      const rolls = scope ? rollTypesOf(scope) : ALL_ROLL_TYPES;
+      return rolls ? rolls.map(roll => change(`system.rolls.damage.${roll}.bonus`, "add", value)) : skip();
+    }
     case "save":
     case "check": {
       // A bonus limited to a skill ("+5 bonus to Wisdom (Survival) checks") goes to that skill only
