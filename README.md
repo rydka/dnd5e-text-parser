@@ -93,7 +93,7 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | Fonction | Rôle |
 |---|---|
 | `parseFeature(name, html, opts?) -> FeaturePlan` | Capacité, action ou attaque de créature. Une capacité **passive** (sans activation, ni attaque, ni sauvegarde) reçoit dans `effects` ce que dnd5e sait appliquer tout seul (voir « Effets d'une capacité passive ») ; `opts.featureEffects: false` laisse `effects` vide |
-| `parseItem(name, html, opts?) -> ItemPlan` | Objet (arme, armure, consommable, objet magique) : `FeaturePlan` du texte restant + `details`, `effects`, `activities`. `opts.itemType` : type dnd5e de l'objet (`weapon`, `equipment`, `consumable`...) |
+| `parseItem(name, html, opts?) -> ItemPlan` | Objet (arme, armure, consommable, objet magique) : `FeaturePlan` du texte restant + `details`, `effects`, `activities`. `opts.itemType` : type dnd5e de l'objet (`weapon`, `equipment`, `consumable`...). Une activité par paragraphe qui en donne une (une de plus à chaque nouvelle activation) ; un paragraphe qui renvoie au précédent (« When you use this property, … », « Whenever you do so, … », « Lorsque vous utilisez cette propriété, … », « Ce faisant, … », après un éventuel intitulé) continue l'activité du paragraphe précédent au lieu d'en créer une seconde |
 | `parseFeatureAsync(name, html, opts?) -> Promise<FeaturePlan>` | `parseFeature` + passe du résolveur de secours sur les phrases non reconnues (voir plus bas) |
 | `parseItemAsync(name, html, opts?) -> Promise<ItemPlan>` | Idem pour un objet |
 | `validateFallbackFacts(facts, { keys?, sentence? }) -> { facts, rejected }` | Contrôle des propositions d'un résolveur (types, clés, bornes) |

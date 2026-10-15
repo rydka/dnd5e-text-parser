@@ -55,6 +55,16 @@ const TRIGGER_FR = /\b(?:quand|lorsque|si)\s+(?:vous|une cr[ée]ature)\s+(?:buve
 const PASSIVE_EN = /\bwhile\s+(?:you\s+(?:are\s+)?(?:wear|wearing|wield|wielding|carry|carrying|hold|holding|attuned)|it\s+is\s+(?:worn|wielded|carried|held)|wearing|wielding)\b/iu;
 const PASSIVE_FR = /\btant\s+que\s+vous\s+(?:portez|maniez|tenez|portez\s+sur\s+vous|[êe]tes\s+(?:li[ée]|harmonis[ée]))\b/iu;
 
+// A paragraph that continues the previous property: "When you use this property, ...", "Whenever you do so, ...",
+// "Lorsque vous utilisez cette propriété, ...", "Ce faisant, ...". An optional short lead-in ("Borrowed Breath.")
+// may precede it.
+const LEAD_IN = String.raw`(?:[^.!?\n]{2,60}?\.\s+)?`;
+const REFERS_EN = new RegExp(String.raw`^${LEAD_IN}(?:(?:when|whenever|if|each\s+time|every\s+time|after)\s+you\s+` +
+  String.raw`(?:use|activate|invoke)\s+(?:this|that|the)\s+(?:property|feature|ability|effect|power)|when(?:ever)?\s+you\s+do\s+so)(?![\p{L}])`, "iu");
+const REFERS_FR = new RegExp(String.raw`^${LEAD_IN}(?:(?:lorsque|quand|chaque\s+fois\s+que|si|apr[èe]s\s+que)\s+vous\s+` +
+  String.raw`(?:utilisez|activez|invoquez|faites\s+appel\s+[àa])\s+(?:cette|ce|cet)\s+(?:propri[ée]t[ée]|capacit[ée]|pouvoir|effet|aptitude|facult[ée])|` +
+  String.raw`lorsque\s+vous\s+le\s+faites|ce\s+faisant)(?![\p{L}])`, "iu");
+
 const DURATION_UNITS = { round: "rounds", minute: "minutes", hour: "hours", heure: "hours", day: "days", jour: "days" };
 
 const SMALL_WORDS = new Set(["of", "the", "and", "de", "du", "des", "la", "le", "les", "d'", "l'", "et", "à", "au", "aux"]);
@@ -287,6 +297,18 @@ export function recognizeDuration(text, ctx = {}) {
 export function hasUseTrigger(text, ctx = {}) {
   const source = String(text ?? "");
   return (hasLang(ctx, "en") && TRIGGER_EN.test(source)) || (hasLang(ctx, "fr") && TRIGGER_FR.test(source));
+}
+
+/**
+ * Does the paragraph continue the previous property ("When you use this property, you also gain...", "Lorsque vous
+ * utilisez cette propriété, ...")? Its facts then belong to the activity of the previous paragraph.
+ * @param {string} text  Text of the paragraph.
+ * @param {object} [ctx]
+ * @returns {boolean}
+ */
+export function refersToPrevious(text, ctx = {}) {
+  const source = String(text ?? "").trim();
+  return (hasLang(ctx, "en") && REFERS_EN.test(source)) || (hasLang(ctx, "fr") && REFERS_FR.test(source));
 }
 
 /**

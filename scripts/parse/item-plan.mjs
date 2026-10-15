@@ -8,7 +8,7 @@ import { recognizeMagicEffects } from "./recognizers/magic-effects.mjs";
 import { recognizeUses } from "./recognizers/uses.mjs";
 import {
   segmentText, recognizeItemActivation, recognizeHeal, recognizeCast, recognizeConsume, recognizeDuration,
-  hasUseTrigger, hasPassiveMarker, recognizeCastList
+  hasUseTrigger, hasPassiveMarker, recognizeCastList, refersToPrevious
 } from "./recognizers/item-activity.mjs";
 
 const EXTRA = /\b(?:extra|additional|supplémentaires?|supplementaires?|en plus)\b/iu;
@@ -103,7 +103,17 @@ export function parseItem(name, html, opts = {}) {
 
   // Segments -> activities
   const leads = leadIns(html);
-  const segments = segmentText(text, ctx).map(segment => ({ ...segment, effects: [] }));
+  const segments = [];
+  for ( const segment of segmentText(text, ctx) ) {
+    // "When you use this property, you also gain..." continues the previous paragraph: one activity for both
+    const previous = segments.at(-1);
+    if ( previous && refersToPrevious(segment.text, ctx) ) {
+      previous.end = segment.end;
+      previous.text = text.slice(previous.start, previous.end);
+      continue;
+    }
+    segments.push({ ...segment, effects: [] });
+  }
   const segmentOf = offset => segments.find(segment => offset >= segment.start && offset < segment.end);
   const activitySpans = [];
   const coverSpans = [];
