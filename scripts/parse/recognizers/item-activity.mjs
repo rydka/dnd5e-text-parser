@@ -27,8 +27,9 @@ const TERM = String.raw`\d+\s*d\s*\d+|\d+|(?:your|its)\s+proficiency\s+bonus|(?:
   String.raw`(?:your|its)\s+\p{L}+\s+modifier|(?:votre|son)\s+modificateur\s+(?:de\s+|d')\p{L}+`;
 const FORMULA = String.raw`(?:${TERM})(?:\s*[+-]\s*(?:${TERM}))*`;
 const HEAL_WORDS_EN = String.raw`(?:regains?|restores?|heals?|recovers?)`;
-const HEAL_WORDS_FR = String.raw`(?:regagn(?:e|ez|es|ent)|r[ée]cup[èéeê]r(?:e|ez|es|ent)|rend(?:ez|s)?|restaur(?:e|ez))`;
-const GAIN_FR = String.raw`gagn(?:e|ez|es|ent)\s+(?:[ée]galement\s+|aussi\s+)?`;
+// Conjugated and infinitive forms ("regagnez", "pour regagner", "récupérer"; EN "gain" / "to gain" is the same word)
+const HEAL_WORDS_FR = String.raw`(?:regagn(?:e|ez|es|ent|er)|r[ée]cup[èéeê]r(?:e|ez|es|ent|er)|rend(?:ez|s|re)?|restaur(?:e|ez|er))`;
+const GAIN_FR = String.raw`gagn(?:e|ez|es|ent|er)\s+(?:[ée]galement\s+|aussi\s+)?`;
 const HEAL_EN = new RegExp(String.raw`\b${HEAL_WORDS_EN}\s+(?:up\s+to\s+)?(${FORMULA})\s+hit\s+points?\b|` +
   String.raw`\b${HEAL_WORDS_EN}\s+(?:a\s+number\s+of\s+)?hit\s+points?\s+equal\s+to\s+(${FORMULA})`, "iu");
 const HEAL_FR = new RegExp(String.raw`\b${HEAL_WORDS_FR}\s+(?:jusqu'[àa]\s+)?(${FORMULA})\s+(?:points?\s+de\s+vie|hit\s+points?)\b|` +
