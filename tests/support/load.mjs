@@ -1,5 +1,5 @@
-// Loads the reference set. Cases with `ref` read the HTML of a real item of
-// ../compendium-json-importer/tools/out/items.json (sibling repository, read-only).
+// Loads the reference set. Cases with `ref` read their name and HTML from the frozen, versioned file
+// fixtures/reference/features-real-texts.json (never from an outside file). A `ref` without text is an error.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,15 +22,18 @@ export function loadRealItems() {
   return realItems || null;
 }
 
-/** Resolve `ref` into name and html. Cases whose ref cannot be resolved are dropped (flag `unresolved`). */
+let frozenTexts = null;
+const texts = () => (frozenTexts ??= readJson("features-real-texts.json").texts);
+
+/** Resolve `ref` into name and html from the frozen texts. Throws when a ref has no text. */
 function resolve(c) {
   if ( !c.ref ) return c;
-  const item = loadRealItems()?.get(c.ref);
-  if ( !item ) return null;
-  return { ...c, name: item.name, html: item.system.description.value };
+  const item = texts()[c.ref];
+  if ( !item?.html ) throw new Error(`Reference case ${c.id}: ref "${c.ref}" has no text in features-real-texts.json`);
+  return { ...c, name: item.name, html: item.html };
 }
 
-const resolved = (cases) => cases.map(resolve).filter(Boolean);
+const resolved = (cases) => cases.map(resolve);
 
 export const loadFeatures = () => [
   ...resolved(readJson("features-real.json").cases),
