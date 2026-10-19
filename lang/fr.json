@@ -1,13 +1,65 @@
 {
   "dnd5e-text-parser": {
-    "settings": {
-      "enabled": {
-        "name": "Activer dnd5e Text Parser",
-        "hint": "Active ou désactive les fonctionnalités du module pour ce monde."
-      }
+    "Describe": {
+      "Attack": "Attaque : {type} {classification} {bonus}",
+      "Range": "Portée : allonge {reach}, portée {value}, longue {long}",
+      "Target": "Cible : {count} {type}",
+      "Damage": "Dégâts : {formula} {type}",
+      "Save": "Jet de sauvegarde : {ability} DD {dc}, en cas de réussite : {onSave}",
+      "Template": "Zone : {type} {size}",
+      "Uses": "Utilisations : {max} par {period}",
+      "Recharge": "Recharge : {min}-6",
+      "LegendaryResistance": "Résistance légendaire : {count}/jour",
+      "Activation": "Activation : {type} {cost}",
+      "Skipped": "Non interprété : {reason}",
+      "Weapon": "Arme : {category} {baseItem} {base}",
+      "Armor": "Armure : {type} CA {ac}",
+      "Consumable": "Consommable : {type}, charges : {charges}",
+      "Charges": "Charges : {charges}",
+      "Rarity": "Rareté : {rarity}",
+      "Attunement": "Harmonisation : {attunement}",
+      "Weight": "Poids : {value} {units}",
+      "Price": "Prix : {value} {denomination}",
+      "Effect": "Effet : {kind} {value} {scope}",
+      "Field": "Rempli : {path}",
+      "Fallback": "proposé par l'assistant",
+      "Activity": "Activité : {name} ({kind})",
+      "Heal": "Soin : {formula}",
+      "Cast": "Lance le sort {name}",
+      "Consume": "Consomme {amount} utilisation(s) de l'objet",
+      "ExtraDamage": "Dégâts supplémentaires : {formula} {type}"
     },
-    "errors": {
-      "wrongSystem": "dnd5e Text Parser nécessite le système dnd5e."
+    "Note": {
+      "Unrecognized": "Phrase non reconnue : {text}",
+      "Flavor": "Texte d'ambiance (non interprété) : {text}",
+      "LegendaryConflict": "Valeurs contradictoires pour {kind} ({values}) : la première a été conservée.",
+      "TraitQualifier": "{kind} avec condition ignoré (ce n'est pas un simple type de dégâts ou d'état) : {text}",
+      "TraitBypassMixed": "Entrées de {kind} avec et sans contournement mélangées : non interprétées : {text}",
+      "TraitUnknown": "Mot inconnu dans {kind}, conservé en texte libre : {text}",
+      "TraitKeyInvalid": "La valeur « {value} » de {kind} n'est pas une clé dnd5e valide et a été écartée.",
+      "TraitBypassSkipped": "Les contournements de {kind} ({bypasses}) n'ont pas été écrits : ils s'appliqueraient aux mauvaises entrées.",
+      "SpellcastingAbilityConflict": "Plusieurs caractéristiques d'incantation trouvées ({abilities}) : aucune n'a été choisie.",
+      "AttackBonuses": "Plusieurs bonus d'attaque différents trouvés ({values}) : aucun n'a été choisi.",
+      "AttackBonusMissing": "L'attaque n'a pas de bonus chiffré ({raw}) : aucun n'a été écrit.",
+      "SaveAbilities": "Plusieurs jets de sauvegarde différents trouvés : aucun n'a été choisi.",
+      "DamageWithheld": "Les dégâts dépendent d'une sauvegarde ambiguë et n'ont pas été écrits : {raw}",
+      "SaveDcFormula": "Le DD du jet de sauvegarde est une formule ({raw}), pas un nombre fixe : il a été écrit {formula}.",
+      "AmbiguousDamageType": "Le type de dégâts « {word} » est ambigu ({choices}) : il a été laissé vide.",
+      "DamagePenalty": "Pénalité aux jets, pas des dégâts : rien n'a été écrit : {raw}",
+      "UnknownDamageType": "Type de dégâts inconnu « {word} » : laissé vide.",
+      "RangeNotCarried": "Allonge ({reach} pi) et portée ({value} pi) trouvées : la portée n'a pas pu être reportée.",
+      "ExtraDamageIgnored": "Dégâts supplémentaires non rattachés à l'attaque ou à la sauvegarde ignorés : {raw}",
+      "ConditionalDamage": "Dégâts conditionnels {formula} {type} ({condition}) non lancés avec le résultat principal : activité distincte : {raw}",
+      "DamageTypeFromWeapon": "Dégâts du type de l'arme laissés de côté (pas de type fixe) : {raw}",
+      "UsesConflict": "Plusieurs nombres d'utilisations différents trouvés ({raw}) : le premier a été conservé.",
+      "RechargeConflict": "Plusieurs valeurs de recharge différentes trouvées ({raw}) : la première a été conservée.",
+      "EffectUnknown": "Effet non interprété ({kind}) : {text}",
+      "AbilityScoreChoices": "Plusieurs valeurs de {ability} sont listées ({raw}) : aucune n'a été choisie.",
+      "EffectSkipped": "L'effet {kind} {scope} n'a pas pu être écrit : clé inconnue ou non prise en charge.",
+      "MasteryUnknown": "Maîtrise d'arme inconnue « {text} » : aucune n'a été écrite.",
+      "SpellNotFound": "Sort « {name} » introuvable : aucune activité de lancement n'a été créée.",
+      "FallbackRejected": "Proposition de l'assistant rejetée ({field}, {reason}) : {raw}",
+      "NotAutomated": "Non automatisé (dnd5e n'a pas de mécanisme pour cela sans l'inventer) : {raw}"
     }
   }
 }

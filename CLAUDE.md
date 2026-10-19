@@ -4,42 +4,52 @@ Module Foundry VTT de l'atelier (voir le `CLAUDE.md` de l'atelier, deux niveaux 
 
 ## Objectif
 
-Shared library that parses dnd5e stat block and item text (English and French) into dnd5e 6 data.
+Bibliothèque partagée (`library: true`) qui lit le texte d'un stat block, d'une capacité ou d'un objet (anglais et français) et le traduit en données dnd5e 6. Aucune interface, aucun réglage. Consommée par `compendium-json-importer` et `item-configurator`. Spécification et conception : `specs/dnd5e-text-parser/initial/` (à la racine de l'atelier). L'API publique est documentée dans `README.md` (c'est la métrique Q1 : un autre module doit pouvoir l'intégrer sans lire le code interne ; toute modification d'API met `README.md` et `CHANGELOG.md` à jour).
 
 ## Cibles
 
-Foundry v14, dnd5e 6.x. Toute API utilisée doit exister dans ces versions. Consulter les sources en lecture seule :
-- Foundry : `C:/Users/Shadow/AppData/Local/Programs/Foundry Virtual Tabletop/resources/app`
-- dnd5e : `C:/Users/Shadow/AppData/Local/FoundryVTT/Data/systems/dnd5e`
+Foundry v14, dnd5e 6.x. Sources en lecture seule : Foundry `C:/Users/Shadow/AppData/Local/Programs/Foundry Virtual Tabletop/resources/app`, dnd5e `reference/dnd5e/<version>/module/` (atelier).
 
 ## Structure
 
 | Chemin | Contenu |
 |---|---|
-| `module.json` | Manifeste. `version` est réécrite par le workflow de release. |
-| `scripts/main.mjs` | Point d'entrée : hooks `init` et `ready` |
-| `styles/dnd5e-text-parser.css` | Styles, tous sous la classe `.dnd5e-text-parser` |
-| `lang/` | Traductions `en` et `fr`, clés sous `dnd5e-text-parser.*` |
-| `templates/` | Templates Handlebars |
-| `tests/unit/` | Tests Vitest avec les faux globaux Foundry de `tests/setup/` |
-| `tests/integration/` | Tests dans un vrai Foundry, servent de preuve de fonctionnement |
+| `module.json` | Manifeste : `library: true`, `esmodules: ["scripts/module.mjs"]`. `version` est réécrite par le workflow de release |
+| `package.json` | `exports: { ".": "./scripts/index.mjs" }` (import `file:../dnd5e-text-parser` depuis d'autres dépôts), `npm run coverage` |
+| `scripts/index.mjs` | API publique pure, **sans effet de bord** : réexports, `API_VERSION`, `SCHEMA_VERSION` |
+| `scripts/module.mjs` | Seul fichier qui touche Foundry : `game.modules.get(id).api` (gelée) au `init`, puis hook `dnd5e-text-parser.ready` |
+| `scripts/registry.mjs` | Registre du résolveur de secours (`registerFallback`, `getFallback`) |
+| `scripts/parse/**` | Analyse texte -> plan (pure) |
+| `scripts/dnd5e/activities.mjs` | Plan -> activités (`toActivities`, `toDamagePart`) |
+| `scripts/dnd5e/item.mjs` | Plan -> patch `system` d'objet (`toItemPatch`) |
+| `scripts/dnd5e/merge.mjs` | Fusion « champs vides seulement » (`isEmpty`, `isEmptyUtility`, `mergeMissing`) |
+| `scripts/dnd5e/keys.mjs` | `keysFromConfig(CONFIG.DND5E)`, `keysSnapshot` (instantané JSON), `isValidKey` |
+| `scripts/dnd5e/effects.mjs` | Plan -> effets actifs v14 (`toEffects`, `effectGroupKey`) |
+| `scripts/dnd5e/describe.mjs` | `describe` -> descripteurs `{ key, data, group, raw, origin, paths }`, `DESCRIBE_KEYS` |
+| `scripts/parse/item-plan.mjs` | `parseItem` : détails, effets, activités d'objet |
+| `scripts/parse/fallback.mjs` | `parseFeatureAsync`, `parseItemAsync`, `validateFallbackFacts` (seul fichier qui utilise `AbortController` et les minuteries, déclarés dans `eslint.config.mjs`) |
+| `scripts/parse/recognizers/` | `attack`, `range-target`, `damage`, `save-area`, `uses`, `activation`, `legendary`, `traits`, `item-meta`, `weapon`, `armor`, `consumable`, `magic-effects`, `feature-effects` (effets d'une capacité passive de créature : réduction de dégâts, sens, hausse de CA, remarque `Note.NotAutomated`), `item-activity` (heal, soin et PV temporaires, cast, consume, durée, segmentation, paragraphe qui renvoie à la propriété précédente), `headings` (intitulés d'un objet en texte brut : nom, titres de section, noms de propriété ; texte d'ambiance `isFlavorLine`) |
+| `lang/` | Traductions `en` et `fr`, clés sous `dnd5e-text-parser.*` (`Describe.*`, `Note.*`) |
+| `tests/unit/` | Tests Vitest ; `tests/integration/` : tests dans un vrai Foundry |
 
 ## Conventions
 
-- Tout ce que le module ajoute est préfixé par l'identifiant `dnd5e-text-parser` : réglages, flags, sockets, clés de traduction, classes CSS, hooks personnalisés (`dnd5e-text-parser.<nom>`).
-- Pas de modification directe des prototypes de Foundry ou de dnd5e. Préférer les hooks et l'API publique. Si c'est impossible, le documenter ici dans « Points de contact avec d'autres modules ».
-- Toute logique testable est exportée depuis un fichier sans effet de bord à l'import (sauf l'enregistrement de hooks dans `main.mjs`).
+- Tout ce que le module ajoute est préfixé par `dnd5e-text-parser` : clés de traduction, hook `dnd5e-text-parser.ready`.
+- **Pureté** : `scripts/parse/**`, `scripts/dnd5e/**`, `scripts/index.mjs`, `scripts/registry.mjs` n'utilisent aucune globale Foundry ni navigateur (ESLint `globals: {}`). Tout ce qui vient de Foundry (`CONFIG.DND5E`, générateur d'identifiants) est passé en paramètre.
+- Aucune clé dnd5e inventée : les valeurs absentes de `keys` sont écartées (jamais écrites), un mot inconnu donne une remarque.
+- Effets actifs au format v14 (`system.changes[].type`), jamais `changes` / `mode`. Pas d'ancien chemin `system.bonuses.*`.
+- Compatibilité : aucune rupture d'API sans changement de majeure (`API_VERSION` = version du module). Champs de plan ajoutés = optionnels.
 
 ## Commandes
 
 ```
 npm install
 npm test
+npm run coverage   # seuil 90 % sur scripts/parse/** et scripts/dnd5e/**
 npm run lint
 ```
 
 ## Points de contact avec d'autres modules
 
-Liste maintenue par le développeur et lue par le vérificateur : hooks écoutés, méthodes remplacées, sélecteurs CSS globaux, modules tiers détectés ou adaptés.
-
-- Aucun pour l'instant.
+- Expose `game.modules.get("dnd5e-text-parser").api` (posée au `init`, gelée) et le hook personnalisé `dnd5e-text-parser.ready` (argument : l'API). Les modules consommateurs le déclarent dans `relationships.requires`.
+- Aucun hook de Foundry ou de dnd5e écouté en dehors de `init`, aucune méthode remplacée, aucun sélecteur CSS global, aucun module tiers détecté.

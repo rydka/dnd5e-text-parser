@@ -1,0 +1,132 @@
+[
+ {
+  "from": "c-en-1",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +7 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 11 (2d6 + 4) dégâts perforants.</p>"
+ },
+ {
+  "from": "c-en-8",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +10 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 12 (2d6 + 5) dégâts perforants plus 10 (3d6) dégâts de froid.</p>"
+ },
+ {
+  "from": "c-en-19",
+  "name": "Griffe",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +17 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 17 (2d6 + 10) dégâts tranchants.</p>"
+ },
+ {
+  "from": "c-en-40",
+  "name": "Morsure (forme de tigre ou hybride uniquement)",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +5 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 8 (1d10 + 3) dégâts perforants.</p><p>Si la cible est un humanoïde, elle doit réussir un jet de sauvegarde de Constitution DD 13 sous peine d'être maudite et de contracter la lycanthropie du tigre-garou.</p>"
+ },
+ {
+  "from": "c-en-45",
+  "name": "Serres",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +3 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 1 dégât tranchant.</p>"
+ },
+ {
+  "from": "c-en-49",
+  "name": "Bond",
+  "html": "<p>Si le lion se déplace d'au moins 6 mètres en ligne droite vers une créature puis la touche d'une attaque de griffe au même tour, la cible doit réussir un jet de sauvegarde de Force DD 13 ou être jetée à terre.</p><p>Si la cible est à terre, le lion peut effectuer une attaque de morsure contre elle par une action bonus.</p>"
+ },
+ {
+  "from": "c-en-54",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +5 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 7 (1d8 + 3) dégâts perforants plus 7 (2d6) dégâts de feu.</p>"
+ },
+ {
+  "from": "c-en-78",
+  "name": "Fléchette empoisonnée",
+  "html": "<p><em>Attaque d'arme à distance :</em> +4 pour toucher, portée 9/36 m, une cible. <em>Touché :</em> 4 (1d4 + 2) dégâts perforants.</p><p>La cible doit réussir un jet de sauvegarde de Constitution DD 12 ou être empoisonnée pendant 1 minute. Elle peut retenter le jet de sauvegarde à la fin de chacun de ses tours.</p>"
+ },
+ {
+  "from": "c-en-91",
+  "name": "Souffle d'acide",
+  "html": "<p>Le dragon noir adulte expire de l'acide en une ligne de 18 m de long et 1,50 m de large. Chaque créature dans cette ligne doit faire un jet de sauvegarde de Dextérité DD 18, subissant 54 (12d8) dégâts d'acide en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "c-en-97",
+  "name": "Charge (forme de sanglier ou hybride uniquement)",
+  "html": "<p>Si le sanglier-garou se déplace d'au moins 4,50 mètres en ligne droite vers une cible puis la touche avec ses défenses au même tour, la cible subit 7 (2d6) dégâts tranchants supplémentaires. Si la cible est une créature, elle doit réussir un jet de sauvegarde de Force DD 13 ou être jetée à terre.</p>"
+ },
+ {
+  "from": "c-en-111",
+  "name": "Morsure",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +4, allonge 1,50 m. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants plus 3 (1d6) dégâts nécrotiques.</p>"
+ },
+ {
+  "from": "c-en-121",
+  "name": "Éclat de poison",
+  "html": "<p><em>Jet d'attaque à distance :</em> +6, portée 36 m. <em>Touché :</em> 13 (3d6 + 3) dégâts de poison.</p>"
+ },
+ {
+  "from": "c-en-137",
+  "name": "Toucher maudit",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +10, allonge 1,50 m. <em>Touché :</em> 12 (2d6 + 5) dégâts tranchants plus 19 (3d12) dégâts nécrotiques. Si la cible est une créature, elle est maudite. Tant qu'elle est maudite, la cible ne tire aucun bénéfice d'un repos court ou long.</p>"
+ },
+ {
+  "from": "c-en-141",
+  "name": "Souffle d'acide",
+  "html": "<p><em>Jet de sauvegarde de Dextérité :</em> DD 11, chaque créature dans une ligne de 4,50 m de long et 1,50 m de large. <em>Échec :</em> 22 (5d8) dégâts d'acide. <em>Réussite :</em> demi-dégâts.</p>"
+ },
+ {
+  "from": "c-en-183",
+  "name": "Poing",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +9, allonge 3 m. <em>Touché :</em> 22 (3d10 + 6) dégâts contondants.</p>"
+ },
+ {
+  "from": "c-en-187",
+  "name": "Étreinte",
+  "html": "<p><em>Jet de sauvegarde de Force :</em> DD 15, une créature de taille G ou inférieure que la salamandre peut voir à moins de 3 m. <em>Échec :</em> 11 (2d6 + 4) dégâts contondants plus 7 (2d6) dégâts de feu. La cible est agrippée (DD d'évasion 14) et entravée jusqu'à la fin de l'agrippement.</p>"
+ },
+ {
+  "from": "c-en-52",
+  "name": "Souffle de lave",
+  "html": "<p>Le méphit de magma expire un cône de feu de 4,50 m. Chaque créature dans cette zone doit faire un jet de sauvegarde de Dextérité DD 11, subissant 7 (2d6) dégâts de feu en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "c-en-68",
+  "name": "Souffle empoisonné",
+  "html": "<p>Le dragon vert adulte expire un gaz empoisonné dans un cône de 18 m. Chaque créature dans cette zone doit faire un jet de sauvegarde de Constitution DD 18, subissant 56 (16d6) dégâts de poison en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "c-en-118",
+  "name": "Orbe de foudre",
+  "html": "<p><em>Jet de sauvegarde de Dextérité :</em> DD 20, chaque ennemi dans une sphère de 6 m de rayon centrée sur un point que la planétar peut voir à moins de 36 m. <em>Échec :</em> 24 (7d6) dégâts radiants. <em>Réussite :</em> demi-dégâts.</p>"
+ },
+ {
+  "from": "c-en-85",
+  "name": "Cimeterre",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +3 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 4 (1d6 + 1) dégâts tranchants.</p>"
+ },
+ {
+  "from": "c-en-101",
+  "name": "Griffe",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +9 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 12 (2d6 + 5) dégâts tranchants.</p>"
+ },
+ {
+  "from": "c-en-73",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +5 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 8 (1d10 + 3) dégâts perforants plus 3 (1d6) dégâts de foudre.</p>"
+ },
+ {
+  "from": "c-en-166",
+  "name": "Déchirure",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +4, allonge 1,50 m. <em>Touché :</em> 7 (1d10 + 2) dégâts tranchants plus 3 (1d6) dégâts de poison.</p>"
+ },
+ {
+  "from": "c-en-179",
+  "name": "Coup de corne",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +8, allonge 1,50 m. <em>Touché :</em> 15 (2d8 + 6) dégâts perforants. Si la cible est de taille TG ou inférieure et que l'éléphant s'est déplacé d'au moins 6 m en ligne droite vers elle juste avant le coup, la cible est à terre.</p>"
+ },
+ {
+  "from": "c-en-13",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 4 (1d4 + 2) dégâts perforants.</p>"
+ },
+ {
+  "from": "c-en-106",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +14 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 19 (2d10 + 8) dégâts perforants.</p>"
+ }
+]

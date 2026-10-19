@@ -1,0 +1,215 @@
+// L4 (strict dnd5e construction of the produced data) and L7 (v14 active effect format), in a real Foundry.
+import fs from "node:fs";
+import path from "node:path";
+import { expect, test } from "../../../../test-env/fixtures.mjs";
+
+const here = path.dirname(new URL(import.meta.url).pathname.replace(/^\/(\w:)/, "$1"));
+const ref = (f) => JSON.parse(fs.readFileSync(path.join(here, "../fixtures/reference", f), "utf8"));
+const ctl = (f) => JSON.parse(fs.readFileSync(path.join(here, "../fixtures/control", f), "utf8")).cases;
+
+function featureCases() {
+  const synthetic = ref("features-synthetic.json").cases;
+  const out = [...synthetic.map(c => ({ id: c.id, name: c.name, html: c.html, kind: "feature" }))];
+  for ( const f of ["features-en.json", "features-fr.json"] ) out.push(...ctl(f).map(c => ({ id: c.id, name: c.name, html: c.html, kind: "feature" })));
+  return out.filter(c => c.html);
+}
+function objectCases() {
+  return [...ref("objects.json").cases.filter(c => c.html), ...ctl("objects.json")]
+    .map(c => ({ id: c.id, name: c.name, html: c.html, itemType: c.itemType, kind: "object" }));
+}
+
+test.setTimeout(300_000);
+
+test("L4/L7: every produced item is accepted by the strict dnd5e construction, effects use the v14 format", async ({ foundry }, testInfo) => {
+  const cases = [...featureCases(), ...objectCases()];
+  const result = await foundry(async ({ cases, moduleId }) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const report = { total: 0, strictOk: 0, errors: [], activities: 0, effects: 0, effectsLegacy: [], itemsWithActivities: 0 };
+    const objectStrict = (data) => { const doc = new CONFIG.Item.documentClass(data, { strict: true }); return doc; };
+    for ( const c of cases ) {
+      report.total++;
+      try {
+        let data;
+        if ( c.kind === "feature" ) {
+          const plan = P.parseFeature(c.name, c.html, { keys });
+          const acts = P.toActivities(plan, { keys, idGen, item: { type: "feat" } });
+          data = { name: c.name || "x", type: "feat", system: { ...P.toItemPatch(plan, { keys, item: { type: "feat" } }), activities: Object.fromEntries(acts.map(a => [a._id, a])) } };
+          report.activities += acts.length;
+        } else {
+          const plan = P.parseItem(c.name, c.html, { keys, itemType: c.itemType });
+          const effects = P.toEffects(plan, { keys, idGen, name: c.name });
+          const acts = P.toActivities(plan, { keys, idGen, item: { type: c.itemType }, effects, resolveSpell: () => null });
+          data = { name: c.name || "x", type: c.itemType, effects, system: { ...P.toItemPatch(plan, { keys, item: { type: c.itemType } }), activities: Object.fromEntries(acts.map(a => [a._id, a])) } };
+          report.activities += acts.length;
+          if ( acts.length ) report.itemsWithActivities++;
+          report.effects += effects.length;
+          for ( const e of effects ) for ( const ch of e.system?.changes ?? [] ) {
+            if ( typeof ch.type !== "string" || "mode" in ch ) report.effectsLegacy.push(`${c.id}: ${JSON.stringify(ch)}`);
+          }
+          if ( effects.some(e => "changes" in e) ) report.effectsLegacy.push(`${c.id}: legacy top-level changes`);
+        }
+        const doc = objectStrict(data);
+        // Embedded effects must also build in strict mode.
+        for ( const e of data.effects ?? [] ) new CONFIG.ActiveEffect.documentClass(e, { strict: true, parent: doc });
+        report.strictOk++;
+      } catch ( e ) {
+        report.errors.push(`${c.id}: ${String(e.message).slice(0, 300)}`);
+      }
+    }
+    return report;
+  }, { cases, moduleId: "dnd5e-text-parser" });
+  fs.writeFileSync(testInfo.outputPath("L4-L7-strict-construction.json"), JSON.stringify(result, null, 1));
+  expect(result.errors).toEqual([]);
+  expect(result.effectsLegacy).toEqual([]);
+  expect(result.strictOk).toBe(result.total);
+  expect(result.total).toBeGreaterThan(300);
+  expect(result.effects).toBeGreaterThan(0);
+});
+
+test("L7: the effects of an object are v14 effects (change.type, no mode), transfer flag set", async ({ foundry }, testInfo) => {
+  const out = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const plan = P.parseItem("Ring of Protection", "<p><em>Ring, rare (requires attunement)</em></p><p>You gain a +1 bonus to AC. You also gain a +1 bonus to all saving throws.</p>", { keys, itemType: "equipment" });
+    const effects = P.toEffects(plan, { keys, idGen: () => foundry.utils.randomID(), name: "Ring of Protection" });
+    // eslint-disable-next-line no-undef
+    const item = await Item.implementation.create({ name: "L7 ring", type: "equipment", effects }, { strict: true });
+    const created = item.effects.contents.map(e => ({ transfer: e.transfer, changes: e.system.changes.map(c => ({ key: c.key, type: c.type, value: c.value })) }));
+    await item.delete();
+    return { effects, created };
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(testInfo.outputPath("L7-effects.json"), JSON.stringify(out, null, 1));
+  expect(out.created.length).toBeGreaterThan(0);
+  const changes = out.created.flatMap(e => e.changes);
+  expect(changes.length).toBeGreaterThan(1);
+  for ( const c of changes ) expect(typeof c.type).toBe("string");
+  expect(JSON.stringify(out.effects)).not.toMatch(/"mode"\s*:/);
+});
+
+test("L4 control: the strict construction does reject invalid activity data (the check is not vacuous)", async ({ foundry }) => {
+  const rejected = await foundry(() => {
+    try {
+      new CONFIG.Item.documentClass({ name: "bad", type: "feat", system: { activities: { aaaaaaaaaaaaaaaa: { _id: "aaaaaaaaaaaaaaaa", type: "attack", damage: { parts: [{ number: "not a number", types: "fire" }] } } } } }, { strict: true });
+      return false;
+    } catch { return true; }
+  });
+  expect(rejected).toBe(true);
+});
+
+test("L4: a recharge ends up in uses.recovery and the item is accepted by the strict construction", async ({ foundry }, testInfo) => {
+  const out = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const html = "<p>The dragon exhales fire in a 60-foot cone. Each creature in that area must make a DC 18 Dexterity saving throw, taking 56 (16d6) fire damage on a failed save, or half as much damage on a successful one.</p>";
+    const plan = P.parseFeature("Fire Breath (Recharge 5-6)", html, { keys });
+    const patch = P.toItemPatch(plan, { keys, item: { type: "feat" } });
+    const doc = new CONFIG.Item.documentClass({ name: "recharge", type: "feat", system: patch }, { strict: true });
+    return { recovery: doc.toObject().system.uses.recovery, periods: [...keys.limitedUsePeriods] };
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(testInfo.outputPath("L4-recharge.json"), JSON.stringify(out, null, 1));
+  expect(out.recovery.some(r => r.period === "recharge" && r.formula === "5")).toBe(true);
+});
+
+test("B9: an actor with a conditional-result ability gets two activities on the same item", async ({ foundry }, testInfo) => {
+  const out = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const html = "<p>Melee Attack Roll: +5, reach 5 ft. Hit: 7 (1d8 + 3) Piercing damage, or 13 (2d8 + 4) Piercing damage if the creature is Bloodied.</p>";
+    const plan = P.parseFeature("Test Gnaw", html, { keys });
+    const acts = P.toActivities(plan, { keys, idGen, item: { type: "feat" } });
+    const actor = await CONFIG.Actor.documentClass.create({ name: "B9 variant actor", type: "npc" });
+    try {
+      const [item] = await actor.createEmbeddedDocuments("Item", [{
+        name: "Test Gnaw", type: "feat",
+        system: { ...P.toItemPatch(plan, { keys, item: { type: "feat" } }), activities: Object.fromEntries(acts.map(a => [a._id, a])) }
+      }]);
+      const stored = [...item.system.activities].map(a => ({
+        type: a.type, name: a.name, parts: a.damage.parts.map(p => `${p.number}d${p.denomination}+${p.bonus} ${[...p.types].join(",")}`), attack: a.attack.type.value
+      }));
+      return { planVariants: plan.variants.length, planParts: plan.damage.length, stored };
+    } finally {
+      await actor.delete();
+    }
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(testInfo.outputPath("B9-variant-activities.json"), JSON.stringify(out, null, 1));
+  expect(out.planVariants).toBe(1);
+  expect(out.planParts).toBe(1);
+  expect(out.stored).toHaveLength(2);
+  expect(out.stored.every(a => a.type === "attack" && a.parts.length === 1)).toBe(true);
+  expect(out.stored.map(a => a.parts[0])).toEqual(["1d8+3 piercing", "2d8+4 piercing"]);
+  expect(out.stored[1].name).toMatch(/Bloodied/);
+});
+
+test("C26: an NPC with a damage-reduction trait gets system.traits.dm.amount in its prepared data", async ({ foundry }, testInfo) => {
+  const out = await foundry(async (moduleId) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const html = "<p>The statue reduces all incoming bludgeoning, piercing, and slashing damage by 3.</p>";
+    const plan = P.parseFeature("Stone Hide", "<p>The statue reduces all incoming bludgeoning, piercing, and slashing damage by 3.</p>", { keys });
+    const effects = P.toEffects(plan, { keys, idGen, name: "Stone Hide" });
+    const actor = await CONFIG.Actor.documentClass.create({ name: "C26 reduction actor", type: "npc" });
+    try {
+      const before = actor.system.traits.dm.amount.bludgeoning ?? null;
+      await actor.createEmbeddedDocuments("Item", [{
+        name: "Stone Hide", type: "feat", effects,
+        system: { ...P.toItemPatch(plan, { keys, item: { type: "feat" } }) }
+      }]);
+      const amount = actor.system.traits.dm.amount;
+      return { html, before, planEffects: plan.effects.length, effectCount: effects.length, amount: { bludgeoning: amount.bludgeoning, piercing: amount.piercing, slashing: amount.slashing, fire: amount.fire ?? null } };
+    } finally {
+      await actor.delete();
+    }
+  }, "dnd5e-text-parser");
+  fs.writeFileSync(testInfo.outputPath("C26-damage-reduction.json"), JSON.stringify(out, null, 1));
+  expect(out.effectCount).toBe(1);
+  expect(out.amount.bludgeoning).toBe("-3");   // FormulaField: a string
+  expect(out.amount.piercing).toBe("-3");   // FormulaField: a string
+  expect(out.amount.slashing).toBe("-3");   // FormulaField: a string
+  expect(out.amount.fire).not.toBe("-3");
+});
+
+test("recette: the Ring of the Last Breath builds in Foundry with a valid heal activity and an effect applied by it", async ({ foundry }, testInfo) => {
+  const lines = [
+    "L'Anneau du Dernier Souffle", "Peu commun", "Objet merveilleux (anneau), nécessite un lien d'harmonisation",
+    "Forgé dans l'argent noirci et serti d'une pierre bleutée, cet anneau est toujours froid au toucher.",
+    "Propriétés magiques",
+    "Refus de mourir. Une fois par repos long, lorsque vous tombez à 0 point de vie sans être tué sur le coup, vous pouvez utiliser votre réaction pour tomber à 1 point de vie à la place.",
+    "Souffle emprunté. Lorsque vous utilisez cette propriété, vous gagnez également un nombre de points de vie temporaires égal à 1d6 + votre bonus de maîtrise.",
+    "Le prix du sursis. Jusqu'à la fin de votre prochain tour, votre vitesse est réduite de moitié et vous ne pouvez pas effectuer de réactions."
+  ];
+  const out = await foundry(async ({ moduleId, html }) => {
+    const P = await import(`/modules/${moduleId}/scripts/index.mjs`);
+    const keys = P.keysFromConfig(CONFIG.DND5E);
+    const idGen = () => foundry.utils.randomID();
+    const plan = P.parseItem("L'Anneau du Dernier Souffle", html, { keys, itemType: "equipment" });
+    const effects = P.toEffects(plan, { keys, idGen, name: plan.name });
+    const acts = P.toActivities(plan, { keys, idGen, item: { type: "equipment" }, effects, resolveSpell: () => null });
+    const doc = new CONFIG.Item.documentClass({
+      name: "Ring", type: "equipment", effects,
+      system: { ...P.toItemPatch(plan, { keys, item: { type: "equipment" } }), activities: Object.fromEntries(acts.map(a => [a._id, a])) }
+    }, { strict: true });
+    for ( const e of effects ) new CONFIG.ActiveEffect.documentClass(e, { strict: true, parent: doc });
+    const activities = [...doc.system.activities];
+    const heal = activities.find(a => a.type === "heal");
+    return {
+      activityTypes: activities.map(a => a.type),
+      healingTypes: heal ? [...heal.healing.types] : null,
+      bonus: heal?.healing.bonus ?? null,
+      activityEffects: heal ? [...heal.effects].map(e => e._id ?? e.effect?.id ?? null) : null,
+      docEffects: doc.effects.map(e => ({ id: e.id, transfer: e.transfer, duration: e.duration?.value ?? null })),
+      uses: doc.system.uses?.max ?? null
+    };
+  }, { moduleId: "dnd5e-text-parser", html: lines.join("\n") });
+  fs.writeFileSync(testInfo.outputPath("recette-ring.json"), JSON.stringify(out, null, 1));
+  expect(out.activityTypes).toEqual(["heal"]);
+  expect(out.healingTypes).toEqual(["temphp"]);
+  expect(out.bonus).toBe("@prof");
+  expect(out.docEffects).toHaveLength(1);
+  expect(out.docEffects[0].transfer).toBe(false);
+  expect(out.activityEffects).toEqual([out.docEffects[0].id]);
+  expect(out.uses).toBe(1);
+});

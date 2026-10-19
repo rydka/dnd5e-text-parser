@@ -1,0 +1,167 @@
+[
+ {
+  "from": "e-en-5",
+  "name": "Poing",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +9 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 22 (3d10 + 6) dégâts contondants.</p>"
+ },
+ {
+  "from": "e-en-8",
+  "name": "Corne",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +7 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 8 (1d8 + 4) dégâts perforants.</p>"
+ },
+ {
+  "from": "e-en-19",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +2 pour toucher, allonge 5 pieds, une cible. <em>Touché :</em> 3 (1d6) dégâts perforants.</p>"
+ },
+ {
+  "from": "e-en-51",
+  "name": "Rocher",
+  "html": "<p><em>Attaque d'arme à distance :</em> +12 pour toucher, portée 18/72 m, une cible. <em>Touché :</em> 30 (4d10 + 8) dégâts contondants.</p>"
+ },
+ {
+  "from": "e-en-85",
+  "name": "Arc long",
+  "html": "<p><em>Attaque d'arme à distance :</em> +4 pour toucher, portée 45/180 m, une cible. <em>Touché :</em> 6 (1d8 + 2) dégâts perforants.</p>"
+ },
+ {
+  "from": "e-en-88",
+  "name": "Griffe",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +15 pour toucher, allonge 3 m, une cible. <em>Touché :</em> 15 (2d6 + 8) dégâts tranchants.</p>"
+ },
+ {
+  "from": "e-en-143",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +1 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 1 (1d4 - 1) dégâts perforants.</p>"
+ },
+ {
+  "from": "e-en-155",
+  "name": "Rocher",
+  "html": "<p><em>Attaque d'arme à distance :</em> +11 pour toucher, portée 60/240 pieds, une cible. <em>Touché :</em> 29 (4d10 + 7) dégâts contondants.</p>"
+ },
+ {
+  "from": "e-en-163",
+  "name": "Arbalète lourde",
+  "html": "<p><em>Attaque d'arme à distance :</em> +4 pour toucher, portée 30/120 m, une cible. <em>Touché :</em> 6 (1d10 + 1) dégâts perforants.</p>"
+ },
+ {
+  "from": "e-en-207",
+  "name": "Volute verdoyante",
+  "html": "<p><em>Jet d'attaque à distance :</em> +5, portée 27 m. <em>Touché :</em> 10 (3d6) dégâts radiants.</p>"
+ },
+ {
+  "from": "e-en-34",
+  "name": "Pseudopode",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 9 (2d6 + 2) dégâts contondants plus 3 (1d6) dégâts d'acide.</p>"
+ },
+ {
+  "from": "e-en-150",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +15 pour toucher, allonge 4,50 m, une cible. <em>Touché :</em> 19 (2d10 + 8) dégâts perforants plus 10 (3d6) dégâts de poison.</p>"
+ },
+ {
+  "from": "e-en-197",
+  "name": "Morsure",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +4, allonge 1,50 m. <em>Touché :</em> 5 (1d6 + 2) dégâts perforants plus 5 (2d4) dégâts de poison. Si la cible est une créature de taille M ou inférieure, elle subit l'état Agrippé (DD d'évasion 12).</p>"
+ },
+ {
+  "from": "e-en-216",
+  "name": "Lacération",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +4, allonge 1,50 m. <em>Touché :</em> 6 (1d8 + 2) dégâts tranchants plus 2 (1d4) dégâts de froid.</p>"
+ },
+ {
+  "from": "e-en-249",
+  "name": "Masse d'armes",
+  "html": "<p><em>Jet d'attaque au corps à corps :</em> +4, allonge 5 pieds. <em>Touché :</em> 5 (1d6 + 2) dégâts contondants plus 2 (1d4) dégâts radiants.</p>"
+ },
+ {
+  "from": "e-en-40",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 7 (2d4 + 2) dégâts perforants. Si la cible est une créature, elle doit réussir un jet de sauvegarde de Force DD 11 ou être jetée à terre.</p>"
+ },
+ {
+  "from": "e-en-70",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 4 (1d4 + 2) dégâts perforants, et la cible doit réussir un jet de sauvegarde de Constitution DD 11 ou subir 10 (3d6) dégâts de poison. Si ces dégâts de poison réduisent la cible à 0 point de vie, elle est stable mais empoisonnée pendant 1 heure.</p>"
+ },
+ {
+  "from": "e-en-107",
+  "name": "Dard",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 7 (1d10 + 2) dégâts perforants. La cible doit faire un jet de sauvegarde de Constitution DD 12, subissant 22 (4d10) dégâts de poison en cas d'échec, ou la moitié de ces dégâts en cas de réussite.</p>"
+ },
+ {
+  "from": "e-en-44",
+  "name": "Puanteur",
+  "html": "<p>Toute créature qui commence son tour à moins de 1,50 m de la goule doit réussir un jet de sauvegarde de Constitution DD 10 ou être empoisonnée jusqu'au début de son prochain tour.</p>"
+ },
+ {
+  "from": "e-en-82",
+  "name": "Perception du cœur",
+  "html": "<p>Le lutin touche une créature et connaît par magie son état émotionnel. Si la cible rate un jet de sauvegarde de Charisme DD 10, le lutin connaît aussi son alignement.</p>"
+ },
+ {
+  "from": "e-en-180",
+  "name": "Masque troublant",
+  "html": "<p>Quand une créature que le diable des chaînes peut voir commence son tour à moins de 9 m de lui, il peut créer l'illusion qu'il ressemble à l'un des proches disparus ou des ennemis jurés de cette créature. Si elle peut le voir, elle doit réussir un jet de sauvegarde de Sagesse DD 14 ou être effrayée jusqu'à la fin de son tour.</p>"
+ },
+ {
+  "from": "e-en-58",
+  "name": "Attaque d'aile",
+  "html": "<p>Le dragon bleu antique bat des ailes. Chaque créature à moins de 4,50 m du dragon doit réussir un jet de sauvegarde de Dextérité DD 24 ou subir 16 (2d6 + 9) dégâts contondants et être jetée à terre. Le dragon peut ensuite voler sur la moitié de sa vitesse de vol.</p>"
+ },
+ {
+  "from": "e-en-61",
+  "name": "Charge",
+  "html": "<p>Si le rhinocéros se déplace d'au moins 6 m en ligne droite vers une cible puis la touche avec une attaque de corne au même tour, la cible subit 9 (2d8) dégâts contondants supplémentaires. Si la cible est une créature, elle doit réussir un jet de sauvegarde de Force DD 15 ou être jetée à terre.</p>"
+ },
+ {
+  "from": "e-en-200",
+  "name": "Tourbillon",
+  "html": "<p><em>Jet de sauvegarde de Force :</em> DD 13, chaque créature de taille M ou inférieure dans l'espace de l'élémentaire d'air. <em>Échec :</em> 24 (4d10 + 2) dégâts de tonnerre, et la cible est repoussée de 6 m en ligne droite et subit l'état À terre. <em>Réussite :</em> moitié des dégâts seulement.</p>"
+ },
+ {
+  "from": "e-en-210",
+  "name": "Souffle de feu",
+  "html": "<p><em>Jet de sauvegarde de Dextérité :</em> DD 17, chaque créature dans un cône de 9 m. <em>Échec :</em> 55 (10d10) dégâts de feu. <em>Réussite :</em> moitié des dégâts.</p>"
+ },
+ {
+  "from": "e-en-241",
+  "name": "Souffle empoisonné",
+  "html": "<p>Jet de sauvegarde de Constitution : DD 22, chaque créature dans un cône de 15 pieds. Échec : 77 (22d6) dégâts de poison. Réussite : moitié des dégâts.</p>"
+ },
+ {
+  "from": "e-en-219",
+  "name": "Harpon",
+  "html": "<p><em>Jet d'attaque au corps à corps ou à distance :</em> +6, allonge 1,50 m ou portée 6/18 m. <em>Touché :</em> 11 (2d6 + 4) dégâts perforants. Si la cible est une créature de taille G ou inférieure, le merrow la tire de 4,50 m en ligne droite vers lui.</p>"
+ },
+ {
+  "from": "e-en-28",
+  "name": "Becs",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, 0 m, une créature dans l'espace de l'essaim. <em>Touché :</em> 7 (2d6) dégâts perforants, ou 3 (1d6) dégâts perforants si l'essaim a la moitié de ses points de vie ou moins.</p>"
+ },
+ {
+  "from": "e-en-36",
+  "name": "Épée longue",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +3 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 5 (1d8 + 1) dégâts tranchants, ou 6 (1d10 + 1) dégâts tranchants si elle est maniée à deux mains.</p>"
+ },
+ {
+  "from": "e-en-122",
+  "name": "Griffe",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +0 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 1 dégât contondant.</p>"
+ },
+ {
+  "from": "e-en-187",
+  "name": "Morsure",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +1 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 2 (1d6 - 1) dégâts tranchants.</p>"
+ },
+ {
+  "from": "e-en-23",
+  "name": "Tentacules",
+  "html": "<p><em>Attaque d'arme au corps à corps :</em> +4 pour toucher, allonge 1,50 m, une cible. <em>Touché :</em> 1 dégât contondant. La cible est agrippée (DD d'évasion 10). Tant que l'agrippement dure, la pieuvre ne peut pas utiliser ses tentacules contre une autre cible.</p>"
+ },
+ {
+  "from": "e-en-193",
+  "name": "Charge",
+  "html": "<p>Si l'élan se déplace d'au moins 6 m en ligne droite vers une cible puis la touche avec une attaque de coup de tête au même tour, la cible subit 7 (2d6) dégâts contondants supplémentaires. Si la cible est une créature, elle doit réussir un jet de sauvegarde de Force DD 11 ou être jetée à terre.</p>"
+ }
+]

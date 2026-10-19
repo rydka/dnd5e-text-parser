@@ -1,0 +1,653 @@
+{
+ "description": "Control set: compendium items outside the item-configurator sample; truth annotated by hand from what each description states.",
+ "cases": [
+  {
+   "id": "o-ctl-1",
+   "lang": "en",
+   "source": "dnd5e.items/Ring of Cold Resistance",
+   "name": "Ring of Cold Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p><em>This ring has been inlaid with a tourmaline stone that gleams when it catches the light.</em></p>\n<p>You have resistance to cold damage while wearing this ring.</p>\n<p>For other rings of resistance, roll on the @UUID[Compendium.dnd5e.tables.RollTable.MdTxWyYVhTIgtNcG]{Ring of Resistance} table.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [
+    {
+     "kind": "resistance",
+     "scope": "cold"
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-2",
+   "lang": "en",
+   "source": "dnd5e.items/Wings of Flying",
+   "name": "Wings of Flying",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While wearing this cloak, you can use an action to speak its command word. This turns the cloak into a pair of bat wings or bird wings on your back for 1 hour or until you repeat the command word as an action. The wings give you a flying speed of 60 feet. When they disappear, you can't use them again for 1d12 hours.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-3",
+   "lang": "en",
+   "source": "dnd5e.items/Dragon Slayer Longsword",
+   "name": "Dragon Slayer Longsword",
+   "itemType": "weapon",
+   "html": "<p>You gain a +1 bonus to attack and damage rolls made with this magic weapon.</p><p>When you hit a dragon with this weapon, the dragon takes an extra 3d6 damage of the weapon's type. For the purpose of this weapon, \"dragon\" refers to any creature with the dragon type, including dragon turtles and wyverns.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "longsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-4",
+   "lang": "en",
+   "source": "dnd5e.items/Leather Armor +3",
+   "name": "Leather Armor +3",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 3
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-5",
+   "lang": "en",
+   "source": "dnd5e.items/Plate Armor of Resistance",
+   "name": "Plate Armor of Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>You have resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly from the @UUID[Compendium.dnd5e.tables.RollTable.VRqG3F72ebgNHyVR]{Armor of Resistance} table.\n</p><p> </p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-6",
+   "lang": "en",
+   "source": "dnd5e.items/Rapier +2",
+   "name": "Rapier +2",
+   "itemType": "weapon",
+   "html": "<p><em>Whether through demonic blessing, celestial bequeathment, crazed experiment, or skillful craft, this weapon has been enhanced to bring more bloodshed by the bearer.</em></p>\n<p>You have a bonus to attack and damage rolls made with this magic weapon.</p>",
+   "expected": {
+    "weapon.magicalBonus": 2,
+    "weapon.baseItem": "rapier"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-7",
+   "lang": "en",
+   "source": "dnd5e.items/Dragon Slayer Rapier",
+   "name": "Dragon Slayer Rapier",
+   "itemType": "weapon",
+   "html": "<p>You gain a +1 bonus to attack and damage rolls made with this magic weapon.</p><p>When you hit a dragon with this weapon, the dragon takes an extra 3d6 damage of the weapon's type. For the purpose of this weapon, \"dragon\" refers to any creature with the dragon type, including dragon turtles and wyverns.</p>",
+   "expected": {
+    "weapon.magicalBonus": 1,
+    "weapon.baseItem": "rapier"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-8",
+   "lang": "en",
+   "source": "dnd5e.items/Shortsword of Life Stealing",
+   "name": "Shortsword of Life Stealing",
+   "itemType": "weapon",
+   "html": "<p><em>(Requires attunement)</em></p>\n<p>When you attack a creature with this magic weapon and roll a 20 on the attack roll, that target takes an extra 3d6 necrotic damage, provided that the target isn't a construct or an undead. You gain temporary hit points equal to the extra damage dealt.</p>",
+   "expected": {
+    "attunement": "required",
+    "weapon.baseItem": "shortsword"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-9",
+   "lang": "en",
+   "source": "dnd5e.items/Tome of Leadership and Influence",
+   "name": "Tome of Leadership and Influence",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item</em></p>\n<p>This book contains guidelines for influencing and charming others, and its words are charged with magic. If you spend 48 hours over a period of 6 days or fewer studying the book's contents and practicing its guidelines, your Charisma score increases by 2, as does your maximum for that score. The manual then loses its magic, but regains it in a century.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-10",
+   "lang": "en",
+   "source": "dnd5e.items/Vicious Battleaxe",
+   "name": "Vicious Battleaxe",
+   "itemType": "weapon",
+   "html": "<p>A stout crescent blade mounted on a thick shaft wrapped in a sturdy grip. This axe is large enough to be wielded with two hands and is adorned with spikes upon the back-side of the blade and the top of the shaft.</p>\n<p>When you roll a 20 on your attack roll with this magic weapon, your critical hit deals an extra 2d6 damage of the weapon's type.</p>",
+   "expected": {
+    "weapon.baseItem": "battleaxe"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-11",
+   "lang": "en",
+   "source": "dnd5e.items/Rope of Entanglement",
+   "name": "Rope of Entanglement",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item</em></p>\n<p>This rope is 30 feet long and weighs 3 pounds. If you hold one end of the rope and use an action to speak its command word, the other end darts forward to entangle a creature you can see within 20 feet of you. The target must succeed on a DC 15 Dexterity saving throw or become restrained.</p>",
+   "expected": {
+    "weight": "3 lb"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-12",
+   "lang": "en",
+   "source": "dnd5e.items/Pearl of Power",
+   "name": "Pearl of Power",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item, (requires attunement by a spellcaster)</em></p>\n<p>While this pearl is on your person, you can use an action to speak its command word and regain one expended spell slot. If the expended slot was of 4th level or higher, the new slot is 3rd level. Once you use the pearl, it can't be used again until the next dawn.</p>",
+   "expected": {
+    "attunement": "required",
+    "attunementCondition": "a spellcaster"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-13",
+   "lang": "en",
+   "source": "dnd5e.items/Arrow +3",
+   "name": "Arrow +3",
+   "itemType": "consumable",
+   "html": "<p>Ammunition used for bows of all varieties.  It has been imbued with magic.</p>\n<p>You have a bonus to attack and damage rolls made with this piece of magic ammunition. Once it hits a target, the ammunition is no longer magical.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-14",
+   "lang": "en",
+   "source": "dnd5e.items/Scale Mail +1",
+   "name": "Scale Mail +1",
+   "itemType": "equipment",
+   "html": "<p><em>This armor has been embellished with powerful runes, crafted in sorcerous fires, blessed by a powerful being, or some other event has seen it bequeathed with enhanced protection for the wearer.</em></p>\n<p>You have a bonus to AC while wearing this armor.</p>",
+   "expected": {
+    "armor.magicalBonus": 1
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-15",
+   "lang": "en",
+   "source": "dnd5e.items/Bracers of Archery",
+   "name": "Bracers of Archery",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While wearing these bracers, you have proficiency with the longbow and shortbow, and you gain a +2 bonus to damage rolls on ranged attacks made with such weapons.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-16",
+   "lang": "en",
+   "source": "dnd5e.items/Adamantine Scale Mail",
+   "name": "Adamantine Scale Mail",
+   "itemType": "equipment",
+   "html": "<p>This armor is reinforced with adamantine, one of the hardest substances in existence.</p>\n<p>While you're wearing it, any critical hit against you becomes a normal hit.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-17",
+   "lang": "en",
+   "source": "dnd5e.items/Censer of Controlling Air Elementals",
+   "name": "Censer of Controlling Air Elementals",
+   "itemType": "consumable",
+   "html": "<p><em>Wondrous item</em></p>\n<p>While incense is burning in this censer, you can use an action to speak the censer's command word and summon an @UUID[Compendium.dnd5e.monsters.Actor.banHjKDMCegbUwYE]{Air Elemental}, as if you had cast the @UUID[Compendium.dnd5e.spells.Item.1LkZvINag7KqBmDR]{Conjure Elemental} spell. The censer can't be used this way again until the next dawn.</p>\n<p>This 6-inch-wide, 1-foot-high vessel resembles a chalice with a decorated lid. It weighs 1 pound.</p>",
+   "expected": {
+    "weight": "1 lb"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-18",
+   "lang": "en",
+   "source": "dnd5e.items/Eyes of Minute Seeing",
+   "name": "Eyes of Minute Seeing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item</em></p>\n<p>These crystal lenses fit over the eyes. While wearing them, you can see much better than normal out to a range of 1 foot. You have advantage on Intelligence (Investigation) checks that rely on sight while searching an area or studying an object within that range.</p>",
+   "expected": {},
+   "effects": [
+    {
+     "kind": "advantage",
+     "scope": "inv",
+     "value": null
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-19",
+   "lang": "en",
+   "source": "dnd5e.items/Shield +2",
+   "name": "Shield +2",
+   "itemType": "equipment",
+   "html": "<p>While holding this shield, you have a bonus to AC of +2. This bonus is in addition to the shield's normal bonus to AC.</p>",
+   "expected": {
+    "armor.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-20",
+   "lang": "en",
+   "source": "dnd5e.items/Hat of Disguise",
+   "name": "Hat of Disguise",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous item, (requires attunement)</em></p>\n<p>While wearing this hat, you can use an action to cast the @UUID[Compendium.dnd5e.spells.Item.A3q2gTNqG6fvNGrv]{Disguise Self} spell from it at will. The spell ends if the hat is removed.</p>",
+   "expected": {
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-21",
+   "lang": "en",
+   "source": "dnd5e.items/Philter of Love",
+   "name": "Philter of Love",
+   "itemType": "consumable",
+   "html": "<p><em>This potion's rose-hued, effervescent liquid contains one easy-to-miss bubble shaped like a heart.</em></p><p>The next time you see a creature within 10 minutes after drinking this philter, you become &amp;reference[charmed] by that creature for [[lookup @labels.duration activity=PQa875kavCObYkw7]]. If the creature is of a species and gender you are normally attracted to, you regard it as your true love while you are charmed.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-22",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Supreme Healing",
+   "name": "Potion of Supreme Healing",
+   "itemType": "consumable",
+   "html": "<p><em>The potion's red liquid glimmers when agitated.</em></p><p>You regain [[/healing]] when you drink this potion.</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-23",
+   "lang": "en",
+   "source": "dnd5e.items/Potion of Diminution",
+   "name": "Potion of Diminution",
+   "itemType": "consumable",
+   "html": "<p><em>The red in the potion's liquid continuously contracts to a tiny bead and then expands to color the clear liquid around it. Shaking the bottle fails to interrupt this process.</em></p><p>When you drink this potion, you gain the \"reduce\" effect of the @UUID[Compendium.dnd5e.spells.Item.WahI41a3goVUg0x1]{enlarge/reduce} spell for 1d4 hours (no concentration required).</p>",
+   "expected": {},
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-24",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Headband of Intellect",
+   "name": "Headband of Intellect",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>Your Intelligence is 19 while you wear this headband. It has no effect on you if your Intelligence is 19 or higher without it.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [
+    {
+     "kind": "abilityScore",
+     "scope": "int",
+     "value": 19
+    }
+   ],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-25",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Rod of Resurrection",
+   "name": "Rod of Resurrection",
+   "itemType": "equipment",
+   "html": "<p><em>Rod, Legendary (Requires Attunement)</em></p><p>The rod has 5 charges. While you hold it, you can cast one of the following spells from it: @UUID[Compendium.dnd5e.spells24.Item.phbsplHeal000000]{Heal} (expends 1 charge) or @UUID[Compendium.dnd5e.spells24.Item.phbsplResurrecti]{Resurrection} (expends 5 charges).</p><p>The rod regains 1 expended charge daily at dawn. If you expend the last charge, roll [[/r 1d20]]. On a 1, the rod disappears in a harmless burst of radiance.</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o-ctl-26",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Circlet of Blasting",
+   "name": "Circlet of Blasting",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Uncommon</em></p></div><p>While wearing this circlet, you can cast <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplScorchingR]{Scorching Ray}</em> with it (+5 to hit). The circlet can't cast this spell again until the next dawn.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-27",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Amulet of Proof against Detection and Location",
+   "name": "Amulet of Proof against Detection and Location",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>While wearing this amulet, you can't be targeted by &amp;Reference[schoolsofmagic]{Divination} spells or perceived through magical scrying sensors unless you allow it.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-28",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Necklace of Adaptation",
+   "name": "Necklace of Adaptation",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>While wearing this necklace, you can breathe normally in any environment, and you have Advantage on saving throws made to avoid or end the &amp;Reference[Poisoned apply=false] condition.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-29",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Elixir of Health",
+   "name": "Elixir of Health",
+   "itemType": "consumable",
+   "html": "<div><p><em>Potion, Rare</em></p></div><p>When you drink this potion, you are cured of all magical contagions. In addition, the following conditions end on you: &amp;Reference[Blinded apply=false], &amp;Reference[Deafened apply=false], &amp;Reference[Paralyzed apply=false], and &amp;Reference[Poisoned apply=false].</p><p>The clear, red liquid has tiny bubbles of light in it.</p>",
+   "expected": {
+    "rarity": "rare",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-30",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ring of Resistance",
+   "name": "Ring of Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>@UUID[Compendium.dnd5e.equipment24.Item.dmgsupRingofResi]{Ring}, Rare</em></p><p>You have Resistance to one damage type while wearing this ring. The gemstone in the ring indicates the type, which the GM chooses or determines randomly by rolling on the following table.</p><p>@Embed[Compendium.dnd5e.tables24.RollTable.dmgRingOfResista rollable caption=false]</p><p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "rare"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-31",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Giant Strength (Hill)",
+   "name": "Potion of Giant Strength (Hill)",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Uncommon</em></p><p>When you drink this potion, your Strength score changes for 1 hour to 21. The type of giant determines the score. The potion has no effect on you if your Strength is equal to or greater than that score.</p><p>This potion's transparent liquid has floating in it a sliver of light resembling a giant's fingernail.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-32",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Wand of Magic Detection",
+   "name": "Wand of Magic Detection",
+   "itemType": "equipment",
+   "html": "<p><em>Wand, Uncommon</em></p><p>This wand has 3 charges. While holding it, you can expend 1 charge to cast @UUID[Compendium.dnd5e.spells24.Item.phbsplDetectMagi]{Detect Magic} from it. The wand regains 1d3 expended charges daily at dawn.</p>",
+   "expected": {
+    "rarity": "uncommon"
+   },
+   "effects": [],
+   "ignore": [
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o-ctl-33",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Dwarven Plate",
+   "name": "Dwarven Plate",
+   "itemType": "equipment",
+   "html": "<div><p><em>Armor (@UUID[Compendium.dnd5e.equipment24.Item.phbarmHalfPlateA]{Half Plate} or @UUID[Compendium.dnd5e.equipment24.Item.phbarmPlateArmor]{Plate Armor}), Very Rare</em></p></div><p>While wearing this armor, you gain a +2 bonus to Armor Class. In addition, if an effect moves you against your will along the ground, you can take a Reaction to reduce the distance you are moved by up to 10 feet.</p><p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "armor.magicalBonus": 2
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-34",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Cloak of Invisibility",
+   "name": "Cloak of Invisibility",
+   "itemType": "equipment",
+   "html": "<div><p><em>Wondrous Item, Legendary (Requires Attunement)</em></p></div><p>This cloak has 3 charges and regains 1d3 expended charges daily at dawn . While wearing the cloak, you can take a Magic action to pull its hood over your head and expend 1 charge to give yourself the &amp;Reference[Invisible apply=false] condition for 1 hour. The effect ends early if you pull the hood down (no action required) or cease wearing the cloak.</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o-ctl-35",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Ring of Spell Turning",
+   "name": "Ring of Spell Turning",
+   "itemType": "equipment",
+   "html": "<p><em>Ring, Legendary (Requires Attunement)</em></p><p>While wearing this ring, you have Advantage on saving throws against spells. If you succeed on the save for a spell of level 7 or lower, the spell has no effect on you. If that spell targeted only you and didn't create an area of effect, you can take a Reaction to deflect the spell back at the spell's caster; the caster must make a saving throw against the spell using their own spell save DC.</p>",
+   "expected": {
+    "rarity": "legendary",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-36",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Climbing",
+   "name": "Potion of Climbing",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Common</em></p><p>When you drink this potion, you gain a Climb Speed equal to your Speed for 1 hour. During this time, you have Advantage on Strength (Athletics) checks to climb.</p><p>This potion is separated into brown, silver, and gray layers resembling bands of stone. Shaking the bottle fails to mix the colors.</p><section id=\"secret-HJGRSX6Nbv4iYQAX\" class=\"secret\"><p><strong>Foundry Note</strong></p><p>The <strong>Climber</strong> Active Effect can be used for tracking but can not automate the effects.</p></section>",
+   "expected": {
+    "rarity": "common",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-37",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Armor of Resistance",
+   "name": "Armor of Resistance",
+   "itemType": "equipment",
+   "html": "<p><em>Armor (Any Light, Medium, or Heavy), Rare (Requires Attunement)</em></p><p>You have Resistance to one type of damage while you wear this armor. The GM chooses the type or determines it randomly by rolling on the following table.</p><p>@Embed[Compendium.dnd5e.tables24.RollTable.dmgArmorOfResist rollable caption=false]</p><p>@Embed[Compendium.dnd5e.content24.JournalEntry.dmgFoundryRefere.JournalEntryPage.Ok4iCgD25ENgoRxE cite=false caption=false classes=\"hide-in-embed\"]</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-38",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Trident of Fish Command",
+   "name": "Trident of Fish Command",
+   "itemType": "weapon",
+   "html": "<p><em>Weapon (@UUID[Compendium.dnd5e.equipment24.Item.phbwepTrident000]{Trident}), Uncommon (Requires Attunement)</em></p><p>This magic weapon has 3 charges, and it regains 1d3 expended charges daily at dawn. While you carry it, you can expend 1 charge to cast @UUID[Compendium.dnd5e.spells24.Item.phbsplDominateBe]{Dominate Beast} (save DC 15) from it on a Beast that has a Swim Speed.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required",
+    "weapon.baseItem": "trident"
+   },
+   "effects": [],
+   "ignore": [
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o-ctl-39",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Healing",
+   "name": "Potion of Healing",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Common</em></p><p>You regain 2d4 + 2 Hit Points when you drink this potion.</p><p>Whatever its potency, the potion's red liquid glimmers when agitated.</p>",
+   "expected": {
+    "rarity": "common",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-40",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Gem of Seeing",
+   "name": "Gem of Seeing",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Rare (Requires Attunement)</em></p><p>This gem has 3 charges. As a Magic action, you can expend 1 charge. For the next 10 minutes, you have &amp;Reference[Truesight] out to 120 feet when you peer through the gem.</p><p>The gem regains 1d3 expended charges daily at dawn.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o-ctl-41",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Potion of Heroism",
+   "name": "Potion of Heroism",
+   "itemType": "consumable",
+   "html": "<p><em>Potion, Rare</em></p><p>When you drink this potion, you gain 10 Temporary Hit Points that last for 1 hour. For the same duration, you are under the effect of the @UUID[Compendium.dnd5e.spells24.Item.phbsplBless00000]{Bless} spell (no Concentration required).</p><p>This potion's blue liquid bubbles and steams as if boiling.</p>",
+   "expected": {
+    "rarity": "rare",
+    "consumable.type": "potion"
+   },
+   "effects": [],
+   "ignore": []
+  },
+  {
+   "id": "o-ctl-42",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Wand of Polymorph",
+   "name": "Wand of Polymorph",
+   "itemType": "equipment",
+   "html": "<p><em>Wand, Very Rare (Requires Attunement by a Spellcaster)</em></p><p>This wand has 7 charges. While holding it, you can expend 1 charge to cast @UUID[Compendium.dnd5e.spells24.Item.phbsplPolymorph0]{Polymorph} (save DC 15) from it.</p><p><em><strong>Regaining Charges.</strong></em> The wand regains 1d6 + 1 expended charges daily at dawn. If you expend the wand's last charge, roll [[/r 1d20]]. On a 1, the wand crumbles into ashes and is destroyed.</p>",
+   "expected": {
+    "rarity": "veryRare",
+    "attunement": "required",
+    "attunementCondition": "a spellcaster"
+   },
+   "effects": [],
+   "ignore": [
+    "consumable.type",
+    "consumable.charges",
+    "consumable.destroyOnEmpty"
+   ]
+  },
+  {
+   "id": "o-ctl-43",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Helm of Telepathy",
+   "name": "Helm of Telepathy",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Uncommon (Requires Attunement)</em></p><p>While wearing this helm, you have telepathy with a range of 30 feet, and you can cast @UUID[Compendium.dnd5e.spells24.Item.phbsplDetectThou]{Detect Thoughts} or @UUID[Compendium.dnd5e.spells24.Item.phbsplSuggestion]{Suggestion} (save DC 13) from the helm. Once either spell is cast from the helm, that spell can't be cast from it again until the next dawn.</p>",
+   "expected": {
+    "rarity": "uncommon",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": [
+    "effect"
+   ]
+  },
+  {
+   "id": "o-ctl-44",
+   "lang": "en",
+   "source": "dnd5e.equipment24/Boots of Levitation",
+   "name": "Boots of Levitation",
+   "itemType": "equipment",
+   "html": "<p><em>Wondrous Item, Rare (Requires Attunement)</em></p><p>While you wear these boots, you can cast <em>@UUID[Compendium.dnd5e.spells24.Item.phbsplLevitate00]{Levitate}</em> on yourself.</p>",
+   "expected": {
+    "rarity": "rare",
+    "attunement": "required"
+   },
+   "effects": [],
+   "ignore": []
+  }
+ ]
+}
