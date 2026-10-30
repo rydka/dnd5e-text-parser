@@ -16,7 +16,7 @@
     "vitest": "^5.0.4",
     "@vitest/coverage-v8": "^5.0.4"
   },
-  "version": "1.0.0-dev",
+  "version": "1.1.0-dev",
   "exports": {
     ".": "./scripts/index.mjs"
   },

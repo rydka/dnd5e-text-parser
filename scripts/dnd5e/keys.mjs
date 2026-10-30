@@ -11,8 +11,34 @@ const SIMPLE = [
   "spellcasting", "weaponIds", "armorIds", "healingTypes", "senses"
 ];
 
+/**
+ * Keys of `CONFIG.DND5E` read only when the config has them (an older snapshot without them keeps accepting every
+ * key for these sets, as `isValidKey` does for a missing set). `languages` is a tree (`standard.children.common`,
+ * `exotic.children.primordial.children.aquan`): every leaf key is kept.
+ */
+const OPTIONAL = ["actorSizes", "creatureTypes", "languages"];
+
 /** `validProperties` groups kept, keyed by item type. */
 const PROPERTY_GROUPS = ["weapon", "equipment", "consumable", "feat"];
+
+/**
+ * Keys of a `CONFIG.DND5E.languages`-like tree (categories with `children`), or of a flat table / list.
+ * @param {*} value
+ * @returns {Set<string>}
+ */
+function toLeafKeySet(value) {
+  if ( !value || Array.isArray(value) || value instanceof Set || value instanceof Map ) return toKeySet(value);
+  const keys = new Set();
+  for ( const [key, entry] of Object.entries(value) ) {
+    if ( entry && typeof entry === "object" && entry.children && typeof entry.children === "object" ) {
+      for ( const leaf of toLeafKeySet(entry.children) ) keys.add(leaf);
+      // "standard" and "exotic" are categories only (`selectable: false`); "primordial" is a language too
+      if ( entry.selectable !== false ) keys.add(key);
+    }
+    else keys.add(key);
+  }
+  return keys;
+}
 
 /**
  * @param {*} value  Object, Map, Set or array.
@@ -35,6 +61,7 @@ export function keysFromConfig(dnd5eConfig) {
   const config = dnd5eConfig ?? {};
   const keys = {};
   for ( const name of SIMPLE ) keys[name] = toKeySet(config[name]);
+  for ( const name of OPTIONAL ) if ( config[name] !== undefined ) keys[name] = toLeafKeySet(config[name]);
   keys.validProperties = {};
   for ( const group of PROPERTY_GROUPS ) keys.validProperties[group] = toKeySet(config.validProperties?.[group]);
   return keys;
@@ -66,6 +93,7 @@ export function keysSnapshot(dnd5eConfig) {
   const keys = keysFromConfig(dnd5eConfig);
   const snapshot = {};
   for ( const name of SIMPLE ) snapshot[name] = [...keys[name]].sort();
+  for ( const name of OPTIONAL ) if ( keys[name] ) snapshot[name] = [...keys[name]].sort();
   snapshot.validProperties = {};
   for ( const group of PROPERTY_GROUPS ) snapshot.validProperties[group] = [...keys.validProperties[group]].sort();
   return snapshot;

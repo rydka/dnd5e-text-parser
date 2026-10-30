@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.0
+
+En-tête d'un bloc de stats (`specs/dnd5e-text-parser/creature-header/`) : les analyseurs écrits pour `compendium-json-importer` (`scripts/core/pdf/stat-lines.mjs`, `lexicon.mjs`, correspondance stats → PNJ de `creature.mjs`) sont déplacés dans la bibliothèque. Aucune rupture : `API_VERSION` 1.1.0, fonctions existantes inchangées (hors `toPounds`, ci-dessous).
+
+- Nouvelles fonctions : `parseStatLines(text|lines, { toFeet? })`, `parseSizeLine`, `parseAc`, `parseHp`, `parseSpeed`, `parseAbilities`, `parseChallenge`, `parseSenses`, `parseLanguages`, `parseSaves`, `parseSkills` (`scripts/parse/stat-lines.mjs`, lexique `scripts/parse/lexicon/stat-block.mjs`) et `toNpcPatch(stats, { keys, metric? }) -> { system, notes }` (`scripts/dnd5e/npc.mjs`). Remarques `Note.NpcKeyInvalid`, `Note.RangeRounded`, `Note.InitiativeSkipped` (en, fr).
+- `keysFromConfig` / `keysSnapshot` : ensembles `actorSizes`, `creatureTypes`, `languages` (feuilles de l'arbre), seulement si le `CONFIG` passé les a.
+- `toPounds(v, "kg")` garde les décimales (1 kg = 2 lb, au centième : 0,2 kg = 0,4 lb) au lieu d'arrondir à la livre entière (0,2 kg donnait 0). Visible aussi dans `parseItem` (`details.weight` d'un objet écrit en kilogrammes, puis `toItemPatch` → `system.weight.value`) : 1,3 kg donne désormais 2,6 lb au lieu de 3, 0,2 kg 0,4 au lieu de 0 ; les poids entiers (1 kg = 2 lb, 1,5 kg = 3 lb) sont inchangés.
+- Robustesse (relecture) : la rangée d'en-tête des caractéristiques est reconnue par un balayage linéaire des abréviations (`isAbilityRow`, ligne bornée à 200 caractères) au lieu d'une expression à six `.*` (O(n⁵) : 3 s sur une ligne hostile de 1 200 caractères) ; `parseSaves` et `parseSkills` lisent les paires « nom, nombre signé » en une passe linéaire sur les mots (valeur bornée à 1 000 caractères) au lieu d'expressions quadratiques ; `parseHp` est ancré au début de la valeur et lit les milliers (« 1,200 (96d20) », « 1 200 », « 1.200 » → 1200 ; « 1,20 » ambigu → `null`, donc `unrecognized`) au lieu de rendre 1 ; l'espace ne vaut séparateur de milliers que si rien d'autre que la formule ne suit (« 45 300 ft », colonne voisine → 45) ; un nombre négatif collé au nom est lu (« Dex-1 », « Stealth-1 »).
+- Écarts volontaires avec l'importeur (L2/L3/L4 de la spécification) :
+  - `parseStatLines` accepte une chaîne multi-lignes en plus d'un tableau de lignes ; elle lit la ligne de taille (`stats.size`) et les lignes dr/di/dv/ci (`stats.traits`, par le reconnaisseur `traits`) ; chaque résultat de champ porte `raw` (ligne d'origine, libellé compris ; `saves`, `skills`, `abilities` restent des tables clé → nombre) ; `unrecognized` reçoit les lignes sans libellé connu et les valeurs illisibles (« Armor Class many » donne `ac: null`) ;
+  - une ligne sans libellé ne continue la valeur précédente que si celle-ci se termine par `,` `;` `(` `+` `-` ou si la ligne commence par une minuscule, un chiffre, un signe ou une parenthèse ; une ligne qui commence par une majuscule après une valeur close (nom de la créature, phrase quelconque) est une ligne à part, rapportée dans `unrecognized` au lieu d'être recollée à la valeur ;
+  - la distance est convertie par `toFeet` de la bibliothèque (arrondi au pied) ; `toNpcPatch` convertit vers l'unité du monde (`metric`) avec 1,5 m = 5 ft sans arrondir à l'entier (sauf les portées des sens, entiers dans dnd5e : `Note.RangeRounded`) et écrit `units` ;
+  - CA : toujours `{ calcs: ["natural"], flat }` (l'importeur écrivait `{ override }` pour une CA sans armure naturelle) ; jamais `calc` ni `formula` ;
+  - initiative (2024) : l'importeur écrivait le bonus imprimé tel quel dans `init.bonus` (qui s'ajoutait une seconde fois au modificateur de Dextérité) ; `toNpcPatch` n'écrit que le reste au-delà du modificateur de Dextérité, et rien sans valeur de Dextérité (`Note.InitiativeSkipped`) ;
+  - `xp` et `prof` ne sont pas écrits dans `system` (l'importeur les rangeait dans ses drapeaux) ; ils restent dans `stats` ;
+  - une langue absente de `keys.languages` va dans `languages.custom` avec `Note.NpcKeyInvalid` ; les clés de taille, type, nuée, caractéristique, compétence, vitesse et sens absentes de `keys` ne sont pas écrites ;
+  - traits dr/di/dv/ci : lus directement par le reconnaisseur `traits` de la bibliothèque (`stats.traits`) au lieu de passer par `parser.parseActor` sur une biographie HTML reconstituée ; dans `toNpcPatch`, une valeur absente de `keys.damageTypes` / `keys.conditionTypes` n'est pas écrite dans `value` mais conservée en texte dans `traits.<kind>.custom`, avec `Note.TraitKeyInvalid` (même règle que `toActorPatch`, via `traitPatch`).
+
 ## 1.0.0-dev
 
 - Corrections après la recette d'item-configurator (anneau à propriétés nommées, EN et FR) :

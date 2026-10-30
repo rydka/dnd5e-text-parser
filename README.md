@@ -14,12 +14,12 @@ Dans le `module.json` du module consommateur :
 ```json
 "relationships": {
   "requires": [
-    { "id": "dnd5e-text-parser", "type": "module", "compatibility": { "minimum": "1.0.0", "verified": "1.0.0" } }
+    { "id": "dnd5e-text-parser", "type": "module", "compatibility": { "minimum": "1.1.0", "verified": "1.1.0" } }
   ]
 }
 ```
 
-Foundry refuse alors d'activer le module si la bibliothèque manque, et propose de l'activer avec lui.
+Foundry refuse alors d'activer le module si la bibliothèque manque, et propose de l'activer avec lui. `minimum` est la version qui apporte les fonctions que vous appelez : `1.0.0` pour les capacités, objets et acteurs (`parseFeature`, `parseItem`, `parseActor`…), `1.1.0` pour l'en-tête d'un bloc de stats (`parseStatLines`, les analyseurs par champ et `toNpcPatch`, absents en 1.0.0 : `undefined`).
 
 ## Trois façons de l'utiliser
 
@@ -84,6 +84,63 @@ const filled = parser.mergeMissing(data.system, system);        // [{ path: "use
 const summary = parser.describe(filled);                          // [{ key, data }] à traduire
 ```
 
+## En-tête d'un bloc de stats (`parseStatLines` -> `toNpcPatch`)
+
+```js
+const keys = parser.keysFromConfig(CONFIG.DND5E);
+const metric = { length: game.settings.get("dnd5e", "metricLengthUnits") };
+
+const stats = parser.parseStatLines(`Medium undead, neutral evil
+Armor Class 16 (natural armor)
+Hit Points 136 (16d8 + 64)
+Speed 30 ft., fly 60 ft. (hover)
+STR DEX CON INT WIS CHA
+18 (+4) 12 (+1) 18 (+4) 10 (+0) 14 (+2) 12 (+1)
+Saving Throws Str +7, Wis +5
+Skills Athletics +7, Perception +5
+Damage Resistances bludgeoning, piercing, and slashing from nonmagical attacks
+Senses darkvision 60 ft., passive Perception 15
+Languages Common, Abyssal, telepathy 120 ft.
+Challenge 5 (1,800 XP)`);
+
+stats.ac;             // { value: 16, detail: "natural armor", natural: true, raw: "Armor Class 16 (natural armor)" }
+stats.speed.speeds;   // { walk: 30, fly: 60 }   (pieds ; 9 m -> 30)
+stats.unrecognized;   // [{ kind, text }] : lignes sans libellé connu, valeurs illisibles (« Armor Class many »)
+
+const { system, notes } = parser.toNpcPatch(stats, { keys, metric });
+// system.attributes.ac        = { calcs: ["natural"], flat: 16 }
+// system.attributes.movement  = { speeds: { walk: "30", fly: "60" }, units: "ft", hover: true }   (ou "9", "18", "m")
+// system.abilities.str        = { value: 18, proficient: 1 }
+// system.traits.dr            = { value: ["bludgeoning", "piercing", "slashing"], bypasses: ["mgc"] }
+await Actor.create({ name: "Wraith", type: "npc", system });
+
+// Dictée découpée par le module appelant : analyseurs par champ, sur la valeur sans son libellé
+parser.parseAc("15 (armure naturelle)");                 // { value: 15, natural: true, ... }
+parser.parseSpeed("9 m, vol 18 m (vol stationnaire)");  // { speeds: { walk: 30, fly: 60 }, hover: true, raw }
+parser.toNpcPatch({ ac: parser.parseAc("15"), size: parser.parseSizeLine("Humanoïde de taille M, neutre") }, { keys });
+```
+
+```js
+StatLines = { size: SizeLine|null,                          // ligne de taille lue dans le texte (ou posée par l'appelant)
+  ac: { value, detail, natural, raw }|null,                 // `natural` : « natural armor » / « armure naturelle »
+  hp: { value, formula, raw }|null,
+  initiative: { bonus, score, raw }|null,                   // 2024 : « AC 17 Initiative +2 (12) » ou ligne « Initiative »
+  speed: { speeds: { walk, fly, swim, climb, burrow }, hover, raw }|null,   // pieds
+  abilities: { str, dex, con, int, wis, cha }|null,         // valeurs
+  saves: { str: 7, ... }|null,                              // bonus imprimés ; 2024 : sauvegardes dont le bonus diffère du modificateur
+  skills: { ath: 1, prc: 2, ... }|null,                     // niveau de maîtrise (2 = expertise, d'après la valeur et le bonus de maîtrise)
+  traits: { dr?, di?, dv?, ci? }|null,                      // { values, bypasses, custom[] } (même lecture que parseActor ; « Immunities » 2024 trié en di et ci)
+  traitLines: { kind, label, text }[],                      // texte imprimé des lignes dr/di/dv/ci
+  senses: { ranges: { darkvision: 120, ... }, units: "ft", special, raw }|null,
+  languages: { value: string[], custom, communication: { telepathy?: { value, units: "ft" } }, raw }|null,
+  cr: number|null, xp: number|null, prof: number|null, gear: string|null,
+  records: { kind, label, text }[],                         // toutes les lignes regroupées (une valeur sur plusieurs lignes est recollée)
+  unrecognized: { kind, text }[] }
+SizeLine = { size: "tiny"|"sm"|"med"|"lg"|"huge"|"grg", type, types: string[], subtype, swarm, alignment, anyAlignment, raw }
+```
+
+Rien n'est inventé : un champ absent ou illisible vaut `null` et `toNpcPatch` n'écrit rien pour lui ; seules les clés présentes dans `keys` sont écrites (`Note.NpcKeyInvalid`). Choix de format (dnd5e 6.0.6, `reports/rules/voice-scribe-initial.md`) : la CA est toujours `{ calcs: ["natural"], flat }`, que l'armure soit naturelle, citée sans objet (« 17 (chain mail, shield) ») ou absente (le libellé affiché est « Armure naturelle », la valeur est exacte ; `calc` / `formula` ne sont plus persistés) ; les vitesses sont des chaînes dans `movement.speeds.<type>` avec `movement.units` ; l'initiative imprimée contient déjà le modificateur de Dextérité, que dnd5e ajoute lui-même : seul le reste va dans `init.bonus` (rien si 0). `xp` et `prof` ne sont pas écrits (dnd5e les calcule depuis le FP) ; ils restent dans `stats`.
+
 ## Référence de l'API v1
 
 Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parseItemAsync`.
@@ -99,6 +156,9 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `validateFallbackFacts(facts, { keys?, sentence? }) -> { facts, rejected }` | Contrôle des propositions d'un résolveur (types, clés, bornes) |
 | `parseActor(actor, opts?) -> ActorPlan` | Acteur (source dnd5e) : traits, ressources légendaires, incantation, plan par capacité |
 | `parseSpellcasting(html, opts?) -> SpellcastingPlan\|null` | En-tête et listes de sorts |
+| `parseStatLines(text\|lines, { toFeet? }) -> StatLines` | En-tête d'un bloc de stats en texte brut (une ligne par stat, ou tableau de lignes) : ligne de taille, CA, PV, initiative (2024), vitesses, caractéristiques (rangée 2014 ou cellules 2024 « Str 16 +3 +3 »), sauvegardes, compétences, traits dr/di/dv/ci, sens, langues, FP, PX, bonus de maîtrise. EN et FR, libellés 2014 et 2024. Voir « En-tête d'un bloc de stats » |
+| `parseSizeLine(text)`, `parseAc(text)`, `parseHp(text)`, `parseSpeed(text, { toFeet? })`, `parseChallenge(text)`, `parseSenses(text, { toFeet? })`, `parseLanguages(text, { toFeet? })`, `parseSaves(text)`, `parseSkills(text, { scores?, prof?, cr? })` | Analyseurs par champ, sur la **valeur** de la ligne sans son libellé (« 16 (natural armor) », « 30 ft., fly 60 ft. (hover) », « 1,200 (96d20) » : milliers séparés par virgule, espace ou point) ; `null` quand rien n'est lisible, jamais une valeur inventée. Pour une dictée découpée par le module appelant |
+| `parseAbilities(records) -> { scores, saves, raw }\|null` | Caractéristiques. Entrée : **un tableau de `{ text }`**, les lignes du tableau des caractéristiques (pas une chaîne) : 2014, la rangée d'en-tête et la rangée des valeurs (`[{ text: "STR DEX CON INT WIS CHA" }, { text: "18 (+4) 12 (+1) …" }]`, ou les deux dans une même entrée) ; 2024, les cellules « Str 16 +3 +3 » (valeur, modificateur, sauvegarde). Sortie : `scores` `{ str, dex, con, int, wis, cha }`, `saves` = sauvegardes dont le bonus diffère du modificateur (2024 seulement, `{}` sinon), `raw` = les lignes jointes par `\n` ; `null` sans les six valeurs |
 | `nameKey(name) -> string` | Clé de comparaison d'un nom (minuscules, sans accents, sans ponctuation ni parenthèses, sans mention « (Recharge 5-6) », « (3/Day) »… : « Hunter's Mark » = « Hunters Mark », « Rope, Hempen (50 feet) » = « Rope Hempen 50 feet ») |
 | `htmlToText`, `splitSentences`, `splitLines`, `toFeet`, `toPounds` | Utilitaires de texte et d'unités |
 
@@ -112,6 +172,7 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `toEffects(plan, { keys?, idGen, name?, img? }) -> object[]` | Effets actifs v14 (`system.changes[].type`) d'un `ItemPlan` ou d'un `FeaturePlan` : un effet `transfer: true` pour tous les effets passifs (objet porté / harmonisé, ou capacité passive d'une créature : à poser sur l'objet de la capacité, dnd5e le transfère à l'acteur), un effet `transfer: false` par activité pour les effets `onUse` (avec `duration`, et `flags["dnd5e-text-parser"].activity` = index de l'`ActivityPlan`). Remarques : `result.notes` |
 | `toItemPatch(plan, { keys, item? }) -> object` | `system` partiel : `uses`, `range` d'arme, détails d'arme/armure/consommable, `rarities`, `attunement`, `weight`, `price`, `properties` |
 | `toActorPatch(actorPlan, { keys, actor? }) -> { system, notes }` | Patch d'acteur : ressources légendaires, traits, incantation, emplacements |
+| `toNpcPatch(stats, { keys, metric? }) -> { system, notes }` | `StatLines` -> `system` partiel d'un acteur `npc` dnd5e 6 : taille, type, alignement, CA, PV, vitesses, caractéristiques et sauvegardes maîtrisées, compétences, traits dr/di/dv/ci, sens, langues, FP. `metric` : `{ length: boolean }` (ou un booléen) = unités du monde (`game.settings.get("dnd5e", "metricLengthUnits")`) ; les distances sont converties (1,5 m = 5 ft, décimales conservées) et `units` vaut `"m"` ou `"ft"`. Voir « En-tête d'un bloc de stats » |
 | `toSpellStubs(spellcastingPlan) -> object[]` | Sorts listés -> données minimales (aucun contenu inventé) |
 | `toDamagePart(part, keys?) -> object` | Une partie de dégâts du plan -> `DamageData` |
 
@@ -136,7 +197,7 @@ Armure lourde : `toItemPatch` écrit `armor.dex = 0` quand le texte ne donne pas
 | Fonction | Rôle |
 |---|---|
 | `keysSnapshot(CONFIG.DND5E) -> object` | Instantané JSON des clés valides (tableaux triés). `keysFromConfig(JSON.parse(texte))` le relit : les tests s'exécutent sans Foundry |
-| `keysFromConfig(CONFIG.DND5E) -> Keys` | Ensembles de clés valides (`damageTypes`, `conditionTypes`, `abilities`, `skills`, `areaTargetTypes`, `individualTargetTypes`, `activityActivationTypes`, `limitedUsePeriods`, `itemRarity`, `weaponTypes`, `armorTypes`, `consumableTypes`, `currencies`, `validProperties.{weapon,equipment,consumable,feat}`…) |
+| `keysFromConfig(CONFIG.DND5E) -> Keys` | Ensembles de clés valides (`damageTypes`, `conditionTypes`, `abilities`, `skills`, `areaTargetTypes`, `individualTargetTypes`, `activityActivationTypes`, `limitedUsePeriods`, `itemRarity`, `weaponTypes`, `armorTypes`, `consumableTypes`, `currencies`, `movementTypes`, `senses`, `validProperties.{weapon,equipment,consumable,feat}`…). Depuis 1.1.0, `actorSizes`, `creatureTypes` et `languages` (feuilles de l'arbre `standard` / `exotic`, « primordial » compris) sont ajoutés **seulement si** le `CONFIG` passé les a : un instantané plus ancien continue d'accepter toutes les clés de ces trois ensembles |
 | `describe(planOrChanges) -> Descriptor[]` | Plan ou liste de champs remplis -> `{ key, data, group, raw, origin, paths }` neutres. Voir ci-dessous |
 | `registerFallback(id, resolver, { priority? }) -> unregister` | Résolveur de secours (voir plus bas) |
 | `getFallback() -> function\|null` | Résolveur actif |
@@ -186,8 +247,11 @@ Remarques émises à la **traduction** (sur la propriété non énumérable `res
 |---|---|---|---|
 | `EffectSkipped` | `toEffects(...).notes` | `{ kind, scope }` | Effet sans chemin dnd5e : clé absente de `keys`, `scope` invalide, ou avantage limité (`against`) |
 | `SpellNotFound` | `toActivities(...).notes` (et `notes` passé en option) | `{ name }` | `resolveSpell(name)` a rendu `null` : pas d'activité `cast` |
-| `TraitKeyInvalid` | `toActorPatch(...).notes` | `{ kind, value }` | Valeur de trait absente de `keys` : écartée |
+| `TraitKeyInvalid` | `toActorPatch(...).notes`, `toNpcPatch(...).notes` | `{ kind, value }` | Valeur de trait dr/di/dv/ci absente de `keys` : non écrite dans `value`, conservée en texte dans `traits.<kind>.custom` |
 | `TraitBypassSkipped` | `toActorPatch(...).notes` | `{ kind, bypasses: string[] }` | Contournements non écrits (ils s'appliqueraient aux mauvaises entrées) |
+| `NpcKeyInvalid` | `toNpcPatch(...).notes` | `{ field, value }` | Clé absente de `keys` (`abilities`, `saves`, `speed`, `senses`, `skills`, `size`, `type`, `swarm`, `languages`) : non écrite ; une langue inconnue va dans `languages.custom`. Les traits dr/di/dv/ci émettent `TraitKeyInvalid` (ci-dessus), pas cette note |
+| `RangeRounded` | `toNpcPatch(...).notes` | `{ field, from, to }` | Portée d'un sens arrondie à l'entier (dnd5e stocke `senses.ranges.*` en entiers ; « 5 ft » en monde métrique donne 2 au lieu de 1,5) |
+| `InitiativeSkipped` | `toNpcPatch(...).notes` | `{ bonus }` | Initiative imprimée sans valeur de Dextérité : le bonus à ajouter au modificateur est inconnu, rien n'est écrit |
 | `SpellcastingAbilityConflict` | `toActorPatch(...).notes` | `{ abilities: string[] }` | Plusieurs caractéristiques d'incantation : aucune n'est écrite |
 | `Unrecognized` | `describe(plan)` seulement | `{ text }` | Une phrase de `plan.unrecognized` |
 | `Flavor` | `describe(plan)` seulement | `{ text }` | Une phrase de `plan.flavor` (texte d'ambiance d'un objet, non interprété) |

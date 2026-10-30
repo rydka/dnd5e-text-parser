@@ -20,6 +20,9 @@ Foundry v14, dnd5e 6.x. Sources en lecture seule : Foundry `C:/Users/Shadow/AppD
 | `scripts/module.mjs` | Seul fichier qui touche Foundry : `game.modules.get(id).api` (gelée) au `init`, puis hook `dnd5e-text-parser.ready` |
 | `scripts/registry.mjs` | Registre du résolveur de secours (`registerFallback`, `getFallback`) |
 | `scripts/parse/**` | Analyse texte -> plan (pure) |
+| `scripts/parse/stat-lines.mjs` | En-tête d'un bloc de stats : `parseStatLines` (ligne de taille, stats, traits, `raw`, `unrecognized`) et analyseurs par champ (`parseSizeLine`, `parseAc`, `parseHp`, `parseSpeed`, `parseAbilities`, `parseChallenge`, `parseSenses`, `parseLanguages`, `parseSaves`, `parseSkills`). Porté de `compendium-json-importer` (`scripts/core/pdf/stat-lines.mjs`) ; écarts listés dans `CHANGELOG.md` 1.1.0 |
+| `scripts/parse/lexicon/stat-block.mjs` | Lexique de l'en-tête (`STAT_LEXICON` : libellés, tailles, types, caractéristiques, vitesses, sens, compétences, langues, unités ; clé dnd5e -> mots EN/FR) et ses aides (`labelOf`, `statLookup`, `alternation`) ; distinct des tables mot -> clé de `lexicon/index.mjs` |
+| `scripts/dnd5e/npc.mjs` | `StatLines` -> patch `system` d'acteur `npc` (`toNpcPatch`, option `metric` = unités du monde) ; réutilise `traitPatch` de `actor.mjs` |
 | `scripts/dnd5e/activities.mjs` | Plan -> activités (`toActivities`, `toDamagePart`) |
 | `scripts/dnd5e/item.mjs` | Plan -> patch `system` d'objet (`toItemPatch`) |
 | `scripts/dnd5e/merge.mjs` | Fusion « champs vides seulement » (`isEmpty`, `isEmptyUtility`, `mergeMissing`) |
