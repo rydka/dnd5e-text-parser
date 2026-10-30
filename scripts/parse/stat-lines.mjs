@@ -17,8 +17,11 @@ import { parseTraitBody } from "./recognizers/traits.mjs";
 const normalize = value => String(value ?? "").replace(/\s+/g, " ").trim();
 /** Longest value a stat line can carry (a real one is under 300 characters); longer text is not read. */
 const MAX_VALUE = 1000;
-/** Words and signed numbers of a saves or skills line, in one linear pass ("Sleight of Hand +4, Str +11"). */
-const TOKEN_RE = /[\p{L}][\p{L}'’-]*|[+-]\s*\d+|[,;]/gu;
+/**
+ * Words and signed numbers of a saves or skills line, in one linear pass ("Sleight of Hand +4, Str +11"). A hyphen
+ * stays in a word only between letters ("mort-vivant"), so a negative number glued to a name is read ("Dex-1").
+ */
+const TOKEN_RE = /[\p{L}][\p{L}'’]*(?:-[\p{L}][\p{L}'’]*)*|[+-]\s*\d+|[,;]/gu;
 const CR_VALUE = String.raw`(\d+\s*/\s*\d+|[⅛¼½]|\d+(?:[.,]\d+)?)`;
 const UNIT_RE = `(${alternation([...LEXICON.units.ft, ...LEXICON.units.m])})`;
 const TABLE_HEADER_RE = new RegExp(`^(?:\\s*(?:${alternation(LEXICON.tableHeaders)})\\.?)+\\s*$`, "iu");
@@ -152,16 +155,23 @@ export function parseAc(text) {
 
 /**
  * "136 (16d8 + 64)", "1,200 (96d20)", "1 200", "1.200" -> { value, formula, raw }. Thousands are grouped by a
- * comma, a space or a point; a number followed by a shorter group ("1,20") is ambiguous and gives null.
+ * comma, a point or a space; a space counts as a separator only when nothing but the formula follows ("45 300 ft"
+ * is the hit points 45 next to a column that reads "300 ft"). A number followed by a shorter group ("1,20") is
+ * ambiguous and gives null.
  */
 export function parseHp(text) {
   const line = normalize(text);
-  const m = line.match(/^(\d{1,3}(?:[ ,.]\d{3})+|\d+)/);
+  let m = line.match(/^(?:\d{1,3}(?:[,.]\d{3})+|\d{1,3}(?: \d{3})+|\d+)(?!\d)/);
   if ( !m ) return null;
-  const rest = line.slice(m[0].length);
+  let rest = line.slice(m[0].length);
+  const trailing = rest.replace(/^\s*\([^)]+\)/, "").trim();
+  if ( m[0].includes(" ") && trailing ) {
+    m = line.match(/^\d+/);
+    rest = line.slice(m[0].length);
+  }
   if ( /^[,.]\d/.test(rest) ) return null;
   const paren = rest.match(/^\s*\(([^)]+)\)/);
-  return { value: Number(m[1].replace(/\D/g, "")), formula: normalize(paren?.[1] ?? ""), raw: line };
+  return { value: Number(m[0].replace(/\D/g, "")), formula: normalize(paren?.[1] ?? ""), raw: line };
 }
 
 /** "+2 (12)" -> { bonus, score, raw } (2024 "Initiative" after the AC). */
