@@ -8,9 +8,14 @@ const toArray = value => value ? Array.from(value) : [];
 
 /**
  * Translate one trait of the plan into a patch, as a union with what the actor already has.
+ * Shared with `toNpcPatch` (`npc.mjs`); not part of the public API.
+ * @param {"dr"|"di"|"dv"|"ci"} kind
+ * @param {{values: string[], bypasses: string[], custom: string[]}} planned
+ * @param {object|undefined} existing  `actor.system.traits[kind]`, if any.
+ * @param {object|undefined} keys
  * @returns {{ patch: object|null, notes: object[] }}
  */
-function traitPatch(kind, planned, existing, keys) {
+export function traitPatch(kind, planned, existing, keys) {
   const notes = [];
   const have = toArray(existing?.value);
   const haveBypasses = toArray(existing?.bypasses);
