@@ -222,9 +222,29 @@ export function isWord(words, text) {
 /** The six abilities, in the order of the stat block. */
 export const ABILITY_ORDER = Object.freeze(["str", "dex", "con", "int", "wis", "cha"]);
 
-/** Row of the six ability headers, in order ("STR DEX CON INT WIS CHA", "FOR DEX CON INT SAG CHA"). */
-export const ABILITY_ROW_RE = new RegExp(
-  ABILITY_ORDER.map(key => `\\b(?:${alternation(STAT_LEXICON.abilities[key])})\\b`).join(".*"), "iu");
+/** Longest line that can be the header row of the ability table (the real one is under 40 characters). */
+const MAX_ABILITY_ROW = 200;
+
+/** One ability abbreviation, as a whole word. */
+const ABILITY_WORD_RE = new RegExp(`\\b(${tableAlternation(STAT_LEXICON.abilities)})\\b`, "giu");
+
+/**
+ * Is the line the row of the six ability headers, in order ("STR DEX CON INT WIS CHA", "FOR DEX CON INT SAG CHA")?
+ * Linear scan: the abbreviations found in the line must contain str, dex, con, int, wis, cha as a subsequence
+ * (a regular expression with six `.*` gaps backtracks in O(n^5) on a hostile line).
+ * @param {string} line
+ * @returns {boolean}
+ */
+export function isAbilityRow(line) {
+  const text = String(line ?? "");
+  if ( !text || text.length > MAX_ABILITY_ROW ) return false;
+  let next = 0;
+  for ( const [, word] of text.matchAll(ABILITY_WORD_RE) ) {
+    if ( statLookup(STAT_LEXICON.abilities, word) === ABILITY_ORDER[next] ) next++;
+    if ( next === ABILITY_ORDER.length ) return true;
+  }
+  return false;
+}
 
 /** One cell of the 2024 ability table: "Str 16 +3 +3" (score, modifier, save). */
 export const ABILITY_CELL_RE = new RegExp(

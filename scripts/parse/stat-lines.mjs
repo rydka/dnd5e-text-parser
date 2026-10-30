@@ -8,13 +8,17 @@
  * (1.5 m = 5 ft); `toNpcPatch` converts them to the world's unit. Pure: no Foundry global.
  */
 import {
-  ABILITY_CELL_RE, ABILITY_ORDER, ABILITY_ROW_RE, STAT_LEXICON as LEXICON, alternation, foldWord, isWord, labelOf,
+  ABILITY_CELL_RE, ABILITY_ORDER, STAT_LEXICON as LEXICON, alternation, foldWord, isAbilityRow, isWord, labelOf,
   statAbilityKey, statLookup as lookup, tableAlternation
 } from "./lexicon/stat-block.mjs";
 import { toFeet as defaultToFeet } from "./text.mjs";
 import { parseTraitBody } from "./recognizers/traits.mjs";
 
 const normalize = value => String(value ?? "").replace(/\s+/g, " ").trim();
+/** Longest value a stat line can carry (a real one is under 300 characters); longer text is not read. */
+const MAX_VALUE = 1000;
+/** Words and signed numbers of a saves or skills line, in one linear pass ("Sleight of Hand +4, Str +11"). */
+const TOKEN_RE = /[\p{L}][\p{L}'’-]*|[+-]\s*\d+|[,;]/gu;
 const CR_VALUE = String.raw`(\d+\s*/\s*\d+|[⅛¼½]|\d+(?:[.,]\d+)?)`;
 const UNIT_RE = `(${alternation([...LEXICON.units.ft, ...LEXICON.units.m])})`;
 const TABLE_HEADER_RE = new RegExp(`^(?:\\s*(?:${alternation(LEXICON.tableHeaders)})\\.?)+\\s*$`, "iu");
@@ -120,7 +124,7 @@ export function groupRecords(lines) {
       records.push(current);
       continue;
     }
-    if ( ABILITY_ROW_RE.test(text) || ABILITY_CELL.test(text) ) {
+    if ( isAbilityRow(text) || ABILITY_CELL.test(text) ) {
       current = { kind: "abilities", label: "", text };
       records.push(current);
       continue;
@@ -146,12 +150,18 @@ export function parseAc(text) {
   };
 }
 
-/** "136 (16d8 + 64)" -> { value, formula, raw }. */
+/**
+ * "136 (16d8 + 64)", "1,200 (96d20)", "1 200", "1.200" -> { value, formula, raw }. Thousands are grouped by a
+ * comma, a space or a point; a number followed by a shorter group ("1,20") is ambiguous and gives null.
+ */
 export function parseHp(text) {
   const line = normalize(text);
-  const m = line.match(/(\d+)\s*(?:\(([^)]+)\))?/);
+  const m = line.match(/^(\d{1,3}(?:[ ,.]\d{3})+|\d+)/);
   if ( !m ) return null;
-  return { value: Number(m[1]), formula: normalize(m[2] ?? ""), raw: line };
+  const rest = line.slice(m[0].length);
+  if ( /^[,.]\d/.test(rest) ) return null;
+  const paren = rest.match(/^\s*\(([^)]+)\)/);
+  return { value: Number(m[1].replace(/\D/g, "")), formula: normalize(paren?.[1] ?? ""), raw: line };
 }
 
 /** "+2 (12)" -> { bonus, score, raw } (2024 "Initiative" after the AC). */
@@ -308,12 +318,35 @@ export function parseLanguages(text, { toFeet } = {}) {
   return { value: [...value].sort(), custom: custom.join("; "), communication, raw: line };
 }
 
-/** "Str +11, Wis +9", "For +11, Sag +9" -> { str: 11, wis: 9 } (plain map, no `raw`). */
+/**
+ * Pairs "name, signed number" of a saves or skills line, in one linear pass over its tokens: the words since the
+ * last separator or number form the name of the number that follows them ("Sleight of Hand +4, Str +11").
+ * @param {string} line
+ * @returns {{ name: string, value: number }[]}
+ */
+function namedBonuses(line) {
+  const pairs = [];
+  let words = [];
+  for ( const [token] of line.matchAll(TOKEN_RE) ) {
+    if ( token === "," || token === ";" ) words = [];
+    else if ( /^[+-]/.test(token) ) {
+      if ( words.length ) pairs.push({ name: words.join(" "), value: Number(token.replace(/\s/g, "")) });
+      words = [];
+    }
+    else words.push(token);
+  }
+  return pairs;
+}
+
+/** "Str +11, Wis +9", "For +11, Sag +9", "Strength +5" -> { str: 11, wis: 9 } (plain map, no `raw`). */
 export function parseSaves(text) {
+  const line = normalize(text);
+  if ( !line || line.length > MAX_VALUE ) return null;
   const out = {};
-  for ( const m of normalize(text).matchAll(/([\p{L}]+)\.?\s*([+-]\s*\d+)/gu) ) {
-    const key = statAbilityKey(m[1]);
-    if ( key ) out[key] = Number(m[2].replace(/\s/g, ""));
+  for ( const { name, value } of namedBonuses(line) ) {
+    // The last word names the ability ("Str", "Sagesse"); a stray word before it is ignored
+    const key = statAbilityKey(name.split(" ").at(-1));
+    if ( key ) out[key] = value;
   }
   return Object.keys(out).length ? out : null;
 }
@@ -326,14 +359,13 @@ export function parseSaves(text) {
  */
 export function parseSkills(text, { scores, prof, cr } = {}) {
   const line = normalize(text);
-  if ( !line ) return null;
+  if ( !line || line.length > MAX_VALUE ) return null;
   const bonus = prof ?? proficiencyFromCr(cr);
   const out = {};
-  for ( const m of line.matchAll(/([\p{L}][\p{L} '’-]*?)\s*([+-]\s*\d+)/gu ) ) {
-    const key = lookup(LEXICON.skills, m[1].trim());
+  for ( const { name, value } of namedBonuses(line) ) {
+    const key = lookup(LEXICON.skills, name);
     if ( !key ) continue;
     let level = 1;
-    const value = Number(m[2].replace(/\s/g, ""));
     const score = scores?.[LEXICON.skillAbilities[key]];
     if ( bonus && (score !== undefined) && (value >= Math.floor((score - 10) / 2) + 2 * bonus) ) level = 2;
     out[key] = level;

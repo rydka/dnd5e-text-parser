@@ -14,12 +14,12 @@ Dans le `module.json` du module consommateur :
 ```json
 "relationships": {
   "requires": [
-    { "id": "dnd5e-text-parser", "type": "module", "compatibility": { "minimum": "1.0.0", "verified": "1.0.0" } }
+    { "id": "dnd5e-text-parser", "type": "module", "compatibility": { "minimum": "1.1.0", "verified": "1.1.0" } }
   ]
 }
 ```
 
-Foundry refuse alors d'activer le module si la bibliothèque manque, et propose de l'activer avec lui.
+Foundry refuse alors d'activer le module si la bibliothèque manque, et propose de l'activer avec lui. `minimum` est la version qui apporte les fonctions que vous appelez : `1.0.0` pour les capacités, objets et acteurs (`parseFeature`, `parseItem`, `parseActor`…), `1.1.0` pour l'en-tête d'un bloc de stats (`parseStatLines`, les analyseurs par champ et `toNpcPatch`, absents en 1.0.0 : `undefined`).
 
 ## Trois façons de l'utiliser
 
@@ -157,7 +157,8 @@ Toutes les fonctions sont synchrones et pures, sauf `parseFeatureAsync` / `parse
 | `parseActor(actor, opts?) -> ActorPlan` | Acteur (source dnd5e) : traits, ressources légendaires, incantation, plan par capacité |
 | `parseSpellcasting(html, opts?) -> SpellcastingPlan\|null` | En-tête et listes de sorts |
 | `parseStatLines(text\|lines, { toFeet? }) -> StatLines` | En-tête d'un bloc de stats en texte brut (une ligne par stat, ou tableau de lignes) : ligne de taille, CA, PV, initiative (2024), vitesses, caractéristiques (rangée 2014 ou cellules 2024 « Str 16 +3 +3 »), sauvegardes, compétences, traits dr/di/dv/ci, sens, langues, FP, PX, bonus de maîtrise. EN et FR, libellés 2014 et 2024. Voir « En-tête d'un bloc de stats » |
-| `parseSizeLine(text)`, `parseAc(text)`, `parseHp(text)`, `parseSpeed(text, { toFeet? })`, `parseAbilities(records)`, `parseChallenge(text)`, `parseSenses(text, { toFeet? })`, `parseLanguages(text, { toFeet? })`, `parseSaves(text)`, `parseSkills(text, { scores?, prof?, cr? })` | Analyseurs par champ, sur la **valeur** de la ligne sans son libellé (« 16 (natural armor) », « 30 ft., fly 60 ft. (hover) ») ; `null` quand rien n'est lisible, jamais une valeur inventée. Pour une dictée découpée par le module appelant |
+| `parseSizeLine(text)`, `parseAc(text)`, `parseHp(text)`, `parseSpeed(text, { toFeet? })`, `parseChallenge(text)`, `parseSenses(text, { toFeet? })`, `parseLanguages(text, { toFeet? })`, `parseSaves(text)`, `parseSkills(text, { scores?, prof?, cr? })` | Analyseurs par champ, sur la **valeur** de la ligne sans son libellé (« 16 (natural armor) », « 30 ft., fly 60 ft. (hover) », « 1,200 (96d20) » : milliers séparés par virgule, espace ou point) ; `null` quand rien n'est lisible, jamais une valeur inventée. Pour une dictée découpée par le module appelant |
+| `parseAbilities(records) -> { scores, saves, raw }\|null` | Caractéristiques. Entrée : **un tableau de `{ text }`**, les lignes du tableau des caractéristiques (pas une chaîne) : 2014, la rangée d'en-tête et la rangée des valeurs (`[{ text: "STR DEX CON INT WIS CHA" }, { text: "18 (+4) 12 (+1) …" }]`, ou les deux dans une même entrée) ; 2024, les cellules « Str 16 +3 +3 » (valeur, modificateur, sauvegarde). Sortie : `scores` `{ str, dex, con, int, wis, cha }`, `saves` = sauvegardes dont le bonus diffère du modificateur (2024 seulement, `{}` sinon), `raw` = les lignes jointes par `\n` ; `null` sans les six valeurs |
 | `nameKey(name) -> string` | Clé de comparaison d'un nom (minuscules, sans accents, sans ponctuation ni parenthèses, sans mention « (Recharge 5-6) », « (3/Day) »… : « Hunter's Mark » = « Hunters Mark », « Rope, Hempen (50 feet) » = « Rope Hempen 50 feet ») |
 | `htmlToText`, `splitSentences`, `splitLines`, `toFeet`, `toPounds` | Utilitaires de texte et d'unités |
 
@@ -246,9 +247,9 @@ Remarques émises à la **traduction** (sur la propriété non énumérable `res
 |---|---|---|---|
 | `EffectSkipped` | `toEffects(...).notes` | `{ kind, scope }` | Effet sans chemin dnd5e : clé absente de `keys`, `scope` invalide, ou avantage limité (`against`) |
 | `SpellNotFound` | `toActivities(...).notes` (et `notes` passé en option) | `{ name }` | `resolveSpell(name)` a rendu `null` : pas d'activité `cast` |
-| `TraitKeyInvalid` | `toActorPatch(...).notes` | `{ kind, value }` | Valeur de trait absente de `keys` : écartée |
+| `TraitKeyInvalid` | `toActorPatch(...).notes`, `toNpcPatch(...).notes` | `{ kind, value }` | Valeur de trait dr/di/dv/ci absente de `keys` : non écrite dans `value`, conservée en texte dans `traits.<kind>.custom` |
 | `TraitBypassSkipped` | `toActorPatch(...).notes` | `{ kind, bypasses: string[] }` | Contournements non écrits (ils s'appliqueraient aux mauvaises entrées) |
-| `NpcKeyInvalid` | `toNpcPatch(...).notes` | `{ field, value }` | Clé absente de `keys` (`abilities`, `saves`, `speed`, `senses`, `skills`, `size`, `type`, `swarm`, `languages`) : non écrite ; une langue inconnue va dans `languages.custom` |
+| `NpcKeyInvalid` | `toNpcPatch(...).notes` | `{ field, value }` | Clé absente de `keys` (`abilities`, `saves`, `speed`, `senses`, `skills`, `size`, `type`, `swarm`, `languages`) : non écrite ; une langue inconnue va dans `languages.custom`. Les traits dr/di/dv/ci émettent `TraitKeyInvalid` (ci-dessus), pas cette note |
 | `RangeRounded` | `toNpcPatch(...).notes` | `{ field, from, to }` | Portée d'un sens arrondie à l'entier (dnd5e stocke `senses.ranges.*` en entiers ; « 5 ft » en monde métrique donne 2 au lieu de 1,5) |
 | `InitiativeSkipped` | `toNpcPatch(...).notes` | `{ bonus }` | Initiative imprimée sans valeur de Dextérité : le bonus à ajouter au modificateur est inconnu, rien n'est écrit |
 | `SpellcastingAbilityConflict` | `toActorPatch(...).notes` | `{ abilities: string[] }` | Plusieurs caractéristiques d'incantation : aucune n'est écrite |
