@@ -8,13 +8,18 @@
  */
 
 /** Semver of the API; equals the module version. Major: removal or signature change, or incompatible plan change. */
-export const API_VERSION = "1.0.0";
+export const API_VERSION = "1.1.0";
 
 /** Version of the intermediate structure; written in each plan as `plan.schema`. */
 export const SCHEMA_VERSION = 1;
 
 export { parseFeature, parseItem, parseActor, nameKey } from "./parse/plan.mjs";
 export { parseSpellcasting } from "./parse/spellcasting.mjs";
+export {
+  parseStatLines, parseSizeLine, parseAc, parseHp, parseSpeed, parseAbilities, parseChallenge, parseSenses,
+  parseLanguages, parseSaves, parseSkills
+} from "./parse/stat-lines.mjs";
+export { toNpcPatch } from "./dnd5e/npc.mjs";
 export { parseFeatureAsync, parseItemAsync, validateFallbackFacts } from "./parse/fallback.mjs";
 export { htmlToText, splitSentences, splitLines, toFeet, toPounds } from "./parse/text.mjs";
 export { toActivities, toDamagePart } from "./dnd5e/activities.mjs";

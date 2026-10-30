@@ -2,7 +2,7 @@
   "id": "dnd5e-text-parser",
   "title": "dnd5e Text Parser",
   "description": "Shared library that parses dnd5e stat block and item text (English and French) into dnd5e 6 data.",
-  "version": "1.0.0-dev",
+  "version": "1.1.0-dev",
   "authors": [
     {
       "name": "Rydka"
