@@ -165,7 +165,8 @@ export function toFeet(value, unit = "ft") {
 }
 
 /**
- * Weight to pounds. Kilograms are doubled and rounded to the nearest pound.
+ * Weight to pounds. Kilograms are doubled (1 kg = 2 lb, the factor of the French books: 0.2 kg = 0.4 lb), to the
+ * hundredth of a pound; the decimals are kept (`reports/rules/voice-scribe-initial.md`, § 1).
  * @param {number|string} value
  * @param {"lb"|"kg"} [unit="lb"]
  * @returns {number|null}
@@ -173,7 +174,7 @@ export function toFeet(value, unit = "ft") {
 export function toPounds(value, unit = "lb") {
   const number = parseNumber(value);
   if ( number === null ) return null;
-  return unit === "kg" ? Math.round(number * 2) : number;
+  return unit === "kg" ? Math.round(number * 200) / 100 : number;
 }
 
 /**
