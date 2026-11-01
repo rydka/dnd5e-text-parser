@@ -1,7 +1,7 @@
 import { isValidKey } from "./keys.mjs";
 
 /**
- * Translation of a FeaturePlan / ItemPlan into dnd5e 6 activity sources (attack, save, damage, heal, cast, utility).
+ * Translation of a FeaturePlan / ItemPlan into dnd5e 5.3.3 activity sources (attack, save, damage, heal, cast, utility).
  * Pure: no Foundry global. Never invents a key: values missing from `keys` are dropped.
  */
 
@@ -197,7 +197,7 @@ function itemActivity(plan, context, { item, resolveSpell, notes }) {
     const activation = buildActivation(plan.activation, keys);
     if ( activation ) heal.activation = activation;
     heal.healing = toDamagePart({ ...plan.heal, type: null }, keys);
-    // `CONFIG.DND5E.healingTypes` (dnd5e 6.0.6 config.mjs): "healing" or "temphp" (temporary hit points)
+    // `CONFIG.DND5E.healingTypes` (dnd5e 5.3.3 config.mjs): "healing" or "temphp" (temporary hit points)
     const type = plan.heal.type === "temphp" ? "temphp" : "healing";
     if ( isValidKey(keys, "healingTypes", type) ) heal.healing.types = [type];
     const range = buildRange(plan.range, null);

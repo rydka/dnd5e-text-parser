@@ -5,7 +5,7 @@ import { recognizeMagicEffects } from "./magic-effects.mjs";
 import { hasPassiveMarker } from "./item-activity.mjs";
 
 /**
- * Effects of a creature's passive feature (a trait without activation): what dnd5e 6 applies by itself through an
+ * Effects of a creature's passive feature (a trait without activation): what dnd5e 5.3.3 applies by itself through an
  * ActiveEffect transferred to the actor. English and French.
  * - The effects an item would give (`recognizeMagicEffects` with `subject: "self"`): bonus to AC, saves, checks,
  *   attack or damage, resistance / immunity / vulnerability, general advantage, ability score, speed.

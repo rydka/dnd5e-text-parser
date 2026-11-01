@@ -133,7 +133,7 @@ function changesOf(effect, keys, notes) {
     case "abilityScore":
       return isValidKey(keys, "abilities", scope) ? [change(`system.abilities.${scope}.value`, "upgrade", value)] : skip();
     case "damageReduction": {
-      // "reduces all incoming bludgeoning, piercing, and slashing damage by 3": dnd5e 6 applies
+      // "reduces all incoming bludgeoning, piercing, and slashing damage by 3": dnd5e 5.3.3 applies
       // `traits.dm.amount.<type>` (a deterministic formula, added to the damage of that type; `ALL` to every damage
       // type) in `Actor#calculateDamage` (documents/actor/actor.mjs), and skips it for physical damage whose
       // properties meet `traits.dm.bypasses` ("from nonmagical attacks" = the `mgc` bypass).
@@ -147,7 +147,7 @@ function changesOf(effect, keys, notes) {
       return changes;
     }
     case "sense":
-      // "darkvision out to 120 feet": dnd5e 6 stores senses in `senses.ranges.<key>` (data/shared/senses-field.mjs)
+      // "darkvision out to 120 feet": dnd5e 5.3.3 stores senses in `senses.ranges.<key>` (data/shared/senses-field.mjs)
       return lookup("senses", scope) === scope && isValidKey(keys, "senses", scope)
         ? [change(`system.attributes.senses.ranges.${scope}`, "upgrade", String(value))] : skip();
     case "speed":

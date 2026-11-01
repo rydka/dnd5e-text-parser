@@ -35,7 +35,7 @@ const ONGOING_BEFORE = new RegExp(String.raw`${ONGOING_PHRASE}(?:(?!\b(?:or|ou)\
 const overlaps = (span, other) => span.start < other.end && span.end > other.start;
 // Conditional damage (B9): a second result "6 (1d8 + 2) Piercing damage, or 11 (2d8 + 2) Piercing damage if the
 // creature is Bloodied" or extra damage "takes an extra 2d6 Fire damage if the target is undead" is never rolled
-// with the main result: dnd5e 6 rolls every part of an activity together.
+// with the main result: dnd5e 5.3.3 rolls every part of an activity together.
 // What introduces the condition right after the damage: "if", "when", "while", "unless", "at range", "in melee",
 // "in bear form", "si", "lorsque", "quand", "tant que", "à distance", "au corps à corps", "sous forme de loup"
 const COND_START = String.raw`(?:if|when|while|unless|at\s+range|in\s+melee|in\s+(?:[\p{L}'-]+\s+){0,3}?form|` +
@@ -186,7 +186,7 @@ export function parseFeature(name, html, opts = {}) {
   const isOngoing = chain => ONGOING_AFTER.test(text.slice(chain.end, chain.end + 80))
     || ONGOING_BEFORE.test(text.slice(Math.max(0, chain.start - 90), chain.start));
   // Conditional damage (B9): a second result ("or N (dice) type damage if...") or extra damage followed by its
-  // condition is never a part rolled with the main result (dnd5e 6 rolls every part of an activity together). It
+  // condition is never a part rolled with the main result (dnd5e 5.3.3 rolls every part of an activity together). It
   // gives `Note.ConditionalDamage` in `ambiguous` and a variant in `plan.variants`: an ActivityPlan with `condition`
   // that `toActivities` turns into a second activity (same attack or save, named after the condition).
   const conditional = new Map();

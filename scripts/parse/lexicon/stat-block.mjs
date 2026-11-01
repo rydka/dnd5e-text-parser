@@ -1,6 +1,6 @@
 /**
  * Lexicon of the header of a stat block (size line and stat lines): English and French, 2014 and 2024 layouts.
- * Every table maps a dnd5e 6 key to the printed words (case- and accent-insensitive). To add a label or fix a
+ * Every table maps a dnd5e 5.3.3 key to the printed words (case- and accent-insensitive). To add a label or fix a
  * translation, edit the lists only: the regular expressions are built from them.
  *
  * Ported from `compendium-json-importer` (`scripts/core/pdf/lexicon.mjs`); the PDF-only tables (sections, item
