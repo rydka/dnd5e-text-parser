@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0-v13
+
+Version pour **Foundry v13 / dnd5e 5.3.x** (branche `v13`, `specs/item-configurator/v13/`), mêmes fonctions que 1.1.0. `API_VERSION` = `1.1.0-v13` (même majeure). Manifeste : `https://raw.githubusercontent.com/rydka/dnd5e-text-parser/v13/module.json`.
+
+- Effets actifs au format v13 : `changes[]` au premier niveau, `{ key, mode, value, priority }` avec `mode` numérique (`CHANGE_MODES`, nouvel export = `CONST.ACTIVE_EFFECT_MODES`) et `value` chaîne ; plus de `system.changes[].type` ni de `phase`.
+- Durée d'effet v13 : nouvel export `toEffectDuration({ value, units, until })` → `{ seconds }` / `{ rounds }` / `{ turns }` / `null` ; `toEffects` l'applique (`until` = fin / début du prochain tour → `{ turns: 1 }`).
+- Chemins d'acteur de dnd5e 5.3.3 (pas de `system.rolls.*`) : `system.bonuses.<mwak|rwak|msak|rsak>.attack` / `.damage`, `system.abilities.<a>.bonuses.check|save`, `system.bonuses.abilities.check|save`, `system.skills.<s>.bonuses.check` ; avantage général écrit sur chaque caractéristique (`abilities.<a>.<check|save>.roll.mode`).
+- Vitesses : `system.attributes.movement.<type>` (`walk burrow climb fly swim` ; `jump` → `Note.EffectSkipped`) ; « vitesse réduite de moitié » = un changement `multiply` par champ de vitesse (pas de `movement.multiplier`).
+- `toItemPatch` : `system.rarity` (chaîne) au lieu de `system.rarities` ; `describe` rend le chemin `system.rarity`.
+- `toNpcPatch` : `attributes.ac = { calc: "natural", flat }` ; vitesses dans `attributes.movement.<type>` (`jump` écarté avec `Note.NpcKeyInvalid`).
+
 ## 1.1.0
 
 En-tête d'un bloc de stats (`specs/dnd5e-text-parser/creature-header/`) : les analyseurs écrits pour `compendium-json-importer` (`scripts/core/pdf/stat-lines.mjs`, `lexicon.mjs`, correspondance stats → PNJ de `creature.mjs`) sont déplacés dans la bibliothèque. Aucune rupture : `API_VERSION` 1.1.0, fonctions existantes inchangées (hors `toPounds`, ci-dessous).
