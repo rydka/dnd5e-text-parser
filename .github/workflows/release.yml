@@ -35,7 +35,7 @@ jobs:
             const m = JSON.parse(fs.readFileSync("module.json", "utf8"));
             const tag = process.env.TAG;
             m.version = tag.replace(/^v/, "");
-            m.manifest = `https://raw.githubusercontent.com/${process.env.REPO}/v13/module.json`;
+            m.manifest = "https://raw.githubusercontent.com/rydka/dnd5e-text-parser/v13/module.json";
             m.download = `https://github.com/${process.env.REPO}/releases/download/${tag}/module.zip`;
             fs.writeFileSync("module.json", JSON.stringify(m, null, 2) + "\n");
           '
