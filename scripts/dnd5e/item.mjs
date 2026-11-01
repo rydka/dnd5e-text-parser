@@ -134,7 +134,8 @@ export function toItemPatch(plan, { keys, item } = {}) {
     system.type = { value: consumableType };
   }
 
-  if ( details.rarity && isValidKey(keys, "itemRarity", details.rarity) ) system.rarities = [details.rarity];
+  // dnd5e 5.3.3: `rarity` is a single string (data/item/templates/physical-item.mjs)
+  if ( details.rarity && isValidKey(keys, "itemRarity", details.rarity) ) system.rarity = details.rarity;
   if ( details.attunement && isValidKey(keys, "attunementTypes", details.attunement) ) {
     system.attunement = details.attunement;
   }

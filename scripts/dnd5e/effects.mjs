@@ -2,19 +2,67 @@ import { isValidKey } from "./keys.mjs";
 import { lookup } from "../parse/lexicon/index.mjs";
 
 /**
- * Translation of the effects of an ItemPlan into dnd5e 6 / Foundry v14 `ActiveEffect` sources
- * (`system.changes[].type`, never `changes` / `mode`, never the old `system.bonuses.*` paths).
+ * Translation of the effects of an ItemPlan into dnd5e 5.3.3 / Foundry v13 `ActiveEffect` sources
+ * (top-level `changes[]` with a numeric `mode` and a string `value`; actor paths of dnd5e 5.3.3: `system.bonuses.*`,
+ * `abilities.<a>.bonuses.*`, `skills.<s>.bonuses.check`, `movement.<type>`).
  * Pure: no Foundry global.
  */
 
 export const FLAG_SCOPE = "dnd5e-text-parser";
 
+/**
+ * Foundry v13 `CONST.ACTIVE_EFFECT_MODES`, by name (the library has no access to `CONST`).
+ * @type {Readonly<{ custom: 0, multiply: 1, add: 2, downgrade: 3, upgrade: 4, override: 5 }>}
+ */
+export const CHANGE_MODES = Object.freeze({ custom: 0, multiply: 1, add: 2, downgrade: 3, upgrade: 4, override: 5 });
+
 const ROLL_TYPES = { weapon: ["mwak", "rwak"], spell: ["msak", "rsak"] };
 const ALL_ROLL_TYPES = ["mwak", "rwak", "msak", "rsak"];
-// Physical damage bypasses of dnd5e 6 (`CONFIG.DND5E.itemProperties` with `isPhysical`): magical, silvered, adamantine
+const ALL_ABILITIES = ["str", "dex", "con", "int", "wis", "cha"];
+// `MovementField` of dnd5e 5.3.3 (data/shared/movement-field.mjs): the only speed fields; `jump` of
+// `CONFIG.DND5E.movementTypes` has no field
+const SPEED_FIELDS = ["walk", "burrow", "climb", "fly", "swim"];
+// Physical damage bypasses (`CONFIG.DND5E.itemProperties` with `isPhysical`): magical, silvered, adamantine
 const BYPASSES = new Set(["mgc", "sil", "ada"]);
 
-const change = (key, type, value) => ({ key, type, value, phase: "initial" });
+// Seconds of each time unit (Foundry plural names and dnd5e singular names, as `recognizeDuration` and a consumer
+// may give either; the trailing "s" is stripped before the lookup); `rounds` / `turns` are combat durations
+const SECONDS = { second: 1, minute: 60, hour: 3600, day: 86400, week: 604800, month: 2592000, year: 31536000 };
+
+const change = (key, mode, value) => ({ key, mode: CHANGE_MODES[mode], value: String(value), priority: null });
+
+/**
+ * Ability keys an unscoped advantage / disadvantage spreads over: those of `keys.abilities` when known.
+ * @param {object} [keys]
+ * @returns {string[]}
+ */
+const abilitiesOf = keys => (keys?.abilities ? [...keys.abilities] : ALL_ABILITIES);
+
+/**
+ * Speed fields written by an unscoped speed multiplier: the `MovementField` fields present in `keys.movementTypes`.
+ * @param {object} [keys]
+ * @returns {string[]}
+ */
+const speedFieldsOf = keys => SPEED_FIELDS.filter(type => isValidKey(keys, "movementTypes", type));
+
+/**
+ * Foundry v13 `EffectDurationData` of a plan duration (`{ value, units }`, `until`): `rounds` / `turns` keep their
+ * unit, time units become `seconds` (same table as dnd5e 5.3.3 `DurationField.getEffectDuration`); a duration bound
+ * to a turn boundary (`until`: end / start of the next turn, no event expiry in v13) lasts one turn.
+ * @param {{ value?: number, units?: string, until?: string }|null|undefined} duration
+ * @returns {{ seconds?: number, rounds?: number, turns?: number }|null}  `null` when nothing can be written.
+ */
+export function toEffectDuration(duration) {
+  if ( !duration || typeof duration !== "object" ) return null;
+  if ( duration.until ) return { turns: 1 };
+  const value = Number(duration.value);
+  if ( !Number.isFinite(value) || value <= 0 ) return null;
+  const unit = String(duration.units ?? "").toLowerCase().replace(/s$/, "");
+  if ( unit === "round" ) return { rounds: value };
+  if ( unit === "turn" ) return { turns: value };
+  if ( Object.hasOwn(SECONDS, unit) ) return { seconds: value * SECONDS[unit] };
+  return null;
+}
 
 /**
  * Roll types (`mwak`...) of an attack / damage scope: `weapon` / `spell` expand to their two roll types, a roll type
@@ -39,22 +87,23 @@ function changesOf(effect, keys, notes) {
     case "ac":
       return [change("system.attributes.ac.bonus", "add", value)];
     case "attack": {
-      if ( !scope ) return [change("system.rolls.attack.bonus", "add", value)];
-      const rolls = rollTypesOf(scope);
-      return rolls ? rolls.map(roll => change(`system.rolls.attack.${roll}.bonus`, "add", value)) : skip();
+      // dnd5e 5.3.3 has no global attack bonus: `system.bonuses.<mwak|rwak|msak|rsak>.attack` (creature.mjs)
+      const rolls = scope ? rollTypesOf(scope) : ALL_ROLL_TYPES;
+      return rolls ? rolls.map(roll => change(`system.bonuses.${roll}.attack`, "add", value)) : skip();
     }
     case "damage": {
       const rolls = scope ? rollTypesOf(scope) : ALL_ROLL_TYPES;
-      return rolls ? rolls.map(roll => change(`system.rolls.damage.${roll}.bonus`, "add", value)) : skip();
+      return rolls ? rolls.map(roll => change(`system.bonuses.${roll}.damage`, "add", value)) : skip();
     }
     case "save":
     case "check": {
       // A bonus limited to a skill ("+5 bonus to Wisdom (Survival) checks") goes to that skill only
       if ( kind === "check" && effect.on === "skill" ) {
-        return scope && isValidKey(keys, "skills", scope) ? [change(`system.skills.${scope}.roll.bonus`, "add", value)] : skip();
+        return scope && isValidKey(keys, "skills", scope) ? [change(`system.skills.${scope}.bonuses.check`, "add", value)] : skip();
       }
       if ( scope && !isValidKey(keys, "abilities", scope) ) return skip();
-      const key = scope ? `system.abilities.${scope}.${kind}.roll.bonus` : `system.rolls.ability.${kind}.bonus`;
+      // dnd5e 5.3.3: `abilities.<a>.bonuses.check/save` (common.mjs), `bonuses.abilities.check/save` for all of them
+      const key = scope ? `system.abilities.${scope}.bonuses.${kind}` : `system.bonuses.abilities.${kind}`;
       return [change(key, "add", value)];
     }
     case "resistance":
@@ -76,8 +125,10 @@ function changesOf(effect, keys, notes) {
       }
       const roll = effect.on === "save" ? "save" : "check";
       if ( scope && !isValidKey(keys, "abilities", scope) ) return skip();
-      const key = scope ? `system.abilities.${scope}.${roll}.roll.mode` : `system.rolls.ability.${roll}.mode`;
-      return [change(key, "add", mode)];
+      // dnd5e 5.3.3 has no global roll mode: an unscoped advantage is written on every ability
+      // (`abilities.<a>.<check|save>.roll.mode`, an `AdvantageModeField` that counts its sources)
+      const abilities = scope ? [scope] : abilitiesOf(keys);
+      return abilities.map(ability => change(`system.abilities.${ability}.${roll}.roll.mode`, "add", mode));
     }
     case "abilityScore":
       return isValidKey(keys, "abilities", scope) ? [change(`system.abilities.${scope}.value`, "upgrade", value)] : skip();
@@ -101,20 +152,20 @@ function changesOf(effect, keys, notes) {
         ? [change(`system.attributes.senses.ranges.${scope}`, "upgrade", String(value))] : skip();
     case "speed":
       // A movement type ("a flying speed of 60 feet") sets that speed; without one, the speed bonus grows.
-      // dnd5e 6 stores speeds in `movement.speeds.<type>` (data/shared/movement-field.mjs, a MappingField of
-      // deterministic FormulaField): `movement.<type>` is only a deprecated shim (removed in dnd5e 7).
+      // dnd5e 5.3.3 stores speeds in `movement.<type>` (data/shared/movement-field.mjs, deterministic FormulaFields
+      // `walk burrow climb fly swim`); `jump` has no field and is skipped.
       if ( scope ) {
-        return isValidKey(keys, "movementTypes", scope)
-          ? [change(`system.attributes.movement.speeds.${scope}`, "upgrade", String(value))] : skip();
+        return SPEED_FIELDS.includes(scope) && isValidKey(keys, "movementTypes", scope)
+          ? [change(`system.attributes.movement.${scope}`, "upgrade", value)] : skip();
       }
       return [change("system.attributes.movement.bonus", "add", `+${value}`)];
     case "speedMultiplier": {
-      // "your speed is halved": dnd5e 6.0.6 multiplies every speed by `movement.multiplier` (a NumberField of
-      // data/shared/movement-field.mjs, initial 1, applied in `prepareMovement` of data/actor/templates/attributes.mjs);
-      // the Foundry v14 change type `multiply` scales it
+      // "your speed is halved": dnd5e 5.3.3 has no `movement.multiplier`; each speed field is scaled by a `multiply`
+      // change (`FormulaField#_applyChangeMultiply`: `value * delta`, an empty speed stays empty)
       const factor = Number(value);
       if ( !Number.isFinite(factor) || factor <= 0 ) return skip();
-      return [change("system.attributes.movement.multiplier", "multiply", String(factor))];
+      const fields = speedFieldsOf(keys);
+      return fields.length ? fields.map(type => change(`system.attributes.movement.${type}`, "multiply", factor)) : skip();
     }
     default:
       return skip();
@@ -135,7 +186,8 @@ export function effectGroupKey(effect) {
  * Translate the effects of an ItemPlan into `ActiveEffect` sources.
  * - Passive effects (worn / wielded / carried): one effect with `transfer: true`; dnd5e suspends it when the item
  *   is not equipped, or not attuned when attunement is required.
- * - `when: "onUse"` effects: one effect per activity, `transfer: false`, with `duration` when the text gives one,
+ * - `when: "onUse"` effects: one effect per activity, `transfer: false`, with a v13 `duration` (`toEffectDuration`)
+ *   when the text gives one,
  *   and `flags["dnd5e-text-parser"].activity` = index of the activity of the plan. `toActivities(plan, { effects })`
  *   puts their `_id` in `activity.effects`.
  * The returned array has a non-enumerable `notes` property (descriptors of the effects that could not be written).
@@ -165,15 +217,14 @@ export function toEffects(plan, { keys, idGen, name, img } = {}) {
     const seen = new Set();
     const changes = all.filter(entry => {
       if ( !entry.key.startsWith("system.traits.") ) return true;
-      const id = `${entry.key}|${entry.type}|${entry.value}`;
+      const id = `${entry.key}|${entry.mode}|${entry.value}`;
       return seen.has(id) ? false : seen.add(id);
     });
-    const source = {
-      _id: idGen(), name: label, transfer: !onUse, disabled: false, system: { changes }
-    };
+    const source = { _id: idGen(), name: label, transfer: !onUse, disabled: false, changes };
     if ( img ) source.img = img;
     if ( onUse ) {
-      if ( effect.duration ) source.duration = { value: effect.duration.value, units: effect.duration.units };
+      const duration = toEffectDuration(effect.duration);
+      if ( duration ) source.duration = duration;
       if ( Number.isInteger(effect.activity) ) source.flags = { [FLAG_SCOPE]: { activity: effect.activity } };
     }
     result.push(source);

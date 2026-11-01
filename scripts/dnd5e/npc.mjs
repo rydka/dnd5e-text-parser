@@ -1,5 +1,5 @@
 /**
- * Header of a stat block (`parseStatLines`) to a partial dnd5e 6 NPC `system`. Pure: no Foundry global; the valid
+ * Header of a stat block (`parseStatLines`) to a partial dnd5e 5.3.3 NPC `system`. Pure: no Foundry global; the valid
  * keys (`keysFromConfig(CONFIG.DND5E)`) and the world's units are passed as parameters.
  */
 import { isValidKey } from "./keys.mjs";
@@ -7,6 +7,8 @@ import { traitPatch } from "./actor.mjs";
 import { STAT_LEXICON } from "../parse/lexicon/stat-block.mjs";
 
 const TRAIT_KINDS = ["dr", "di", "dv", "ci"];
+// Speed fields of dnd5e 5.3.3 `MovementField` (data/shared/movement-field.mjs)
+const SPEED_FIELDS = ["walk", "burrow", "climb", "fly", "swim"];
 const NOTE = "dnd5e-text-parser.Note";
 
 /** Feet to metres (1.5 m = 5 ft), to the centimetre: 30 -> 9, 5 -> 1.5, 33 -> 9.9. */
@@ -21,7 +23,7 @@ const toMetres = feet => Math.round(Number(feet) * 30) / 100;
 const length = (feet, metric) => (metric ? toMetres(feet) : Number(feet));
 
 /**
- * Translate the header of a stat block into a partial dnd5e 6 NPC `system`.
+ * Translate the header of a stat block into a partial dnd5e 5.3.3 NPC `system`.
  * Only keys present in `keys` are written (a dropped key gives `Note.NpcKeyInvalid`); nothing is invented: a null
  * field writes nothing. Distances are converted to the world's unit (1.5 m = 5 ft, no rounding to the integer,
  * except sense ranges, which dnd5e stores as integers: `Note.RangeRounded`).
@@ -57,21 +59,25 @@ export function toNpcPatch(stats, { keys, metric } = {}) {
 
   const attributes = {};
   if ( stats.ac && Number.isFinite(stats.ac.value) ) {
-    // dnd5e 6: `natural` computes @attributes.ac.flat (config.mjs:1645). A printed AC without a natural armor
-    // (none, or an armor the actor does not own as an item) takes the same form (reports/rules/voice-scribe-initial.md
-    // § 2): the label reads "Natural Armor" but the value is exact. `calc` / `formula` are no longer persisted.
-    attributes.ac = { calcs: ["natural"], flat: stats.ac.value };
+    // dnd5e 5.3.3: `calc` is a single string (data/actor/templates/attributes.mjs) and `natural` reads
+    // @attributes.ac.flat. A printed AC without a natural armor (none, or an armor the actor does not own as an
+    // item) takes the same form (reports/rules/voice-scribe-initial.md § 2): the label reads "Natural Armor" but
+    // the value is exact.
+    attributes.ac = { calc: "natural", flat: stats.ac.value };
   }
   if ( stats.hp && Number.isFinite(stats.hp.value) ) {
     attributes.hp = { value: stats.hp.value, max: stats.hp.value, formula: stats.hp.formula ?? "" };
   }
   if ( stats.speed ) {
+    // dnd5e 5.3.3 `MovementField` (data/shared/movement-field.mjs): one FormulaField per speed type at the top level
+    // (`walk burrow climb fly swim`); `jump` of `movementTypes` has no field and is skipped
     const speeds = {};
     for ( const [type, feet] of Object.entries(stats.speed.speeds ?? {}) ) {
       if ( !Number.isFinite(feet) || !valid("movementTypes", type, "speed") ) continue;
+      if ( !SPEED_FIELDS.includes(type) ) { skip("speed", type); continue; }
       speeds[type] = String(length(feet, metricLength));
     }
-    if ( Object.keys(speeds).length ) attributes.movement = { speeds, units, hover: !!stats.speed.hover };
+    if ( Object.keys(speeds).length ) attributes.movement = { ...speeds, units, hover: !!stats.speed.hover };
   }
   if ( stats.senses ) {
     const ranges = {};
