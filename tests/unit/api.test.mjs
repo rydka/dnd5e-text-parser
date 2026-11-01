@@ -15,13 +15,58 @@ function walk(dir) {
 
 describe("public API (L8, unit part)", () => {
   it("exposes the versions", () => {
-    expect(P.API_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(P.API_VERSION).toMatch(/^\d+\.\d+\.\d+(-v13)?$/);
     expect(P.SCHEMA_VERSION).toBe(1);
   });
 
-  it("API_VERSION matches the module version (without pre-release suffix)", () => {
+  it("P10: API_VERSION equals the module version, 1.1.0-v13 (item-configurator reads only the major)", () => {
     const manifest = JSON.parse(fs.readFileSync(path.join(root, "module.json"), "utf8"));
-    expect(manifest.version.split("-")[0]).toBe(P.API_VERSION);
+    expect(P.API_VERSION).toBe("1.1.0-v13");
+    expect(manifest.version).toBe(P.API_VERSION);
+    expect(Number(P.API_VERSION.split(".")[0])).toBe(1);
+  });
+
+  it("P10: toEffectDuration and CHANGE_MODES are exposed by the frozen API", async () => {
+    const { buildApi } = await import("../../scripts/module.mjs");
+    const api = buildApi();
+    expect(Object.isFrozen(api)).toBe(true);
+    expect(typeof api.toEffectDuration).toBe("function");
+    expect(api.CHANGE_MODES).toEqual({ custom: 0, multiply: 1, add: 2, downgrade: 3, upgrade: 4, override: 5 });
+  });
+
+  it("P10: module.json targets Foundry 13 and dnd5e 5.3.0 to 5.99 (C6)", () => {
+    const m = JSON.parse(fs.readFileSync(path.join(root, "module.json"), "utf8"));
+    expect(m.version).toBe("1.1.0-v13");
+    expect(m.compatibility).toEqual({ minimum: "13", verified: "13" });
+    expect(m.relationships.systems).toEqual([{
+      id: "dnd5e", type: "system", compatibility: { minimum: "5.3.0", verified: "5.3.3", maximum: "5.99" }
+    }]);
+    expect(m.library).toBe(true);
+  });
+
+  it("P10: manifest is the raw file of the v13 branch, download is the v1.1.0-v13 release", () => {
+    const m = JSON.parse(fs.readFileSync(path.join(root, "module.json"), "utf8"));
+    expect(m.manifest).toBe("https://raw.githubusercontent.com/rydka/dnd5e-text-parser/v13/module.json");
+    expect(m.download).toBe("https://github.com/rydka/dnd5e-text-parser/releases/download/v1.1.0-v13/module.zip");
+  });
+
+  it("P10: the release workflow publishes the v13 branch manifest, not releases/latest", () => {
+    const yml = fs.readFileSync(path.join(root, ".github/workflows/release.yml"), "utf8");
+    expect(yml).toContain("raw.githubusercontent.com/rydka/dnd5e-text-parser/v13/module.json");
+    expect(yml).not.toContain("releases/latest/download/module.json");
+  });
+
+  it("the Foundry v13 / dnd5e 5.3.3 globals are what the design asks for", () => {
+    expect(game.system.version).toBe("5.3.3");
+    expect(game.version).toBe("13.350");
+    expect(game.release.generation).toBe(13);
+    expect(typeof globalThis._replace).toBe("undefined");
+    expect(typeof globalThis._del).toBe("undefined");
+  });
+
+  it("no script of the library uses _replace or _del (absent from v13)", () => {
+    const offenders = walk(path.join(root, "scripts")).filter(f => /\b_replace\b|\b_del\b/.test(fs.readFileSync(f, "utf8")));
+    expect(offenders.map(f => path.relative(root, f))).toEqual([]);
   });
 
   it.each([

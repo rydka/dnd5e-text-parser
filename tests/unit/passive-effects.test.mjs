@@ -8,7 +8,9 @@ const snapshot = JSON.parse(readFileSync(new URL("../fixtures/dnd5e-keys.json", 
 const keys = P.keysFromConfig({ ...snapshot, senses: { darkvision: {}, blindsight: {}, tremorsense: {}, truesight: {} } });
 const idGen = () => "p".repeat(16);
 const feature = (name, html) => P.parseFeature(name, html, { keys });
-const changes = (plan, name = "Trait") => P.toEffects(plan, { keys, idGen, name }).flatMap(e => e.system.changes.map(c => `${c.key}|${c.type}|${c.value}`));
+// v13: `mode` is numeric; the readable name keeps the expectations legible
+const MODE_NAME = { 0: "custom", 1: "multiply", 2: "add", 3: "downgrade", 4: "upgrade", 5: "override" };
+const changes = (plan, name = "Trait") => P.toEffects(plan, { keys, idGen, name }).flatMap(e => e.changes.map(c => `${c.key}|${MODE_NAME[c.mode]}|${c.value}`));
 const noteKeys = (plan) => plan.notes.map(n => n.key.split(".").pop());
 
 describe("damage reduction", () => {

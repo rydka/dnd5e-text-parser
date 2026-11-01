@@ -10,13 +10,13 @@ const item = (name, html, itemType = "equipment") => P.parseItem(name, html, { k
 const patch = (name, html, type = "weapon") => P.toItemPatch(item(name, html, type), { item: { type }, keys });
 
 describe("speed effect path", () => {
-  it("writes movement.speeds.<type>, not the deprecated movement.<type>", () => {
+  it("writes movement.<type> (dnd5e 5.3.3), not movement.speeds.<type>", () => {
     const plan = item("Boots of Skies", "<p>Wondrous Item, Rare. While you wear these boots, you have a flying speed of 40 feet.</p>", "equipment");
-    const changes = P.toEffects(plan, { idGen, keys }).flatMap(e => e.system.changes);
+    const changes = P.toEffects(plan, { idGen, keys }).flatMap(e => e.changes);
     const speed = changes.filter(c => /movement/.test(c.key));
     expect(speed.length).toBeGreaterThan(0);
-    expect(speed.map(c => c.key)).toContain("system.attributes.movement.speeds.fly");
-    expect(speed.every(c => /^system\.attributes\.movement\.(speeds\.|bonus)/.test(c.key))).toBe(true);
+    expect(speed.map(c => c.key)).toContain("system.attributes.movement.fly");
+    expect(speed.every(c => /^system\.attributes\.movement\.(walk|burrow|climb|fly|swim|bonus)$/.test(c.key))).toBe(true);
   });
 });
 

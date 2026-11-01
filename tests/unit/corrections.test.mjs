@@ -20,7 +20,7 @@ const item = (name, html, itemType = "equipment") => P.parseItem(name, html, { k
 const dice = (parts) => (parts ?? []).map(d => `${d.number}d${d.denomination}${d.bonus ? `${d.bonus > 0 ? "+" : ""}${d.bonus}` : ""} ${d.type ?? "-"}`);
 const keyOf = (descriptor) => descriptor.key.split(".").pop();
 const withKey = (list, name) => (list ?? []).filter(d => keyOf(d) === name);
-const changeKeys = (plan) => P.toEffects(plan, { idGen, keys }).flatMap(e => e.system.changes.map(c => c.key));
+const changeKeys = (plan) => P.toEffects(plan, { idGen, keys }).flatMap(e => e.changes.map(c => c.key));
 
 describe("bug 1: an attack header without a number invents no bonus", () => {
   const html = "<p>Melee Attack Roll: Automatic hit, reach 5 ft. Hit: 11 (2d6 + 4) Psychic damage.</p>";
@@ -211,7 +211,7 @@ describe("bug 6: damage that continues is damage, not the damage of the save", (
 });
 
 describe("item defect 1: a bonus limited to a skill applies to that skill only", () => {
-  const abilityCheckKeys = (plan) => changeKeys(plan).filter(k => /^system\.abilities\.[a-z]+\.check\.roll\.bonus$|^system\.rolls\.ability\.check\.bonus$/.test(k));
+  const abilityCheckKeys = (plan) => changeKeys(plan).filter(k => /^system\.abilities\.[a-z]+\.bonuses\.check$|^system\.bonuses\.abilities\.check$/.test(k));
 
   it("'+2 bonus to Dexterity (Stealth) checks' is not a Dexterity check bonus", () => {
     const plan = item("Cloak", "<p>Wondrous Item, Uncommon. While wearing this cloak, you gain a +2 bonus to Dexterity (Stealth) checks.</p>");
@@ -234,12 +234,12 @@ describe("item defect 1: a bonus limited to a skill applies to that skill only",
   it("a bonus to all checks of an ability is still written", () => {
     const plan = item("Band", "<p>Wondrous Item, Rare. While wearing this band, you gain a +2 bonus to Dexterity checks.</p>");
     expect(plan.effects).toContainEqual(expect.objectContaining({ kind: "check", scope: "dex" }));
-    expect(changeKeys(plan)).toContain("system.abilities.dex.check.roll.bonus");
+    expect(changeKeys(plan)).toContain("system.abilities.dex.bonuses.check");
   });
 
   it("a bonus to saving throws of an ability is still written", () => {
     const plan = item("Charm", "<p>Wondrous Item, Rare. You gain a +1 bonus to Wisdom saving throws while you hold this charm.</p>");
-    expect(changeKeys(plan)).toContain("system.abilities.wis.save.roll.bonus");
+    expect(changeKeys(plan)).toContain("system.abilities.wis.bonuses.save");
   });
 });
 

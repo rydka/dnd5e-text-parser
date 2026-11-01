@@ -37,15 +37,15 @@ describe("L6: translation of details", () => {
     expect(P.toItemPatch(plan, { item: { type: c.itemType } }).magicalBonus).toBe("1") // FormulaField: a string;
   });
 
-  it("rarity is written as a Set-compatible 'rarities' value (dnd5e 6), not 'rarity'", () => {
+  it("rarity is written as the 'rarity' string (dnd5e 5.3.3), not a 'rarities' set", () => {
     const c = cases.find(x => x.id === "o-en-ring-protection");
     const patch = P.toItemPatch(P.parseItem(c.name, c.html, { itemType: c.itemType }), { item: { type: c.itemType } });
-    expect(patch).not.toHaveProperty("rarity");
-    expect([...patch.rarities]).toEqual(["rare"]);
+    expect(patch).not.toHaveProperty("rarities");
+    expect(patch.rarity).toBe("rare");
   });
 });
 
-describe("L7: effects in the v14 format", () => {
+describe("L7: effects in the v13 format", () => {
   const withEffects = cases.filter(c => c.effects?.length);
   const idGen = (() => { let n = 0; return () => `eff${String(++n).padStart(13, "0")}`; })();
 
@@ -55,21 +55,23 @@ describe("L7: effects in the v14 format", () => {
     expect(effects.length).toBeGreaterThan(0);
     for ( const e of effects ) {
       expect(e.transfer).toBe(true);
-      expect(e).not.toHaveProperty("changes");
-      expect(e.system.changes.length).toBeGreaterThan(0);
-      for ( const ch of e.system.changes ) {
-        expect(ch).toHaveProperty("type");
-        expect(ch).not.toHaveProperty("mode");
+      expect(e).not.toHaveProperty("system");
+      expect(e.changes.length).toBeGreaterThan(0);
+      for ( const ch of e.changes ) {
+        expect(Object.values(P.CHANGE_MODES)).toContain(ch.mode);
+        expect(typeof ch.value).toBe("string");
+        expect(ch).not.toHaveProperty("type");
+        expect(ch).not.toHaveProperty("phase");
         expect(typeof ch.key).toBe("string");
-        expect(ch.key).not.toMatch(/^system\.bonuses\.(mwak|rwak|msak|rsak|abilities)/);
+        expect(ch.key).not.toMatch(/^system\.rolls\./);
       }
     }
   });
 
-  it("AC bonus targets system.attributes.ac.bonus with an 'add' change", () => {
+  it("AC bonus targets system.attributes.ac.bonus with an 'add' (mode 2) change", () => {
     const c = cases.find(x => x.id === "o-en-ring-protection");
     const effects = P.toEffects(P.parseItem(c.name, c.html, { itemType: c.itemType }), { idGen });
-    const ac = effects.flatMap(e => e.system.changes).find(ch => ch.key === "system.attributes.ac.bonus");
-    expect(ac).toMatchObject({ type: "add", value: "+1" });
+    const ac = effects.flatMap(e => e.changes).find(ch => ch.key === "system.attributes.ac.bonus");
+    expect(ac).toMatchObject({ mode: 2, value: "+1" });
   });
 });
