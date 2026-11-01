@@ -222,7 +222,7 @@ export function describe(planOrChanges) {
     detail("Consumable", { type: c.type, charges: c.charges?.max ?? null }, c, paths);
   }
   if ( details.charges ) detail("Charges", { charges: details.charges.max }, details.charges, ["system.uses"]);
-  if ( details.rarity ) detail("Rarity", { rarity: details.rarity }, null, ["system.rarities"]);
+  if ( details.rarity ) detail("Rarity", { rarity: details.rarity }, null, ["system.rarity"]);
   if ( details.attunement ) {
     detail("Attunement", { attunement: details.attunement, condition: details.attunementCondition ?? "" }, null, ["system.attunement"]);
   }

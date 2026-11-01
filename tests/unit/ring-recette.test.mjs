@@ -100,8 +100,9 @@ describe("the ring: back-reference, drawback, headings and flavor", () => {
           expect(effects).toHaveLength(1);
           const effect = effects[0];
           expect(effect.transfer).toBe(false);
-          expect(effect.duration).toMatchObject({ value: 1, units: "turns" });
-          expect(effect.system.changes).toEqual([expect.objectContaining({ key: "system.attributes.movement.multiplier", type: "multiply", value: "0.5" })]);
+          expect(effect.duration).toEqual({ turns: 1 });
+          expect(effect.changes.map(c => c.key).sort()).toEqual(["burrow", "climb", "fly", "swim", "walk"].map(t => `system.attributes.movement.${t}`).sort());
+          for ( const c of effect.changes ) expect(c).toMatchObject({ mode: 1, value: "0.5" });
           expect(activities[0].effects.map(e => e._id)).toEqual([effect._id]);
         });
 

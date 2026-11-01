@@ -8,7 +8,7 @@
  */
 
 /** Semver of the API; equals the module version. Major: removal or signature change, or incompatible plan change. */
-export const API_VERSION = "1.1.0";
+export const API_VERSION = "1.1.0-v13";
 
 /** Version of the intermediate structure; written in each plan as `plan.schema`. */
 export const SCHEMA_VERSION = 1;
@@ -23,7 +23,7 @@ export { toNpcPatch } from "./dnd5e/npc.mjs";
 export { parseFeatureAsync, parseItemAsync, validateFallbackFacts } from "./parse/fallback.mjs";
 export { htmlToText, splitSentences, splitLines, toFeet, toPounds } from "./parse/text.mjs";
 export { toActivities, toDamagePart } from "./dnd5e/activities.mjs";
-export { toEffects } from "./dnd5e/effects.mjs";
+export { toEffects, toEffectDuration, CHANGE_MODES } from "./dnd5e/effects.mjs";
 export { toItemPatch } from "./dnd5e/item.mjs";
 export { toActorPatch, toSpellStubs } from "./dnd5e/actor.mjs";
 export { isEmpty, isEmptyUtility, mergeMissing } from "./dnd5e/merge.mjs";

@@ -117,7 +117,7 @@ describe("objects: effects", () => {
     const adv = plan.effects.find(e => e.kind === "advantage");
     expect(adv.against).toBe("charmed");
     const written = P.toEffects(plan, { keys, idGen, name: "Charm" });
-    const keysWritten = written.flatMap(e => e.system.changes.map(c => c.key)).join(" ");
+    const keysWritten = written.flatMap(e => e.changes.map(c => c.key)).join(" ");
     expect(keysWritten).toMatch(/di|immun|traits/i);
     expect(keysWritten).not.toMatch(/charmed/i);
   });

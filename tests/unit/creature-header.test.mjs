@@ -36,10 +36,10 @@ Langues commun, abyssal
 Facteur de puissance 3 (700 PX)`;
 
 describe("L5: version and API surface", () => {
-  it("API_VERSION is 1.1.0 and matches module.json", () => {
-    expect(P.API_VERSION).toBe("1.1.0");
+  it("API_VERSION is 1.1.0-v13 and equals the module.json version", () => {
+    expect(P.API_VERSION).toBe("1.1.0-v13");
     const manifest = JSON.parse(fs.readFileSync(path.join(root, "module.json"), "utf8"));
-    expect(manifest.version.split("-")[0]).toBe("1.1.0");
+    expect(manifest.version).toBe("1.1.0-v13");
   });
 
   it.each([
@@ -235,29 +235,29 @@ describe("L2: toNpcPatch", () => {
   const stats = P.parseStatLines(EN_BLOCK);
   const sysOf = (s, opts) => { const p = P.toNpcPatch(s, { keys, ...opts }); return p.system ?? p; };
 
-  it("AC in dnd5e 6 format: natural -> calcs + flat, never calc/formula", () => {
+  it("AC in dnd5e 5.3.3 format: natural -> calc + flat, never calcs/formula", () => {
     const system = sysOf(stats);
-    expect(system.attributes.ac).toEqual({ calcs: ["natural"], flat: 16 });
+    expect(system.attributes.ac).toEqual({ calc: "natural", flat: 16 });
   });
-  it("AC with a cited armor and no object -> calcs natural + flat", () => {
-    expect(sysOf(P.parseStatLines("Armor Class 17 (chain mail, shield)")).attributes.ac).toEqual({ calcs: ["natural"], flat: 17 });
+  it("AC with a cited armor and no object -> calc natural + flat", () => {
+    expect(sysOf(P.parseStatLines("Armor Class 17 (chain mail, shield)")).attributes.ac).toEqual({ calc: "natural", flat: 17 });
   });
-  it("AC without detail -> calcs natural + flat", () => {
+  it("AC without detail -> calc natural + flat", () => {
     const ac = sysOf(P.parseStatLines("Armor Class 15")).attributes.ac;
-    expect(ac).toEqual({ calcs: ["natural"], flat: 15 });
-    expect(ac).not.toHaveProperty("calc");
+    expect(ac).toEqual({ calc: "natural", flat: 15 });
+    expect(ac).not.toHaveProperty("calcs");
     expect(ac).not.toHaveProperty("formula");
   });
   it("hp: value, max, formula", () => {
     expect(sysOf(stats).attributes.hp).toEqual({ value: 136, max: 136, formula: "16d8 + 64" });
   });
-  it("speeds in movement.speeds.<type> + units", () => {
+  it("speeds in movement.<type> + units (dnd5e 5.3.3), no movement.speeds", () => {
     const m = sysOf(stats).attributes.movement;
-    expect(Number(m.speeds.walk)).toBe(30);
-    expect(Number(m.speeds.fly)).toBe(60);
-    expect(Number(m.speeds.swim)).toBe(20);
+    expect(Number(m.walk)).toBe(30);
+    expect(Number(m.fly)).toBe(60);
+    expect(Number(m.swim)).toBe(20);
     expect(m.units).toBe("ft");
-    expect(m).not.toHaveProperty("walk");
+    expect(m).not.toHaveProperty("speeds");
   });
   it("abilities, proficient saves, proficient skills", () => {
     const system = sysOf(stats);
@@ -284,9 +284,9 @@ describe("L2: toNpcPatch", () => {
     const narrow = { ...keys, movementTypes: new Set(["walk"]), skills: new Set(["ath"]) };
     const sys = P.toNpcPatch(stats, { keys: narrow });
     const system = sys.system ?? sys;
-    expect(system.attributes.movement.speeds.fly).toBeUndefined();
-    expect(system.attributes.movement.speeds.swim).toBeUndefined();
-    expect(system.attributes.movement.speeds.walk).toBeDefined();
+    expect(system.attributes.movement.fly).toBeUndefined();
+    expect(system.attributes.movement.swim).toBeUndefined();
+    expect(system.attributes.movement.walk).toBeDefined();
     expect(system.skills.prc).toBeUndefined();
     expect(system.skills.ath).toBeDefined();
   });
@@ -319,19 +319,19 @@ describe("L3: metric units", () => {
   it("distances converted with 1.5 m = 5 ft, no rounding to integers", () => {
     const sys = sysOf(stats, { metric });
     expect(sys.attributes.movement.units).toBe("m");
-    expect(Number(sys.attributes.movement.speeds.walk)).toBeCloseTo(9, 5);
-    expect(Number(sys.attributes.movement.speeds.fly)).toBeCloseTo(18, 5);
+    expect(Number(sys.attributes.movement.walk)).toBeCloseTo(9, 5);
+    expect(Number(sys.attributes.movement.fly)).toBeCloseTo(18, 5);
     expect(sys.attributes.senses.units).toBe("m");
     expect(sys.attributes.senses.ranges.darkvision).toBeCloseTo(18, 5);
   });
   it("5 ft = 1.5 m is not rounded", () => {
     const sys = sysOf(P.parseStatLines("Speed 5 ft."), { metric });
-    expect(Number(sys.attributes.movement.speeds.walk)).toBeCloseTo(1.5, 5);
+    expect(Number(sys.attributes.movement.walk)).toBeCloseTo(1.5, 5);
   });
   it("without metric: feet", () => {
     const sys = sysOf(stats);
     expect(sys.attributes.movement.units).toBe("ft");
-    expect(Number(sys.attributes.movement.speeds.walk)).toBe(30);
+    expect(Number(sys.attributes.movement.walk)).toBe(30);
   });
   it("toPounds keeps decimals: 0.2 kg = 0.4 lb", () => {
     expect(P.toPounds(0.2, "kg")).toBeCloseTo(0.4, 5);

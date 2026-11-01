@@ -17,7 +17,7 @@ const EXTRA = /\b(?:extra|additional|supplémentaires?|supplementaires?|en plus)
 const EXTRA_AFTER = /^\s*(?:suppl[ée]mentaires?|en\s+plus)(?![\p{L}])/iu;
 const overlaps = (a, b) => a.start < b.end && a.end > b.start;
 const NOTE_NOT_AUTOMATED = "dnd5e-text-parser.Note.NotAutomated";
-// Clauses dnd5e 6 has no mechanism for: no reactions, "drop to 1 hit point instead"
+// Clauses dnd5e 5.3.3 has no mechanism for: no reactions, "drop to 1 hit point instead"
 const NOT_AUTOMATED = new RegExp(String.raw`\b(?:you\s+)?can(?:'t|not)\s+(?:take|use)\s+(?:a\s+)?reactions?\b|` +
   String.raw`\b(?:you\s+)?(?:drops?|falls?|(?:is\s+|are\s+)?reduced)\s+to\s+1\s+hit\s+point\s+instead\b|` +
   String.raw`\b(?:vous\s+)?ne\s+(?:pouvez|peut|peuvent)\s+pas\s+(?:effectuer|utiliser|prendre|faire)\s+de\s+r[ée]actions?\b|` +

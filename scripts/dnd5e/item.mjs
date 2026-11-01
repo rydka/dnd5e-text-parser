@@ -2,7 +2,7 @@ import { isValidKey } from "./keys.mjs";
 import { toDamagePart } from "./activities.mjs";
 
 /**
- * Translation of a FeaturePlan / ItemPlan into a partial dnd5e 6 item `system` source.
+ * Translation of a FeaturePlan / ItemPlan into a partial dnd5e 5.3.3 item `system` source.
  * Pure: no Foundry global. Only keys found in `keys` are written.
  */
 
@@ -28,7 +28,7 @@ function buildUses(plan, keys) {
       ? { period: charges.period, type: "formula", formula: charges.formula }
       : { period: charges.period, type: "recoverAll" });
   } else if ( charges ) max = charges.max;
-  // "recharge" is not a `limitedUsePeriods` key in dnd5e 6: it is a fixed period handled by `UsesField`
+  // "recharge" is not a `limitedUsePeriods` key in dnd5e 5.3.3: it is a fixed period handled by `UsesField`
   // (data/shared/uses-field.mjs, `recovery.period === "recharge"`, formula = minimum d6 result, type recoverAll)
   if ( plan.recharge && Number.isFinite(plan.recharge.min) ) {
     max ??= 1;
@@ -134,7 +134,8 @@ export function toItemPatch(plan, { keys, item } = {}) {
     system.type = { value: consumableType };
   }
 
-  if ( details.rarity && isValidKey(keys, "itemRarity", details.rarity) ) system.rarities = [details.rarity];
+  // dnd5e 5.3.3: `rarity` is a single string (data/item/templates/physical-item.mjs)
+  if ( details.rarity && isValidKey(keys, "itemRarity", details.rarity) ) system.rarity = details.rarity;
   if ( details.attunement && isValidKey(keys, "attunementTypes", details.attunement) ) {
     system.attunement = details.attunement;
   }

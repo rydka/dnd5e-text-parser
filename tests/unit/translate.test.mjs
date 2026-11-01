@@ -112,21 +112,22 @@ describe("toActivities, toEffects, toItemPatch: item plans", () => {
     expect(heal.healing.types).toEqual(["healing"]);
   });
 
-  it("effects: v14 changes (type, no mode), transfer true for passive effects", () => {
+  it("effects: v13 changes (numeric mode at the top level, no system), transfer true for passive effects", () => {
     const plan = P.parseItem("Ring", RING, { keys, itemType: "equipment" });
     const effects = P.toEffects(plan, { keys, idGen, name: "Ring" });
     expect(effects.length).toBeGreaterThan(0);
-    const changes = effects.flatMap(e => e.system.changes);
+    const changes = effects.flatMap(e => e.changes);
     expect(changes.length).toBeGreaterThanOrEqual(2);
-    for ( const c of changes ) { expect(typeof c.type).toBe("string"); expect(c).not.toHaveProperty("mode"); }
-    expect(effects.every(e => !("changes" in e))).toBe(true);
+    for ( const c of changes ) { expect(typeof c.mode).toBe("number"); expect(typeof c.value).toBe("string"); expect(c).not.toHaveProperty("type"); }
+    expect(effects.every(e => !("system" in e))).toBe(true);
     expect(effects.some(e => e.transfer === true)).toBe(true);
   });
 
   it("toItemPatch: rarity, attunement, charges for a wand", () => {
     const plan = P.parseItem("Wand", WAND, { keys, itemType: "consumable" });
     const patch = P.toItemPatch(plan, { keys, item: { type: "consumable" } });
-    expect(patch.rarities ?? patch.rarity).toBeTruthy();
+    expect(typeof patch.rarity).toBe("string");
+    expect(patch).not.toHaveProperty("rarities");
     expect(patch.attunement).toBe("required");
     expect(patch.uses.max).toBe("7");
   });

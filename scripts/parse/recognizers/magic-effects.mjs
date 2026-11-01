@@ -44,7 +44,7 @@ const SCORE_FR = /\bVotre\s+(?:(?:valeur|score)\s+(?:de\s+|d'))?(\p{L}+)\s+(?:pa
 const SPEED_EN = /\bspeed\s+(?:increases|is\s+increased)\s+by\s+(\d+)\s*(?:feet|ft\.?)/giu;
 const SPEED_FR = /\bvitesse(?:\s+de\s+d[ée]placement)?\s+augmente\s+de\s+(\d+(?:[.,]\d+)?)\s*m\b/giu;
 // "your speed is halved" / "doubled", "votre vitesse est réduite de moitié" / "divisée par deux" / "doublée":
-// a multiplier of every speed (dnd5e 6 `movement.multiplier`)
+// a multiplier of every speed (`toEffects` writes one `multiply` change per speed field of dnd5e 5.3.3)
 const SPEED_MULT_EN = /\bspeed\s+is\s+(halved|reduced\s+(?:by|to)\s+half|cut\s+in\s+half|doubled)\b/giu;
 const SPEED_MULT_FR = /\bvitesse(?:\s+de\s+d[ée]placement)?\s+est\s+(r[ée]duite\s+de\s+moiti[ée]|divis[ée]e\s+par\s+(?:deux|2)|doubl[ée]e)(?![\p{L}])/giu;
 const SPEED_MULTIPLIERS = [[/doubl/iu, 2], [/halv|half|moiti|divis/iu, 0.5]];
